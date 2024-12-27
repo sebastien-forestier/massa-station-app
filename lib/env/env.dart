@@ -12,8 +12,22 @@ class Env {
     'jrpc_host',
     defaultValue: 'mainnet.massa.net',
   );
-  static const jrpVersion = String.fromEnvironment(
+  static const jrpcVersion = String.fromEnvironment(
     'jrpc_port',
     defaultValue: "api/v2",
+  );
+
+  static const explorerHost = String.fromEnvironment(
+    'explorer_host',
+    defaultValue: "explorer-api.massa.net",
+  );
+
+  /// privateKey should be kept private. But this key is here for experimenting and never use it.
+  /// its corresponding public key: P16CaSWoXu5A3AVTynHZH4BP8rkd1GNuSvwxMwWpJZwNcYmamww
+  /// its correspoding address:    AU1y3oYTgK8RGzLWFVAGL3JxHLdTVKxBPHrwbo2Kj8a2CSbeMug
+  static const privateKey = String.fromEnvironment(
+    'privateKey',
+    defaultValue:
+        "S1R3W8t9tRBxxRsULe2cLJXX1moAragCzKh8gVxB8PBLJdA4vCD", //this private key is used for testing only. Never use it as it is publicly avaiable.
   );
 }

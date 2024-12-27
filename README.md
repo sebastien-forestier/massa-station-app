@@ -17,24 +17,31 @@ MicroGate will initally have the following features:
 
 ## Development Status
 ### Massa explorer
-- [ ] List all addreses
-- [ ] Search for an address
-- [ ] View address details
+- [x] List all staking addreses
+- [x] Search for an address
+- [x] View address details
+- [x] Search for domain name
+- [x] View  domain name details
+- [x] Search for operation
+- [x] View  view operation details
+- [x] Search for block
+- [x] View  view block details
+
 ### Massa wallet
-- [ ] Create wallet
-- [ ] Store wallet in secure storage
-- [ ] View wallet details
+- [x] Create wallet
+- [x] Store wallet in secure storage
+- [x] View wallet details
 - [ ] Restore wallet from private key
 - [ ] Export wallet private key and as QR code
-- [ ] Send transaction from one address to another
-- [ ] Receive transaction
+- [x] Send transaction from one address to another
+- [x] Receive transaction
 ### Dusa Integration
-- [ ] Wrap MAS to WMAS
-- [ ] Unwrap WMAS to MAS
-- [ ] Swap MAS to USDC.e
-- [ ] Swap USDC.e to MAS
-- [ ] Swap MAS to WETH
-- [ ] Swap WETH to MAS
+- [x] Wrap MAS to WMAS
+- [x] Unwrap WMAS to MAS
+- [x] Swap MAS to USDC.e
+- [x] Swap USDC.e to MAS
+- [x] Swap MAS to WETH
+- [x] Swap WETH to MAS
 
 
 ## Additional information
