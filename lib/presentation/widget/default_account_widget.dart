@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mug/presentation/provider/setting_provider.dart';
-import 'package:mug/presentation/provider/wallet_provider.dart';
-import 'package:mug/service/massa_icon/svg.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class DefaultAccountBottomSheet extends StatelessWidget {
   final String address;
@@ -12,19 +8,20 @@ class DefaultAccountBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final isDarkTheme = ref.watch(settingProvider).darkTheme;
+        //final isDarkTheme = ref.watch(settingProvider).darkTheme;
 
         return Container(
           padding: const EdgeInsets.all(16.0),
-          height: 300,
+          height: 400,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text("CONFIRMATION", style: TextStyle(fontSize: 20, color: Colors.blue)),
               const SizedBox(height: 20),
-              Text("Account Address: $address", style: const TextStyle(fontSize: 18)),
+              Text("Wallet Address: $address", style: const TextStyle(fontSize: 18)),
               const SizedBox(height: 20),
-              const Text("Are you sure you want to make this account as default?"),
+              const Text(
+                  "Default wallet will be used to sign all smart contract transactions and pay the gas fee. Are you sure you want to make this wallet as default?"),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -37,7 +34,7 @@ class DefaultAccountBottomSheet extends StatelessWidget {
                       icon: const Icon(Icons.check)),
                   OutlinedButton.icon(
                       onPressed: () {
-                        Navigator.of(context).pop(true);
+                        Navigator.of(context).pop(false);
                       },
                       label: const Text("No"),
                       icon: const Icon(Icons.close)),

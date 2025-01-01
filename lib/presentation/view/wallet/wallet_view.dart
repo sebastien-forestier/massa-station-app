@@ -1,183 +1,347 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:horizontal_data_table/horizontal_data_table.dart' as ht;
+import 'package:massa/massa.dart';
+import 'package:mug/data/model/transaction_history.dart';
 
 // Project imports:
+import 'package:mug/presentation/provider/address_provider.dart';
+import 'package:mug/presentation/provider/screen_title_provider.dart';
+import 'package:mug/presentation/provider/setting_provider.dart';
 import 'package:mug/presentation/provider/wallet_provider.dart';
-import 'package:mug/presentation/state/wallets_state.dart';
+import 'package:mug/presentation/state/wallet_state.dart';
+import 'package:mug/presentation/widget/common_padding.dart';
+import 'package:mug/presentation/widget/default_account_widget.dart';
+import 'package:mug/presentation/widget/information_snack_message.dart';
+import 'package:mug/presentation/widget/private_key_bottomsheet_widget.dart';
 import 'package:mug/routes/routes_name.dart';
 import 'package:mug/service/massa_icon/svg.dart';
 import 'package:mug/utils/number_helpers.dart';
-import 'package:mug/presentation/widget/common_padding.dart';
-import 'package:mug/presentation/widget/button_widget.dart';
+import 'package:mug/utils/string_helpers.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class WalletView extends ConsumerStatefulWidget {
-  const WalletView({super.key});
+  final String address;
+  const WalletView(this.address, {super.key});
 
   @override
   ConsumerState<WalletView> createState() => _WalletViewState();
 }
 
 class _WalletViewState extends ConsumerState<WalletView> {
+  bool isAccountDefault = false;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((duration) {
-      ref.read(walletProvider.notifier).loadWallets();
+    // Trigger wallet information loading
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      ref.read(walletProvider.notifier).getWalletInformation(widget.address, true);
+      isAccountDefault = await ref.read(walletProvider.notifier).isAccountDefault(widget.address);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = ref.watch(settingProvider).darkTheme;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: const Text('Wallets'),
+        title: const Text('Wallet Details'),
       ),
       body: CommonPadding(
         child: RefreshIndicator(
           onRefresh: () {
-            return ref.read(walletProvider.notifier).loadWallets();
+            return ref.read(addressProvider.notifier).getAddress(widget.address, true);
           },
           child: Consumer(
             builder: (context, ref, child) {
-              //final isDarkTheme = ref.watch(settingProvider).darkTheme;
               return switch (ref.watch(walletProvider)) {
-                WalletInitial() => const Text('List is empty.'),
                 WalletLoading() => const CircularProgressIndicator(),
-                WalletEmpty(message: final message) => Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                WalletSuccess(addressEntity: final addressEntity) => Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max, // Ensures the Column takes up the full available height
                     children: [
-                      Text(message),
-                      const SizedBox(
-                        height: 20,
+                      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: generateRadial(addressEntity.address),
+                          // child: AvatarGenerator(
+                          //   seed: addressEntity.address,
+                          //   tilePadding: 2.0,
+                          //   colors: const [Colors.white70, Colors.black, Colors.blue],
+                          // ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          addressEntity.address.substring(addressEntity.address.length - 4),
+                          style: const TextStyle(fontSize: 40),
+                        ),
+                      ]),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Card(
+                              child: ListTile(
+                                title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                  Text(
+                                    shortenString(addressEntity.address, 26),
+                                    textAlign: TextAlign.left,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                  IconButton(
+                                      onPressed: () {
+                                        Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
+                                          informationSnackBarMessage(context, "Wallet address copied!");
+                                        });
+                                      },
+                                      icon: const Icon(Icons.copy)),
+                                ]),
+                                subtitle:
+                                    Text("Threat: ${addressEntity.thread.toString()}", textAlign: TextAlign.center),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      ButtonWidget(
-                        isDarkTheme: true,
-                        text: "New Wallet",
-                        onClicked: () async {
-                          await ref.watch(walletProvider.notifier).createWallet();
-                        },
-                      )
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Card(
+                              child: ListTile(
+                                leading: const Text(
+                                  "Balance",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                title: Text(
+                                  "${formatNumber4(addressEntity.finalBalance + addressEntity.finalRolls * 100.00)} MAS",
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                                //subtitle: const Text("MAS", textAlign: TextAlign.center),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+                      // Tabs for Assets and Transactions
+                      Expanded(
+                        child: DefaultTabController(
+                          length: 3,
+                          child: Column(
+                            children: [
+                              const TabBar(
+                                tabs: [
+                                  Tab(text: 'TOKENS'),
+                                  Tab(text: 'TRANSACTIONS'),
+                                  Tab(text: 'SETTING'),
+                                ],
+                                labelColor: Colors.blue,
+                                unselectedLabelColor: Colors.grey,
+                                //labelStyle: TextStyle(fontSize: 14),
+                              ),
+                              Expanded(
+                                child: TabBarView(
+                                  children: [
+                                    // Assets Tab
+                                    ListView.builder(
+                                      padding: const EdgeInsets.all(16.0),
+                                      itemCount: addressEntity.tokenBalances?.length,
+                                      itemBuilder: (context, index) {
+                                        return Column(
+                                          children: [
+                                            ListTile(
+                                              leading: SvgPicture.asset(addressEntity.tokenBalances![index].iconPath,
+                                                  semanticsLabel: addressEntity.tokenBalances?[index].name.name,
+                                                  height: 40.0,
+                                                  width: 40.0),
+                                              title: Text(
+                                                '${addressEntity.tokenBalances?[index].balance}  ${addressEntity.tokenBalances?[index].name.name}',
+                                                style: const TextStyle(fontSize: 18),
+                                              ),
+                                            ),
+                                            Divider(thickness: 0.5, color: Colors.brown[500]),
+                                          ],
+                                        );
+                                      },
+                                    ),
+
+                                    if (addressEntity.transactionHistory != null)
+                                      Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: ht.HorizontalDataTable(
+                                          leftHandSideColumnWidth: 100,
+                                          rightHandSideColumnWidth: 700,
+                                          isFixedHeader: true,
+                                          leftHandSideColBackgroundColor: Theme.of(context).canvasColor,
+                                          rightHandSideColBackgroundColor: Theme.of(context).canvasColor,
+
+                                          headerWidgets: [
+                                            _buildHeaderItem('Hash', 100),
+                                            _buildHeaderItem('Age', 110),
+                                            _buildHeaderItem('Status', 70),
+                                            _buildHeaderItem('Type', 100),
+                                            _buildHeaderItem('From', 110),
+                                            _buildHeaderItem('To', 110),
+                                            _buildHeaderItem('Amount', 120),
+                                            _buildHeaderItem('Fee', 80),
+                                          ],
+                                          leftSideItemBuilder: (context, index) {
+                                            final history = addressEntity.transactionHistory?.combinedHistory?[index];
+                                            return _buildLeftSideItem(shortenString(history!.hash!, 10), index);
+                                          },
+                                          rightSideItemBuilder: (context, index) {
+                                            final history = addressEntity.transactionHistory?.combinedHistory?[index];
+                                            return _buildRightSideItem(history!, index);
+                                          },
+                                          itemCount: addressEntity.transactionHistory!.combinedHistory!.length,
+                                          // rowSeparatorWidget: const Divider(
+                                          //   color: Colors.black54,
+                                          //   height: 0.1,
+                                          //   thickness: 0.0,
+                                          // ),
+                                        ),
+                                      ),
+                                    if (addressEntity.transactionHistory == null)
+                                      const Text("No transaction history found"),
+
+                                    Column(
+                                      children: [
+                                        const SizedBox(height: 16),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Wallet Name: ${addressEntity.address.substring(addressEntity.address.length - 4)}",
+                                                style: const TextStyle(fontSize: 18),
+                                              ),
+                                              OutlinedButton.icon(
+                                                  onPressed: () {}, label: const Text("Edit"), icon: Icon(Icons.edit)),
+                                            ],
+                                          ),
+                                        ),
+                                        Divider(thickness: 0.5, color: Colors.brown[500]),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text(
+                                                "Private Key: ***",
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                              OutlinedButton.icon(
+                                                  onPressed: () async {
+                                                    final wallet = await ref
+                                                        .read(walletProvider.notifier)
+                                                        .getWalletKey(addressEntity.address);
+                                                    await privateKeyBottomSheet(context, wallet!, isDarkTheme);
+                                                  },
+                                                  label: const Text("Show"),
+                                                  icon: const Icon(Icons.lock_open)),
+                                            ],
+                                          ),
+                                        ),
+                                        Divider(thickness: 0.5, color: Colors.brown[500]),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              isAccountDefault
+                                                  ? const Text(
+                                                      "Default Account: Yes",
+                                                      style: TextStyle(fontSize: 18),
+                                                    )
+                                                  : const Text(
+                                                      "Default Account: No",
+                                                      style: TextStyle(fontSize: 18),
+                                                    ),
+                                              if (!isAccountDefault)
+                                                OutlinedButton.icon(
+                                                    onPressed: () async {
+                                                      final response = await defaultAccountBottomSheet(
+                                                          context, addressEntity.address);
+                                                      if (response!) {
+                                                        ref
+                                                            .read(walletProvider.notifier)
+                                                            .setDefaultAccount(addressEntity.address);
+                                                        informationSnackBarMessage(
+                                                            context, "The wallet is set as a default wallet");
+                                                        setState(() {
+                                                          isAccountDefault = true;
+                                                        });
+                                                      }
+                                                    },
+                                                    label: const Text("Set"),
+                                                    icon: const Icon(Icons.edit)),
+                                            ],
+                                          ),
+                                        ),
+                                        Divider(thickness: 0.5, color: Colors.brown[500]),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                        color: Colors.transparent,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 32.0),
+                              child: FilledButton.tonalIcon(
+                                onPressed: () async {
+                                  ref.read(screenTitleProvider.notifier).updateTitle("Transfer Fund");
+                                  await Navigator.pushNamed(
+                                    context,
+                                    WalletRoutes.transfer,
+                                    arguments: addressEntity,
+                                  );
+                                },
+                                icon: const Icon(Icons.arrow_outward),
+                                label: const Text('Send'),
+                                iconAlignment: IconAlignment.start,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 32.0),
+                              child: FilledButton.tonalIcon(
+                                onPressed: () {
+                                  receiveBottomSheet(context, isDarkTheme, widget.address);
+                                },
+                                icon: Transform.rotate(
+                                  angle: 3.14,
+                                  child: const Icon(Icons.arrow_outward),
+                                ),
+                                label: const Text('Receive'),
+                                iconAlignment: IconAlignment.start,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                WalletSuccess(wallets: final wallets) => Text("Nothing new here!"),
-                // WalletSuccess(wallets: final wallets) => Column(
-                //     mainAxisAlignment: MainAxisAlignment.start,
-                //     children: [
-                //       Row(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: [
-                //           Expanded(
-                //             child: Card(
-                //               child: ListTile(
-                //                 title: Text(
-                //                   "${formatNumber4(wallets.finalBalance)} MAS",
-                //                   textAlign: TextAlign.center,
-                //                 ),
-                //                 subtitle: const Text("Total Balance", textAlign: TextAlign.center),
-                //               ),
-                //             ),
-                //           ),
-                //           Expanded(
-                //             child: Card(
-                //               child: ListTile(
-                //                 title: Text(formatNumber(wallets.rolls.toDouble()), textAlign: TextAlign.center),
-                //                 subtitle: const Text("Total Rolls", textAlign: TextAlign.center),
-                //               ),
-                //             ),
-                //           )
-                //         ],
-                //       ),
-                //       Container(
-                //         margin: const EdgeInsets.symmetric(vertical: 20),
-                //         //padding: const EdgeInsets.symmetric(vertical: 20),
-                //         height: 400,
-                //         child: ListView.builder(
-                //           scrollDirection: Axis.vertical,
-                //           physics: const PageScrollPhysics(),
-                //           itemCount: wallets.wallets.length,
-                //           itemBuilder: (BuildContext context, int index) {
-                //             final wallet = wallets.wallets[index];
-                //             return GestureDetector(
-                //               onTap: () async {
-                //                 await Navigator.pushNamed(
-                //                   context,
-                //                   WalletRoutes.account,
-                //                   arguments: wallet.address,
-                //                 );
-                //               },
-                //               child: Card(
-                //                 child: ListTile(
-                //                   // leading: StringIcon(
-                //                   //   inputString: wallet.address,
-                //                   //   iconSize: 50,
-                //                   // ),
-
-                //                   leading: SizedBox(
-                //                     width: 50,
-                //                     height: 50,
-                //                     child: generateRadial(wallet.address),
-                //                     // child: AvatarGenerator(
-                //                     //   seed: wallet.address,
-                //                     //   tilePadding: 1.0,
-                //                     //   colors: const [Colors.white70, Colors.black, Colors.blue],
-                //                     // ),
-                //                   ),
-                //                   //leading: RandomAvatar(wallet.address, trBackground: true, height: 40, width: 40),
-                //                   title: Text(
-                //                     wallet.address.substring(wallet.address.length - 4),
-                //                     style: const TextStyle(fontSize: 20),
-                //                   ),
-                //                   trailing: Row(
-                //                     mainAxisAlignment: MainAxisAlignment.end,
-                //                     crossAxisAlignment: CrossAxisAlignment.center,
-                //                     mainAxisSize: MainAxisSize.min,
-                //                     children: [
-                //                       Text(
-                //                         formatNumber4(wallet.addressInformation!.finalBalance),
-                //                         textAlign: TextAlign.center,
-                //                         style: const TextStyle(fontSize: 16),
-                //                       ),
-                //                       const SizedBox(width: 10),
-                //                       const Text(
-                //                         "MAS",
-                //                         style: TextStyle(fontSize: 16),
-                //                       ),
-                //                     ],
-                //                   ),
-                //                 ),
-                //               ),
-                //             );
-                //           },
-                //         ),
-                //       ),
-                //       Row(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: [
-                //           Expanded(
-                //             child: ButtonWidget(
-                //               isDarkTheme: true,
-                //               text: "Import Wallet",
-                //               onClicked: () => _showBottomSheet(context),
-                //             ),
-                //           ),
-                //           const SizedBox(width: 10.0),
-                //           Expanded(
-                //             child: ButtonWidget(
-                //               isDarkTheme: true,
-                //               text: "New Wallet",
-                //               onClicked: () async {
-                //                 await ref.watch(walletProvider.notifier).createWallet();
-                //               },
-                //             ),
-                //           ),
-                //         ],
-                //       )
-                //     ],
-                //   ),
                 WalletFailure(message: final message) => Text(message),
               };
             },
@@ -187,61 +351,130 @@ class _WalletViewState extends ConsumerState<WalletView> {
     );
   }
 
-  void _showBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return BottomSheetContent(onSubmit: (String value) {
-          // Handle the submitted text here
-          ref.read(walletProvider.notifier).importWallet(value);
-          print('Submitted text: $value');
-          Navigator.pop(context); // Close the bottom sheet
-        });
-      },
+  Widget _buildHeaderItem(String label, double width) {
+    return Container(
+      width: width,
+      height: 56,
+      //color: Colors.blue,
+      decoration: BoxDecoration(
+        color: Colors.grey[850],
+        border: Border(
+          bottom: BorderSide(color: Colors.brown[900]!, width: 0.1),
+        ),
+      ),
+      child: Center(
+        child: Text(
+          label,
+          textAlign: TextAlign.left,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
     );
   }
 
-  Future<String?> importWalletModelBottomSheet(BuildContext context) {
+  Widget _buildLeftSideItem(String text, int index) {
+    return Container(
+      width: 100,
+      height: 52,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: index % 2 == 0 ? Colors.grey[900] : Colors.grey[800],
+        border: Border(
+          bottom: BorderSide(color: Colors.brown[900]!, width: 0.1),
+        ),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRightSideItem(TransactionHistory history, int index) {
+    return Row(
+      children: [
+        _buildRightItem(computeAge(int.parse(history.blockTime!)), 110, index),
+        _buildRightItem(history.status!, 70, index),
+        _buildRightItem(history.type!, 100, index),
+        _buildRightItem(shortenString(history.from!, 12), 110, index),
+        _buildRightItem(shortenString(history.to!, 12), 110, index),
+        _buildRightItem('${toMAS(BigInt.parse(history.value!))} MAS', 120, index),
+        _buildRightItem('${toMAS(BigInt.parse(history.transactionFee!))} MAS', 80, index),
+      ],
+    );
+  }
+
+  Widget _buildRightItem(String text, double width, int index) {
+    return Container(
+      width: width,
+      height: 52,
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      decoration: BoxDecoration(
+        color: index % 2 == 0 ? Colors.grey[900] : Colors.grey[800],
+        border: Border(
+          bottom: BorderSide(color: Colors.brown[900]!, width: 0.1),
+        ),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Future<String?> receiveBottomSheet(BuildContext context, bool isDarkTheme, String address) async {
     return showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true, // Allow the BottomSheet to resize
       builder: (BuildContext context) {
-        final TextEditingController walletController = TextEditingController();
-
         return SizedBox(
-          height: 400,
+          height: 340,
           child: SingleChildScrollView(
             // Allow scrolling if the content exceeds height
             child: Padding(
               // padding: const EdgeInsets.all(16.0),
               padding: EdgeInsets.only(top: 20, right: 20, left: 20, bottom: MediaQuery.of(context).viewInsets.bottom),
-
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start, // Align items to the top
                 children: <Widget>[
                   const Text(
-                    'Import Wallet',
+                    'Wallet address',
                     style: TextStyle(fontSize: 20),
                   ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    autocorrect: false,
-                    controller: walletController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Enter Wallet Address',
+                  QrImageView(
+                    data: address,
+                    version: QrVersions.auto,
+                    //backgroundColor:
+                    eyeStyle: QrEyeStyle(
+                        color: (isDarkTheme == true) ? Colors.white : Colors.black, eyeShape: QrEyeShape.circle),
+                    dataModuleStyle: QrDataModuleStyle(
+                      color: (isDarkTheme == true) ? Colors.white : Colors.black,
                     ),
-                    keyboardType: TextInputType.text, // Specify keyboard type
+                    size: 180.0,
                   ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      final enteredWalletAddress = walletController.text;
-                      // Pass the wallet address back to the calling context
-                      Navigator.of(context).pop(enteredWalletAddress);
-                    },
-                    child: const Text('Submit'),
-                  ),
+                  const SizedBox(height: 10),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Text(
+                      shortenString(address, 24),
+                      textAlign: TextAlign.left,
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: address)).then((result) {
+                            informationSnackBarMessage(context, "Wallet address copied!");
+                          });
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.copy)),
+                  ]),
                 ],
               ),
             ),
@@ -251,105 +484,64 @@ class _WalletViewState extends ConsumerState<WalletView> {
     );
   }
 
-  Future<void> showQRCodeModelBottomSheet(BuildContext context) {
-    return showModalBottomSheet<void>(
+//TODO: move this function to the provider
+  String computeAge(int timestampMillis) {
+    // Convert input timestamp from milliseconds to DateTime
+    DateTime timestamp = DateTime.fromMillisecondsSinceEpoch(timestampMillis, isUtc: true);
+
+    // Get the current time in UTC
+    DateTime now = DateTime.now().toUtc();
+
+    // Calculate the difference as a Duration
+    Duration difference = now.difference(timestamp);
+
+    if (difference.inSeconds < 86400) {
+      // Less than a day, format as hh:mm:ss
+      int hours = difference.inHours;
+      int minutes = difference.inMinutes % 60;
+      int seconds = difference.inSeconds % 60;
+      return '${hours.toString().padLeft(2, '0')}h '
+          '${minutes.toString().padLeft(2, '0')}m '
+          '${seconds.toString().padLeft(2, '0')}s';
+    } else if (difference.inDays < 30) {
+      // Less than a month, format as d:hh:mm
+      int days = difference.inDays;
+      int hours = difference.inHours % 24;
+      int minutes = difference.inMinutes % 60;
+      return '${days}d ${hours.toString().padLeft(2, '0')}h '
+          '${minutes.toString().padLeft(2, '0')}m';
+    } else if (difference.inDays < 365) {
+      // Less than a year, format as m:d:h
+      int months = difference.inDays ~/ 30; // Approximate months
+      int days = difference.inDays % 30;
+      int hours = difference.inHours % 24;
+      return '${months}m ${days}d ${hours}h';
+    } else {
+      // Greater than or equal to a year, show years:months:days
+      int years = difference.inDays ~/ 365;
+      int months = (difference.inDays % 365) ~/ 30; // Approximate months
+      int days = (difference.inDays % 365) % 30;
+      return '${years}y ${months}m ${days}d';
+    }
+  }
+
+// Function to display the Yes-No confirmation bottom sheet
+  Future<bool?> privateKeyBottomSheet(BuildContext context, String privateKey, bool isDarkTheme) async {
+    return await showModalBottomSheet<bool>(
       context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 400,
-          //color: Colors.white,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text(
-                  'This is a BottomSheet',
-                  style: TextStyle(fontSize: 20),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Close BottomSheet'),
-                ),
-              ],
-            ),
-          ),
-        );
+      builder: (context) {
+        return PrivateKeyBottomSheet(privateKey, isDarkTheme);
       },
     );
   }
 
-  Future<bool?> _deleteWallet() async {
-    return showDialog<bool>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Please Confirm'),
-            content: const SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text('Are you sure you want to delete this wallet?'),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Yes'),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              ),
-              TextButton(
-                child: const Text('No'),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              ),
-            ],
-          );
-        });
-  }
-}
-
-class BottomSheetContent extends StatefulWidget {
-  final Function(String) onSubmit;
-
-  const BottomSheetContent({Key? key, required this.onSubmit}) : super(key: key);
-
-  @override
-  _BottomSheetContentState createState() => _BottomSheetContentState();
-}
-
-class _BottomSheetContentState extends State<BottomSheetContent> {
-  final TextEditingController _controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      //padding: const EdgeInsets.all(16.0),
-      padding: EdgeInsets.only(top: 20, right: 20, left: 20, bottom: MediaQuery.of(context).viewInsets.bottom),
-
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _controller,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Enter Wallet Address',
-            ),
-          ),
-          SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: () {
-              widget.onSubmit(_controller.text); // Pass the text to the calling function
-            },
-            child: Text('Submit'),
-          ),
-        ],
-      ),
+// Function to display the Yes-No confirmation bottom sheet
+  Future<bool?> defaultAccountBottomSheet(BuildContext context, String address) async {
+    return await showModalBottomSheet<bool>(
+      context: context,
+      builder: (context) {
+        return DefaultAccountBottomSheet(address);
+      },
     );
   }
 }

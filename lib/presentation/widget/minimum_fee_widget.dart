@@ -34,7 +34,7 @@ class _EditableFeeWidgetState extends ConsumerState<EditableFeeWidget> {
         // Save the value (add validation logic here if needed)
         final enteredValue = double.tryParse(_controller.text);
         if (enteredValue != null) {
-          ref.read(settingProvider.notifier).changeFee(feeAmount: enteredValue);
+          ref.read(settingProvider.notifier).changeTxFee(feeAmount: enteredValue);
         }
       } else {
         // Update the TextField with the latest provider value

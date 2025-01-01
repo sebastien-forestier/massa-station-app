@@ -75,9 +75,15 @@ class SettingProvider extends StateNotifier<Setting> {
     _debug();
   }
 
-  Future<void> changeFee({required double feeAmount}) async {
+  Future<void> changeTxFee({required double feeAmount}) async {
     state = state.copyWith(feeAmount: feeAmount);
     await localStorageService.setMinimumFee(feeAmount);
+    _debug();
+  }
+
+  Future<void> changeGasFee({required double gasFeeAmount}) async {
+    state = state.copyWith(gasAmount: gasFeeAmount);
+    await localStorageService.setMinimumGassFee(gasFeeAmount);
     _debug();
   }
 

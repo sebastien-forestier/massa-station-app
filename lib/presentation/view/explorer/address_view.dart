@@ -13,7 +13,7 @@ import 'package:mug/presentation/provider/wallet_provider.dart';
 import 'package:mug/presentation/state/address_state.dart';
 import 'package:mug/presentation/widget/button_widget.dart';
 import 'package:mug/presentation/widget/common_padding.dart';
-import 'package:mug/presentation/widget/snack_message.dart';
+import 'package:mug/presentation/widget/information_snack_message.dart';
 import 'package:mug/utils/number_helpers.dart';
 import 'package:mug/utils/string_helpers.dart';
 
@@ -36,11 +36,10 @@ class _AddressViewState extends ConsumerState<AddressView> {
 
   @override
   Widget build(BuildContext context) {
-    final isAccount = ref.read(walletProvider.notifier).isAccountExisting(widget.address);
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: isAccount.$1 ? const Text('Account Details') : const Text('Address Details'),
+        title: const Text('Address Details'),
       ),
       body: CommonPadding(
         child: RefreshIndicator(
@@ -68,7 +67,7 @@ class _AddressViewState extends ConsumerState<AddressView> {
                                   child: AvatarGenerator(
                                     seed: addressEntity.address,
                                     tilePadding: 2.0,
-                                    colors: [Colors.white70, Colors.black, Colors.blue],
+                                    colors: const [Colors.white70, Colors.black, Colors.blue],
                                   ),
                                 ),
                                 title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -79,10 +78,7 @@ class _AddressViewState extends ConsumerState<AddressView> {
                                   IconButton(
                                       onPressed: () {
                                         Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
-                                          //if (!mounted) return;
-                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                            content: Text('Address copied'),
-                                          ));
+                                          informationSnackBarMessage(context, "Address copied!");
                                         });
                                       },
                                       icon: const Icon(Icons.copy)),
@@ -94,51 +90,7 @@ class _AddressViewState extends ConsumerState<AddressView> {
                           ),
                         ],
                       ),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   // crossAxisAlignment: CrossAxisAlignment.stretch,
-                      //   children: [
-                      //     Expanded(
-                      //       child: Card(
-                      //         child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      //           // QrImageView(
-                      //           //   data: addressEntity.address,
-                      //           //   version: QrVersions.auto,
-                      //           //   //backgroundColor:
-                      //           //   eyeStyle: QrEyeStyle(
-                      //           //       color: (isDarkTheme == true) ? Colors.white : Colors.black,
-                      //           //       eyeShape: QrEyeShape.circle),
-                      //           //   dataModuleStyle: QrDataModuleStyle(
-                      //           //     color: (isDarkTheme == true) ? Colors.white : Colors.black,
-                      //           //   ),
-                      //           //   size: 180.0,
-                      //           // ),
-                      //           RandomAvatar(addressEntity.address, trBackground: true, height: 80, width: 80),
-                      //           ListTile(
-                      //             title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      //               Text(
-                      //                 shortenString(addressEntity.address, 24),
-                      //                 textAlign: TextAlign.left,
-                      //               ),
-                      //               IconButton(
-                      //                   onPressed: () {
-                      //                     Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
-                      //                       //if (!mounted) return;
-                      //                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      //                         content: Text('Address copied'),
-                      //                       ));
-                      //                     });
-                      //                   },
-                      //                   icon: const Icon(Icons.copy)),
-                      //             ]),
-                      //             subtitle:
-                      //                 Text("Threat: ${addressEntity.thread.toString()}", textAlign: TextAlign.center),
-                      //           ),
-                      //         ]),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -207,17 +159,7 @@ class _AddressViewState extends ConsumerState<AddressView> {
                           ),
                         ],
                       ),
-                      if (isAccount.$1)
-                        ButtonWidget(
-                          isDarkTheme: isDarkTheme,
-                          text: "Set as Default Account",
-                          onClicked: () {
-                            final isSet = ref.read(walletProvider.notifier).setDefaultAccount(widget.address);
-                            if (isSet) {
-                              showSnackBarMessage(context, "${widget.address} is set as a default account");
-                            }
-                          },
-                        )
+
                       // Row(
                       //   mainAxisAlignment: MainAxisAlignment.center,
                       //   // crossAxisAlignment: CrossAxisAlignment.stretch,

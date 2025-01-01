@@ -1,5 +1,4 @@
 // Dart imports:
-import 'dart:developer';
 
 // Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,18 +8,17 @@ import 'package:mug/data/model/wallet_model.dart';
 // Project imports:
 import 'package:mug/domain/usecase/wallet_use_case.dart';
 import 'package:mug/domain/usecase/wallet_use_case_impl.dart';
-import 'package:mug/presentation/state/wallets_state.dart';
 import 'package:mug/service/local_storage_service.dart';
 import 'package:mug/service/provider.dart';
 import 'package:mug/utils/encryption/aes_encryption.dart';
 import 'package:mug/utils/exception_handling.dart';
 
-class WalletListNotifier extends AsyncNotifier<List<WalletModel>> {
+class WalletListNotifier extends AsyncNotifier<WalletData?> {
   late final LocalStorageService localStorageService;
   late final WalletUseCase walletUseCase;
 
   @override
-  Future<List<WalletModel>> build() async {
+  Future<WalletData?> build() async {
     localStorageService = ref.read(localStorageServiceProvider);
     walletUseCase = ref.read(walletUseCaseProvider);
 
@@ -29,6 +27,8 @@ class WalletListNotifier extends AsyncNotifier<List<WalletModel>> {
   }
 
   Future<void> createNewWallet() async {
+    state = const AsyncValue.loading(); // Set state to loading
+
     final wallet = Wallet();
     final passphrase = await localStorageService.passphrase;
     final account = await wallet.newAccount(AddressType.user, NetworkType.MAINNET);
@@ -52,24 +52,55 @@ class WalletListNotifier extends AsyncNotifier<List<WalletModel>> {
     state = AsyncData(await loadWallets()); //Re-fetch the wallets to update the state
   }
 
-  Future<List<WalletModel>> loadWallets() async {
+  /// Creates the initial wallet
+  Future<void> importExistingWallet(String privateKey) async {
+    state = const AsyncValue.loading(); // Set state to loading
+    try {
+      final wallet = Wallet();
+      final passphrase = await localStorageService.passphrase;
+      final account = await wallet.addAccountFromSecretKey(privateKey, AddressType.user, NetworkType.MAINNET);
+
+      final walletEntity = WalletModel(
+        address: account.address(),
+        encryptedKey: encryptAES(account.privateKey(), passphrase),
+      );
+
+      // Get existing stored wallets
+      List<WalletModel> wallets;
+      final walletString = await localStorageService.getStoredWallets();
+      if (walletString.isNotEmpty) {
+        wallets = WalletModel.decode(walletString);
+        wallets.add(walletEntity);
+      } else {
+        wallets = [walletEntity];
+      }
+
+      // Store the updated wallet list
+      await localStorageService.storeWallets(WalletModel.encode(wallets));
+
+      // Set the new wallet as the default
+      await localStorageService.setDefaultWallet(account.address());
+
+      state = AsyncData(await loadWallets()); //Re-fetch the wallets to update the state
+    } catch (e, stack) {
+      // Handle errors and update state
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  Future<WalletData?> loadWallets() async {
     final result = await walletUseCase.loadWallets();
     switch (result) {
       case Success(value: final response):
-        if (response.wallets.isNotEmpty) {
-          return response.wallets;
-        } else {
-          return [];
-        }
+        return response;
 
       case Failure(exception: final exception):
-        return [];
+        return null;
     }
   }
 }
 
-final walletListProvider = AsyncNotifierProvider<WalletListNotifier, List<WalletModel>>(() {
-  print("wallet list provider initalised...");
+final walletListProvider = AsyncNotifierProvider<WalletListNotifier, WalletData?>(() {
   return WalletListNotifier();
 });
 

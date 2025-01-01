@@ -14,7 +14,7 @@ import 'package:mug/presentation/provider/swap_provider.dart';
 import 'package:mug/presentation/state/swap_state.dart';
 import 'package:mug/presentation/widget/button_widget.dart';
 import 'package:mug/presentation/widget/common_padding.dart';
-import 'package:mug/presentation/widget/snack_message.dart';
+import 'package:mug/presentation/widget/information_snack_message.dart';
 import 'package:mug/utils/number_helpers.dart';
 import 'package:mug/utils/string_helpers.dart';
 
@@ -220,7 +220,7 @@ class _DexViewState extends ConsumerState<DexView> {
                             final value2 = double.parse(_toAmountController.text.replaceAll(',', ''));
                             notifier.swap(value1, value2);
                             if (swapState.showNotification!) {
-                              showSnackBarMessage(context, swapState.notificationMessage);
+                              informationSnackBarMessage(context, swapState.notificationMessage);
                             }
                             //swapState.notificationMessage!
                           },
@@ -237,10 +237,8 @@ class _DexViewState extends ConsumerState<DexView> {
                                   onPressed: () {
                                     Clipboard.setData(ClipboardData(text: swapState.notificationMessage!))
                                         .then((result) {
-                                      //if (!mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                        content: Text('Copied operation ID: ${swapState.notificationMessage!}'),
-                                      ));
+                                      informationSnackBarMessage(
+                                          context, 'Copied operation ID: ${swapState.notificationMessage!}');
                                     });
                                   },
                                   icon: const Icon(
@@ -255,37 +253,6 @@ class _DexViewState extends ConsumerState<DexView> {
                                   }),
                             ]),
                           ),
-
-                        //   Card(
-                        //     child: Column(
-                        //       mainAxisSize: MainAxisSize.min,
-                        //       children: [
-                        //         ListTile(
-                        //           title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                        //             Text(
-                        //               "Swaping compted with operation id: ${swapState.notificationMessage!}",
-                        //               textAlign: TextAlign.left,
-                        //             ),
-                        //             IconButton(
-                        //                 onPressed: () {
-                        //                   Clipboard.setData(ClipboardData(text: swapState.notificationMessage!))
-                        //                       .then((result) {
-                        //                     //if (!mounted) return;
-                        //                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        //                       content: Text('Address copied'),
-                        //                     ));
-                        //                   });
-                        //                 },
-                        //                 icon: const Icon(Icons.copy)),
-                        //           ]),
-                        //           trailing: ButtonWidget(
-                        //               isDarkTheme: isDarkTheme,
-                        //               text: "Dismis",
-                        //               onClicked: () => notifier.resetNotification),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
                       ],
                     ),
                   ),

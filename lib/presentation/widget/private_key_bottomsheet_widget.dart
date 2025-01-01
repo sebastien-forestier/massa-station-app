@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mug/presentation/widget/information_snack_message.dart';
 import 'package:mug/utils/string_helpers.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -36,9 +37,7 @@ class PrivateKeyBottomSheet extends StatelessWidget {
             IconButton(
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: privateKey)).then((result) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Private key copied'),
-                    ));
+                    informationSnackBarMessage(context, 'Private key copied');
                   });
                   Navigator.pop(context);
                 },

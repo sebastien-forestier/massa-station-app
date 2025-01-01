@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mug/presentation/provider/setting_provider.dart';
+import 'package:mug/presentation/widget/information_snack_message.dart';
 
 final slippageProvider = StateProvider<double>((ref) => 0.1); // Default to 0.1%
 
@@ -24,11 +25,7 @@ class SlippageWidget extends ConsumerWidget {
       onChanged: (value) {
         if (value != null) {
           ref.read(settingProvider.notifier).changeSlippage(slippage: value);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Slippage set to ${value.toStringAsFixed(1)}%'),
-            ),
-          );
+          informationSnackBarMessage(context, 'Slippage set to ${value.toStringAsFixed(1)}%');
         }
       },
       dropdownColor: Colors.grey.shade900,

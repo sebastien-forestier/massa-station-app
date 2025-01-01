@@ -6,8 +6,8 @@ import 'package:mug/presentation/view/explorer/block_view.dart';
 import 'package:mug/presentation/view/explorer/domain_view.dart';
 import 'package:mug/presentation/view/explorer/operation_view.dart';
 import 'package:mug/presentation/view/explorer/search_not_found_view.dart';
-import 'package:mug/presentation/view/wallet/account_view.dart';
 import 'package:mug/presentation/view/wallet/transfer_view.dart';
+import 'package:mug/presentation/view/wallet/wallet_view.dart';
 
 // Package imports:
 import 'package:page_transition/page_transition.dart';
@@ -133,10 +133,10 @@ class RouteGenerator {
 
 //Wallet routes
 
-      case WalletRoutes.account:
+      case WalletRoutes.wallet:
         if (args is String) {
           return PageTransition(
-            child: AccountView(args),
+            child: WalletView(args),
             duration: const Duration(milliseconds: transitionDuration),
             type: transitionType,
           );

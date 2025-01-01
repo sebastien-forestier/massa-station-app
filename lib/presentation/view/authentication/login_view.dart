@@ -16,22 +16,15 @@ import 'package:local_session_timeout/local_session_timeout.dart';
 import 'package:mug/presentation/provider/local_session_timeout_provider.dart';
 import 'package:mug/routes/routes.dart';
 import 'package:mug/service/local_storage_service.dart';
-import 'package:mug/service/massa_icon/svg.dart';
 import 'package:mug/service/provider.dart';
-import 'package:mug/presentation/widget/footer.dart';
 import 'package:mug/presentation/widget/generic.dart';
 import 'package:mug/presentation/widget/button_widget.dart';
-import 'package:mug/presentation/widget/snack_message.dart';
-
-//import 'package:easy_localization/easy_localization.dart';
-//import 'package:flutter_nord_theme/flutter_nord_theme.dart';
+import 'package:mug/presentation/widget/information_snack_message.dart';
 
 class LoginView extends ConsumerStatefulWidget {
-  //final StreamController<SessionState> sessionStream;
   final bool? isKeyboardFocused;
 
   const LoginView({
-    //required this.sessionStream,
     this.isKeyboardFocused,
     super.key,
   });
@@ -44,9 +37,7 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
   // BiometricAuth:
   final LocalAuthentication auth = LocalAuthentication();
   _BiometricState _supportState = _BiometricState.unknown;
-  late bool forcePassphraseInput; // = _storage.biometricAttemptAllTimeCount % 5 == 0;
-
-  //final _localStorage  =
+  late bool forcePassphraseInput;
 
   //ClassicLogin:
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -61,7 +52,6 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
 
   @override
   void initState() {
-    print("login view init state...");
     _storage = ref.read(localStorageServiceProvider);
 
     super.initState();
@@ -93,7 +83,6 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
 
   @override
   Widget build(BuildContext context) {
-    //print("in the login build page");
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     scrollToBottomIfOnScreenKeyboard();
 
@@ -104,7 +93,6 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
         appBar: AppBar(
           title: const Text(
             'Login',
-            //style: appBarTitle,
           ),
           centerTitle: true,
         ),
@@ -120,22 +108,15 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
                     padding: EdgeInsets.only(bottom: bottom),
                     child: Column(
                       children: [
-                        //generateRadial("sdfsuutrewa54d"),
                         const SizedBox(height: 120),
                         SvgPicture.asset(
                           'assets/icons/mu.svg',
                           height: 200,
                           width: 200,
                         ),
-                        //generateSVG("sdfsdssdfddfqweqwewd"),
-                        //_buildTopLogo(),
                         const SizedBox(height: 20),
                         _buildLoginWorkflow(context: context),
                         const Spacer(),
-                        // Padding(
-                        //   padding: const EdgeInsets.only(top: 5),
-                        //   child: footer(),
-                        // ),
                       ],
                     ),
                   ),
@@ -155,24 +136,6 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
             duration: const Duration(milliseconds: 500), curve: Curves.ease);
       }
     } catch (e) {}
-  }
-
-  Widget _buildTopLogo() {
-    final double topPadding = MediaQuery.of(context).size.height * 0.050;
-    final double dimensions = MediaQuery.of(context).orientation == Orientation.portrait
-        ? MediaQuery.of(context).size.width * 0.50
-        : MediaQuery.of(context).size.height * 0.50;
-
-    return Padding(
-      padding: EdgeInsets.only(top: topPadding),
-      child: Center(
-        child: SizedBox(
-          width: dimensions,
-          height: dimensions,
-          child: const Icon(Icons.security),
-        ),
-      ),
-    );
   }
 
   Widget _buildLoginWorkflow({required BuildContext context}) {
@@ -199,7 +162,6 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
     if (_isLocked) {
       SystemChannels.textInput.invokeMethod('TextInput.hide');
       passPhraseController.clear();
-
       _startTimer(
         () {
           setState(
@@ -225,7 +187,6 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
               child: Text(
                 'Exceeded number of attempts, try after ${timeLeft.toString()} seconds',
                 style: const TextStyle(
-                  //color: NordColors.aurora.red,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
@@ -258,7 +219,6 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
 
   String? _passphraseValidator(String? passphrase) {
     const numberOfAttemptExceded = 'Number of attempt exceeded';
-
     if (_noOfAllowedAttempts <= 1) {
       setState(() {
         _isLocked = true;
@@ -271,7 +231,6 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
       final wrongPhraseMsg = 'Wrong passphrase ${_noOfAllowedAttempts.toString()} attempts left!';
       return _noOfAllowedAttempts == 0 ? numberOfAttemptExceded : wrongPhraseMsg;
     }
-
     return null;
   }
 
@@ -366,7 +325,7 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
       final phrase = passPhraseController.text;
       await _login(phrase);
     } else {
-      showSnackBarMessage(context, snackMsgWrongEncryptionPhrase);
+      informationSnackBarMessage(context, snackMsgWrongEncryptionPhrase);
     }
   }
 
@@ -374,7 +333,7 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
     const verifyPassphrase = 'Verifying your passphrase!';
     const snackMsgWrongEncryptionPhrase = 'Wrong passphrase!';
     if (await _storage.verifyPassphrase(passphrase)) {
-      showSnackBarMessage(context, verifyPassphrase);
+      informationSnackBarMessage(context, verifyPassphrase);
 
       // re-enable biometric auth
       if (forcePassphraseInput) _storage.incrementBiometricAttemptAllTimeCount();
@@ -387,10 +346,9 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
       await Navigator.pushReplacementNamed(
         context,
         AuthRoutes.home,
-        //arguments: _session,
       );
     } else {
-      showSnackBarMessage(context, snackMsgWrongEncryptionPhrase);
+      informationSnackBarMessage(context, snackMsgWrongEncryptionPhrase);
     }
   }
 
@@ -453,8 +411,8 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
   }
 }
 
-int _noOfAllowedAttempts = 0; // = _storage.noOfLogginAttemptAllowed;
-int _lockoutTime = 0; // _storage.bruteforceLockOutTime;
+int _noOfAllowedAttempts = 0;
+int _lockoutTime = 0;
 int _counter = 0;
 
 Timer? _timer;
@@ -462,10 +420,7 @@ StreamController<String> _controller = StreamController<String>.broadcast();
 
 void _startTimer(VoidCallback callback, {required int lockoutTime, required int allowedLoginAttempts}) {
   _counter = lockoutTime;
-  // _lockoutTime;
-
   if (_timer != null) _timer?.cancel();
-
   _timer = Timer.periodic(
     const Duration(seconds: 1),
     (timer) {

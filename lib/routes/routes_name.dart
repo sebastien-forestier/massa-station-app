@@ -19,10 +19,11 @@ class ExploreRoutes {
 class WalletRoutes {
   static const String newWallet = 'new-wallet';
   static const String importWallet = 'import-wallet';
-  static const String walletDetails = 'wallet-details';
+
+  ///static const String walletDetails = 'wallet-details';
   static const String send = 'send';
   static const String receive = 'receive';
-  static const String account = 'account';
+  static const String wallet = 'wallet';
   static const String transfer = 'transfer';
 }
 

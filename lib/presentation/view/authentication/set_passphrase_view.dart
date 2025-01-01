@@ -16,15 +16,12 @@ import 'package:mug/utils/passphrase_util.dart';
 import 'package:mug/presentation/widget/footer.dart';
 import 'package:mug/presentation/widget/generic.dart';
 import 'package:mug/presentation/widget/button_widget.dart';
-import 'package:mug/presentation/widget/snack_message.dart';
+import 'package:mug/presentation/widget/information_snack_message.dart';
 
 class SetPassphraseView extends ConsumerStatefulWidget {
-  //final StreamController<SessionState> sessionStream;
   final bool? isKeyboardFocused;
-
   const SetPassphraseView({
     super.key,
-    //required this.sessionStream,
     this.isKeyboardFocused,
   });
 
@@ -71,7 +68,6 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
         appBar: AppBar(
           title: const Text(
             'Set Passphrase',
-            //style: appBarTitle,
           ),
           centerTitle: true,
         ),
@@ -115,11 +111,6 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
           height: 200,
           width: 200,
         ),
-        // child: Container(
-        //     width: dimensions,
-        //     height: dimensions,
-        //     child: const Icon(Icons.security) //Image.asset(SafeNotesConfig.appLogoPath),
-        //     ),
       ),
     );
   }
@@ -206,7 +197,6 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
         autofillHints: const [AutofillHints.password],
         keyboardType: TextInputType.visiblePassword,
         textInputAction: TextInputAction.done,
-        //onEditingComplete: _loginController(ctx),
         validator: _confirmInputValidator,
       ),
     );
@@ -295,7 +285,7 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
       final enteredPassphraseConfirm = _passPhraseControllerConfirm.text;
 
       if (enteredPassphrase == enteredPassphraseConfirm) {
-        showSnackBarMessage(context, 'Passphrase set!');
+        informationSnackBarMessage(context, 'Passphrase set!');
 
         await _storage.setPassphrase(enteredPassphrase);
         TextInput.finishAutofillContext();
@@ -305,7 +295,7 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
           arguments: true,
         );
       } else {
-        showSnackBarMessage(context, 'Passphrase mismatch!');
+        informationSnackBarMessage(context, 'Passphrase mismatch!');
       }
     }
   }
