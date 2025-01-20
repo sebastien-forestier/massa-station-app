@@ -1,15 +1,14 @@
 
-<div align="center">
-  <img src="assets/icons/mu.svg" alt="App Icon" width="300"/>
-</div>
+
 
 # MicroGate (μG)
-[![pub.dev][pub-dev-shield]][pub-dev-url]
 [![Stars][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 
-
+<div align="center">
+  <img src="assets/icons/mu.svg" alt="App Icon" width="300"/>
+</div>
 ## Introduction
 Massa Universal Mobile Gateway, abbreviated as (MUG) and hence resulting in the name microgateway -  abbreviated at (μG), is a universal mobile gatway for Massa Blockchain. The icon for the app is designed to reflect this.
 
@@ -179,7 +178,6 @@ The MIT License (MIT). Please see [License File](LICENSE) for more information.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[pub-dev-shield]: https://img.shields.io/pub/v/massa?style=for-the-badge
 [pub-dev-url]: https://pub.dev/packages/massa
 [stars-shield]: https://img.shields.io/github/stars/nafsilabs/mug.svg?style=for-the-badge&logo=github&colorB=deeppink&label=stars
 [stars-url]: https://packagist.org/packages/nafsilabs/mug
