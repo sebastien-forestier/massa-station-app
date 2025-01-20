@@ -57,7 +57,7 @@ Follow these steps to complete the initial setup:
 | ![Initial Screen](screenshots/passphrase-login-1.png) | ![Login](screenshots/passphrase-login-2.png) | ![Wallet](screenshots/passphrase-login-3.png) |
 | Enter your passphrase and its confirmation| Enter passphrase to login. | The default wallet account is created and displyed on wallet homepage |
 
-### Import and create wallet
+### MASA Wallet - Import and create wallet
 
 Follow these steps to import an existing wallet or create a new one:
 
@@ -66,7 +66,7 @@ Follow these steps to import an existing wallet or create a new one:
 | ![Initial Screen](screenshots/import-create-wallet-1.png) | ![Login](screenshots/import-create-wallet-2.png) | ![Wallet](screenshots/import-create-wallet-3.png) |
 | Paste the wallet private key. The imported wallet key is encrypted and added to the list of wallets| Create New wallet, creates a new wallet and store it securely | The second wallet in the lis is imported and the third one is created|
 
-### Wallet Details
+### MASA Wallet - Wallet Details
 
 Follow these steps to view more information about your wallet:
 
@@ -75,15 +75,24 @@ Follow these steps to view more information about your wallet:
 | ![Tokens](screenshots/wallet-details-1.png) | ![Transactions](screenshots/wallet-details-2.png) | ![Settings](screenshots/wallet-details-1.png) |
 | List of tokens associated with the wallet | List of transactions | Wallet settings where you can edit wallet name, show the wallet private key and set the wallet as default wallet|
 
-### Send and Receive coins
+### MASA Wallet - Send and Receive coins
 
 Follow these steps to to send and receive tokens:
 
-| Step 1: Transfer MAS | Step 2: Transaction info | Step 3: Receive MAS|
+| Step 1: Transfer MAS | Step 2: Transaction Confirmation | Step 3: Receive MAS|
 |---|---|---|
-| ![Send](send-receive-1.png) | ![Confirmation](screenshots/send-receive-2.png) | ![Receive](screenshots/send-receive-3.png) |
+| ![Send](screenshots/send-receive-1.png) | ![Confirmation](screenshots/send-receive-2.png) | ![Receive](screenshots/send-receive-3.png) |
 | Past the recipent address or select from the list of addresses and enter the amount you want to transfer | This is a summary of the transaction | You can scan the address to receive to receive token|
 
+
+### Dusa DEX - Swap tokens
+
+Follow these steps to to swap tokens using dusa decentralised exchange:
+
+| Step 1: List of tokens | Step 2: Transaction Confirmation | Step 3: Receive MAS|
+|---|---|---|
+| ![Tokens](screenshots/sdusa-dex-1.png) | ![Swap](screenshots/dusa-dex-2.png) | ![Confirmation](screenshots/dusa-dex-3.png) |
+| Currently supported tokens are MAS, WMAS, USDC and WETH | Enter the amount and token you want to swap from | Confirmation after swaping|
 
 ## Additional information
 You can get more information about massa by visiting the links below.
