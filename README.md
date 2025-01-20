@@ -96,12 +96,21 @@ Follow these steps to to swap tokens using dusa decentralised exchange:
 
 ### Massa Explorer - Search Address
 
-Follow these steps to to swap tokens using dusa decentralised exchange:
+Follow these steps to search for the address:
 
 | Step 1: Explorer Homepage| Step 2: Search Address | Step 3: Address details|
 |---|---|---|
 | ![Explorer](screenshots/explorer.png) | ![Search Address](screenshots/explorer-address-1.png) | ![Address details](screenshots/explorer-address-2.png) |
 | Explorer homepage with search bar| Search an address | View details of the searched address|
+
+### Massa Explorer - Search Block
+
+Follow these steps to to swap tokens using dusa decentralised exchange:
+
+| Step 1: Explorer Homepage| Step 2: Search Address | Step 3: Address details|
+|---|---|---|
+| ![Explorer](screenshots/explorer.png) | ![Search Block](screenshots/explorer-block-1.png) | ![Block details](screenshots/explorer-block-2.png) |
+| Explorer homepage with search bar| Search a block with block hash | View details of the searched block|
 
 ## Additional information
 You can get more information about massa by visiting the links below.
