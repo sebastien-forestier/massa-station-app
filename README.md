@@ -152,6 +152,71 @@ This app supports other functionalies as detailed below:
 | ![Login attempts](screenshots/others-1.png) | ![Timeout](screenshots/others-2.png) | ![Settings](screenshots/others-3.png) |
 | The app restricts the number of login attempts to 3. If exceeded, it will disable the apply for a certain duration before it allows you to login again| The app will automatically logout you out for a certain duration of inactivity | The app has settings provision|
 
+
+## Testing Flutter App
+
+Follow the steps below to set up and test the Flutter app on your computer:
+
+---
+
+### Prerequisites
+
+1. **Install Flutter SDK**  
+   Download and install the [Flutter SDK](https://docs.flutter.dev/get-started/install) for your operating system. Follow the installation guide specific to your platform (macOS, Linux, or Windows).
+
+2. **Set Up Emulators/Simulators**  
+   - **Android**: Install the [Android Emulator](https://developer.android.com/studio/run/emulator). You can set it up via Android Studio by adding an emulator in the AVD Manager.  
+   - **iOS** (macOS only): Install Xcode and set up the [iOS Simulator](https://developer.apple.com/documentation/safari-developer-tools/installing-xcode-and-simulators).
+
+3. **Install a Code Editor (Optional)**  
+   Install [Visual Studio Code](https://code.visualstudio.com/) for an optimized development and testing experience. You may also install Flutter and Dart extensions for better support.
+
+---
+
+   ### Steps to Test the App
+
+1. **Clone the Repository**  
+   Clone the project to your local machine:
+   ```bash
+   git clone git@github.com:nafsilabs/mug.git
+   cd mug
+
+2. **Install Dependencies**  
+   Navigate to the app's root folder and run the following command to install all required packages:
+   ```bash
+   flutter pub get
+
+3. **Install Dependencies**  
+Launch an Emulator/Simulator
+* **Android**: Start the Android Emulator via Android Studio or the flutter emulators command.
+* **iOS**: Open Xcode and launch the iOS Simulator.
+
+4. **Verify Device Detection**  
+Check if Flutter has detected the connected devices or emulators:
+    ```bash
+    flutter devices
+
+5. **Run the App**
+Launch the app by specifying the device identifier obtained in the previous step:  
+    ```bash
+    flutter run -d <device-id>
+Replace <device-id> with the actual emulator or physical device identifier.
+
+5. **Start Testing**
+The app will launch on the selected device/emulator. You can now interact with and test the app's features.
+
+Please follow the following instructions to test the app on your computer:
+1. Install [Flutter SDK](https://docs.flutter.dev/get-started/install) by selecting your specific operating system and follow the installation instructions.
+2. For testing the app on androd, install the [Android Emulator](https://developer.android.com/studio/run/emulator). If can install Androd Studio and add the Android Emmulator.
+3. For testing the app on iOs, install the the [iOS Simulator](https://developer.apple.com/documentation/safari-developer-tools/installing-xcode-and-simulators).
+4. It is recommended also to install the [Visual Studio Code](https://code.visualstudio.com/)
+5. Clone this repository `git clone git@github.com:nafsilabs/mug.git`
+6. Navigate to app root folder and run `flutter pub get` to install all package dependances.
+7. Launch the Android Emulator or iOS Simulator.
+8. Check if flutter has detected the devices by running `flutter devices`.
+9. Type `flutter run -d device-identifier` replace device-identifier by the actual emulator identifier obtained in the previous 
+10. The app will launch on your emulator and you can start testing the app.
+
 ## Additional information
 You can get more information about massa by visiting the links below.
 ### Links
