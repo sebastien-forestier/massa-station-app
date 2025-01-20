@@ -187,7 +187,7 @@ Follow the steps below to set up and test the Flutter app on your computer:
    flutter pub get
 
 3. **Install Dependencies**  
-    Launch an Emulator/Simulator
+   Launch an Emulator/Simulator
         * **Android**: Start the Android Emulator via Android Studio or the flutter emulators command.
         * **iOS**: Open Xcode and launch the iOS Simulator.
 
