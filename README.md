@@ -137,6 +137,15 @@ If the domain is not found, it likely that it is not yet purchase and you can pu
 | ![Search domain](screenshots/explorer-buy-domain-1.png) | ![Ssearch Status](screenshots/explorer-buy-domain-2.png) | ![Domain purchase confirmation](screenshots/explorer-buy-domain-3.png) |
 | Search for the damain| Shows the details of the doamin that does not exist, e.g `ilovemassa.massa`. Click `Buy` to purchase it | Domain purchase confirmation|
 
+### Others
+
+This app supports other functionalies as detailed below:
+
+| Login attempts| Timeout | Settings|
+|---|---|---|
+| ![Login attempts](screenshots/others-1.png) | ![Timeout](screenshots/others-2.png) | ![Settings](screenshots/others-3.png) |
+| The app restricts the number of login attempts to 3. If exceeded, it will disable the apply for a certain duration before it allows you to login again| The app will automatically logout you out for a certain duration of inactivity | The app has settings provision|
+
 ## Additional information
 You can get more information about massa by visiting the links below.
 ### Links
