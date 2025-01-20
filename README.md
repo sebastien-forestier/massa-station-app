@@ -187,23 +187,23 @@ Follow the steps below to set up and test the Flutter app on your computer:
    flutter pub get
 
 3. **Install Dependencies**  
-Launch an Emulator/Simulator
-    * **Android**: Start the Android Emulator via Android Studio or the flutter emulators command.
-    * **iOS**: Open Xcode and launch the iOS Simulator.
+    Launch an Emulator/Simulator
+        * **Android**: Start the Android Emulator via Android Studio or the flutter emulators command.
+        * **iOS**: Open Xcode and launch the iOS Simulator.
 
 4. **Verify Device Detection**  
-Check if Flutter has detected the connected devices or emulators:
+   Check if Flutter has detected the connected devices or emulators:
     ```bash
     flutter devices
 
 5. **Run the App**
-Launch the app by specifying the device identifier obtained in the previous step:  
+   Launch the app by specifying the device identifier obtained in the previous step:  
     ```bash
     flutter run -d <device-id>
-Replace <device-id> with the actual emulator or physical device identifier.
+   Replace <device-id> with the actual emulator or physical device identifier.
 
 6. **Start Testing**
-The app will launch on the selected device/emulator. You can now interact with and test the app's features.
+   The app will launch on the selected device/emulator. You can now interact with and test the app's features.
 
 ## Additional information
 You can get more information about massa by visiting the links below.
