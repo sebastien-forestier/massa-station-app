@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:massa/massa.dart';
 import 'package:mug/data/model/wallet_model.dart';
 import 'package:mug/utils/encryption/aes_encryption.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -127,11 +128,12 @@ class LocalStorageService {
 
   Future<void> setMinimumGassFee(double minimumGassFee) async =>
       sharedPreferences.setDouble(StorageKeys.minimumGassFee, minimumGassFee);
-  double get minimumGassFee => sharedPreferences.getDouble(StorageKeys.minimumGassFee) ?? 0.0;
+  double get minimumGassFee =>
+      sharedPreferences.getDouble(StorageKeys.minimumGassFee) ?? toMAS(BigInt.from(GasLimit.MIN_GAS_CALL.value));
 
   Future<void> setMinimumFee(double minimumFee) async =>
       sharedPreferences.setDouble(StorageKeys.minimumFee, minimumFee);
-  double get minimumFee => sharedPreferences.getDouble(StorageKeys.minimumFee) ?? 0.0;
+  double get minimumFee => sharedPreferences.getDouble(StorageKeys.minimumFee) ?? 0.01;
 
   Future<void> setSlipage(double slippage) async => sharedPreferences.setDouble(StorageKeys.slippageAmount, slippage);
   double get slippage => sharedPreferences.getDouble(StorageKeys.slippageAmount) ?? 0.5;

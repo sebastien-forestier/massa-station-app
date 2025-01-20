@@ -68,12 +68,22 @@ Follow these steps to import an existing wallet or create a new one:
 
 ### Wallet Details
 
-Follow these steps to import an existing wallet or create a new one:
+Follow these steps to view more information about your wallet:
 
 | Step 1: Wallet Tokens | Step 2: Wallet Transactions | Step 3: Wallet Settings |
 |---|---|---|
 | ![Tokens](screenshots/wallet-details-1.png) | ![Transactions](screenshots/wallet-details-2.png) | ![Settings](screenshots/wallet-details-1.png) |
 | List of tokens associated with the wallet | List of transactions | Wallet settings where you can edit wallet name, show the wallet private key and set the wallet as default wallet|
+
+### Send and Receive coins
+
+Follow these steps to to send and receive tokens:
+
+| Step 1: Transfer MAS | Step 2: Transaction info | Step 3: Receive MAS|
+|---|---|---|
+| ![Send](send-receive-1.png) | ![Confirmation](screenshots/send-receive-2.png) | ![Receive](screenshots/send-receive-3.png) |
+| Past the recipent address or select from the list of addresses and enter the amount you want to transfer | This is a summary of the transaction | You can scan the address to receive to receive token|
+
 
 ## Additional information
 You can get more information about massa by visiting the links below.
