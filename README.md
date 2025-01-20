@@ -121,6 +121,15 @@ Follow these steps to search for an operation using the operation hash:
 | ![Explorer](screenshots/explorer.png) | ![Search Operation](screenshots/explorer-operation-1.png) | ![Operation details](screenshots/explorer-operation-2.png) |
 | Explorer homepage with search bar| Search an operation using operation hash | View details of an operation|
 
+### Massa Explorer - Search Domain
+
+Follow these steps to search for a domain name:
+
+| Step 1: Explorer Homepage| Step 2: Search Domain | Step 3: Domain details|
+|---|---|---|
+| ![Explorer](screenshots/explorer.png) | ![Search Domain](screenshots/explorer-domain-1.png) | ![Domain details](screenshots/explorer-domain-2.png) |
+| Explorer homepage with search bar| Search a domain name. A domain name must end with .massa, e.g `deweb.massa` | View details of a domain name|
+
 ## Additional information
 You can get more information about massa by visiting the links below.
 ### Links
