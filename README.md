@@ -188,8 +188,8 @@ Follow the steps below to set up and test the Flutter app on your computer:
 
 3. **Install Dependencies**  
 Launch an Emulator/Simulator
-* **Android**: Start the Android Emulator via Android Studio or the flutter emulators command.
-* **iOS**: Open Xcode and launch the iOS Simulator.
+    * **Android**: Start the Android Emulator via Android Studio or the flutter emulators command.
+    * **iOS**: Open Xcode and launch the iOS Simulator.
 
 4. **Verify Device Detection**  
 Check if Flutter has detected the connected devices or emulators:
@@ -202,20 +202,8 @@ Launch the app by specifying the device identifier obtained in the previous step
     flutter run -d <device-id>
 Replace <device-id> with the actual emulator or physical device identifier.
 
-5. **Start Testing**
+6. **Start Testing**
 The app will launch on the selected device/emulator. You can now interact with and test the app's features.
-
-Please follow the following instructions to test the app on your computer:
-1. Install [Flutter SDK](https://docs.flutter.dev/get-started/install) by selecting your specific operating system and follow the installation instructions.
-2. For testing the app on androd, install the [Android Emulator](https://developer.android.com/studio/run/emulator). If can install Androd Studio and add the Android Emmulator.
-3. For testing the app on iOs, install the the [iOS Simulator](https://developer.apple.com/documentation/safari-developer-tools/installing-xcode-and-simulators).
-4. It is recommended also to install the [Visual Studio Code](https://code.visualstudio.com/)
-5. Clone this repository `git clone git@github.com:nafsilabs/mug.git`
-6. Navigate to app root folder and run `flutter pub get` to install all package dependances.
-7. Launch the Android Emulator or iOS Simulator.
-8. Check if flutter has detected the devices by running `flutter devices`.
-9. Type `flutter run -d device-identifier` replace device-identifier by the actual emulator identifier obtained in the previous 
-10. The app will launch on your emulator and you can start testing the app.
 
 ## Additional information
 You can get more information about massa by visiting the links below.
