@@ -61,7 +61,7 @@ Follow these steps to complete the initial setup:
 | Step 1: Passphrase setup | Step 2: Login | Step 3: Wallet homepage |
 |---|---|---|
 | ![Initial Screen](screenshots/passphrase-login-1.png) | ![Login](screenshots/passphrase-login-2.png) | ![Wallet](screenshots/passphrase-login-3.png) |
-| Enter your passphrase and its confirmation| Enter passphrase to login. | The default wallet account is created and displyed on wallet homepage |
+|**Screen 1**. Enter your passphrase and its confirmation| **Screen 2**. Enter passphrase to login. | **Screen 3**. The default wallet account is created and displayed on wallet homepage |
 
 ### MASA Wallet - Import and create wallet
 
@@ -69,8 +69,8 @@ Follow these steps to import an existing wallet or create a new one:
 
 | Step 1: Import wallet | Step 2: Create wallet | Step 3: Wallet homepage |
 |---|---|---|
-| ![Initial Screen](screenshots/import-create-wallet-1.png) | ![Login](screenshots/import-create-wallet-2.png) | ![Wallet](screenshots/import-create-wallet-3.png) |
-| Paste the wallet private key. The imported wallet key is encrypted and added to the list of wallets| Create New wallet, creates a new wallet and store it securely | The second wallet in the lis is imported and the third one is created|
+| ![Import wallet](screenshots/import-create-wallet-1.png) | ![Create wallet](screenshots/import-create-wallet-2.png) | ![Wallet](screenshots/import-create-wallet-3.png) |
+|**Screen 4**. Paste the wallet private key. The imported wallet key is encrypted and added to the list of wallets|**Screen 5**. Create New wallet, creates a new wallet and store it securely | **Screen 6**. The second wallet in the lis is imported and the third one is created|
 
 ### MASA Wallet - Wallet Details
 
@@ -78,8 +78,8 @@ Follow these steps to view more information about your wallet:
 
 | Step 1: Wallet Tokens | Step 2: Wallet Transactions | Step 3: Wallet Settings |
 |---|---|---|
-| ![Tokens](screenshots/wallet-details-1.png) | ![Transactions](screenshots/wallet-details-2.png) | ![Settings](screenshots/wallet-details-1.png) |
-| List of tokens associated with the wallet | List of transactions | Wallet settings where you can edit wallet name, show the wallet private key and set the wallet as default wallet|
+| ![Tokens](screenshots/wallet-details-1.png) | ![Transactions](screenshots/wallet-details-2.png) | ![Settings](screenshots/wallet-details-3.png) |
+|**Screen 7**. List of tokens associated with the wallet |**Screen 8**. List of transactions |**Screen 9**. Wallet settings where you can edit wallet name, show the wallet private key and set the wallet as default wallet|
 
 ### MASA Wallet - Send and Receive coins
 
@@ -88,16 +88,16 @@ Follow these steps to to send and receive tokens:
 | Step 1: Transfer MAS | Step 2: Transaction Confirmation | Step 3: Receive MAS|
 |---|---|---|
 | ![Send](screenshots/send-receive-1.png) | ![Confirmation](screenshots/send-receive-2.png) | ![Receive](screenshots/send-receive-3.png) |
-| Past the recipent address or select from the list of addresses and enter the amount you want to transfer | This is a summary of the transaction | You can scan the address to receive to receive token|
+|**Screen 10**. Past the recipent address or select from the list of addresses and enter the amount you want to transfer |**Screen 11**. This is a summary of the transaction |**Screen 12**. You can scan the address to receive to receive token|
 
 ### Dusa DEX - Swap tokens
 
 Follow these steps to to swap tokens using dusa decentralised exchange:
 
-| Step 1: List of tokens | Step 2: Transaction Confirmation | Step 3: Receive MAS|
+| Step 1: List of tokens | Step 2: Swap| Step 3: Confirmation|
 |---|---|---|
 | ![Tokens](screenshots/dusa-dex-1.png) | ![Swap](screenshots/dusa-dex-2.png) | ![Confirmation](screenshots/dusa-dex-3.png) |
-| Currently supported tokens are MAS, WMAS, USDC and WETH | Enter the amount and token you want to swap from | Confirmation after swaping|
+|**Screen 13**. Currently supported tokens are MAS, WMAS, USDC and WETH |**Screen 14**. Enter the amount and token you want to swap from |**Screen 15**. Confirmation after swaping|
 
 ### Massa Explorer - Search Address
 
@@ -106,7 +106,7 @@ Follow these steps to search for the address:
 | Step 1: Explorer Homepage| Step 2: Search Address | Step 3: Address details|
 |---|---|---|
 | ![Explorer](screenshots/explorer.png) | ![Search Address](screenshots/explorer-address-1.png) | ![Address details](screenshots/explorer-address-2.png) |
-| Explorer homepage with search bar| Search an address | View details of the searched address|
+|**Screen 16**. Explorer homepage with search bar|**Screen 17**. Search an address |**Screen 18**. View details of the searched address|
 
 ### Massa Explorer - Search Block
 
@@ -115,7 +115,7 @@ Follow these steps to search for block using block hash:
 | Step 1: Explorer Homepage| Step 2: Search Block | Step 3: Block details|
 |---|---|---|
 | ![Explorer](screenshots/explorer.png) | ![Search Block](screenshots/explorer-block-1.png) | ![Block details](screenshots/explorer-block-2.png) |
-| Explorer homepage with search bar| Search a block with block hash | View details of the searched block|
+|**Screen 19**. Explorer homepage with search bar|**Screen 20**. Search a block with block hash |**Screen 21**. View details of the searched block|
 
 ### Massa Explorer - Search Operation
 
@@ -124,7 +124,7 @@ Follow these steps to search for an operation using the operation hash:
 | Step 1: Explorer Homepage| Step 2: Search Operation | Step 3: Operation details|
 |---|---|---|
 | ![Explorer](screenshots/explorer.png) | ![Search Operation](screenshots/explorer-operation-1.png) | ![Operation details](screenshots/explorer-operation-2.png) |
-| Explorer homepage with search bar| Search an operation using operation hash | View details of an operation|
+|**Screen 22**. Explorer homepage with search bar|**Screen 23**. Search an operation using operation hash |**Screen 24**. View details of an operation|
 
 ### Massa Explorer - Search Domain
 
@@ -133,7 +133,7 @@ Follow these steps to search for a domain name:
 | Step 1: Explorer Homepage| Step 2: Search Domain | Step 3: Domain details|
 |---|---|---|
 | ![Explorer](screenshots/explorer.png) | ![Search Domain](screenshots/explorer-domain-1.png) | ![Domain details](screenshots/explorer-domain-2.png) |
-| Explorer homepage with search bar| Search a domain name. A domain name must end with .massa, e.g `deweb.massa` | View details of a domain name|
+|**Screen 25**. Explorer homepage with search bar|**Screen 26**. Search a domain name. A domain name must end with .massa, e.g `deweb.massa` |**Screen 27**. View details of a domain name|
 
 ### Massa Explorer - Buy Domain
 If the domain is not found, it likely that it is not yet purchase and you can purchase and own it. Follow these steps to purchase a domain.
@@ -141,7 +141,7 @@ If the domain is not found, it likely that it is not yet purchase and you can pu
 | Step 1: Search for domain| Step 2: Search Domain | Step 3: Domain details|
 |---|---|---|
 | ![Search domain](screenshots/explorer-buy-domain-1.png) | ![Search Status](screenshots/explorer-buy-domain-2.png) | ![Domain purchase confirmation](screenshots/explorer-buy-domain-3.png) |
-| Search for the damain| Shows the details of the doamin that does not exist, e.g `ilovemassa.massa`. Click `Buy` to purchase it | Domain purchase confirmation|
+|**Screen 28**. Search for the damain|**Screen 29**. Shows the details of the doamin that does not exist, e.g `ilovemassa.massa`. Click `Buy` to purchase it **Screen 30**.| Domain purchase confirmation|
 
 ### Others
 
@@ -150,7 +150,7 @@ This app supports other functionalies as detailed below:
 | Login attempts| Timeout | Settings|
 |---|---|---|
 | ![Login attempts](screenshots/others-1.png) | ![Timeout](screenshots/others-2.png) | ![Settings](screenshots/others-3.png) |
-| The app restricts the number of login attempts to 3. If exceeded, it will disable the apply for a certain duration before it allows you to login again| The app will automatically logout you out for a certain duration of inactivity | The app has settings provision|
+|**Screen 31**. The app restricts the number of login attempts to 3. If exceeded, it will disable the apply for a certain duration before it allows you to login again|**Screen 32**. The app will automatically logout you out for a certain duration of inactivity |**Screen 33**. The app has settings provision|
 
 
 ## Testing Flutter App
