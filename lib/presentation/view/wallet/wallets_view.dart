@@ -178,7 +178,7 @@ class _ImportWalletBottomSheet extends ConsumerWidget {
                 controller: controller,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Enter Wallet Address',
+                  labelText: 'Enter wallet private key',
                 ),
               ),
               const SizedBox(height: 16.0),

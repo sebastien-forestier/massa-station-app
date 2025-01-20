@@ -48,12 +48,23 @@ MicroGate will initally have the following features:
 
 ## Usage Instructions
 
-Follow these steps to get started with the app:
+### Initial setup and login
 
-| Step 1: Login | Step 2: Explore Features | Step 3: View Details |
+Follow these steps to complete the initial setup:
+
+| Step 1: Passphrase setup | Step 2: Login | Step 3: Wallet homepage |
 |---|---|---|
-| ![Login Screen](screenshots/login.png) | ![Explore Features](screenshots/explore.png) | ![View Details](screenshots/details.png) |
-| Enter your credentials to log in. | Browse through the features available in the app. | Tap on a feature to see more details. |
+| ![Initial Screen](screenshots/passphrase-login-1.png) | ![Login](screenshots/passphrase-login-2.png) | ![Wallet](screenshots/passphrase-login-2.png) |
+| Enter your passphrase and its confirmation| Enter passphrase to login. | The default wallet account is created and displyed on wallet homepage |
+
+### Import and create wallet
+
+Follow these steps to import an existing wallet or create a new one:
+
+| Step 1: Import wallet | Step 2: Create wallet | Step 3: Wallet homepage |
+|---|---|---|
+| ![Initial Screen](screenshots/passphrase-login-1.png) | ![Login](screenshots/passphrase-login-2.png) | ![Wallet](screenshots/passphrase-login-2.png) |
+| Enter your passphrase and its confirmation| Enter passphrase to login. | The default wallet account is created and displyed on wallet homepage |
 
 ## Additional information
 You can get more information about massa by visiting the links below.
