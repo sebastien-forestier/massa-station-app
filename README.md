@@ -130,6 +130,13 @@ Follow these steps to search for a domain name:
 | ![Explorer](screenshots/explorer.png) | ![Search Domain](screenshots/explorer-domain-1.png) | ![Domain details](screenshots/explorer-domain-2.png) |
 | Explorer homepage with search bar| Search a domain name. A domain name must end with .massa, e.g `deweb.massa` | View details of a domain name|
 
+If the domain is not found, it likely that it is not yet purchase and you can purchase and own it. Follow these steps to purchase a domain.
+
+| Step 1: Search for domain| Step 2: Search Domain | Step 3: Domain details|
+|---|---|---|
+| ![Search domain](screenshots/explorer-buy-domain-1.png) | ![Ssearch Status](screenshots/explorer-buy-domain-2.png) | ![Domain purchase confirmation](screenshots/explorer-buy-domain-3.png) |
+| Search for the damain| Shows the details of the doamin that does not exist, e.g `ilovemassa.massa`. Click `Buy` to purchase it | Domain purchase confirmation|
+
 ## Additional information
 You can get more information about massa by visiting the links below.
 ### Links

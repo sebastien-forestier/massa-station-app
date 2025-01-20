@@ -32,7 +32,7 @@ class MNSWidget extends ConsumerWidget {
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   LabelCard(
                     labelText: "Domain",
