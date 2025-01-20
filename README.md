@@ -63,8 +63,8 @@ Follow these steps to import an existing wallet or create a new one:
 
 | Step 1: Import wallet | Step 2: Create wallet | Step 3: Wallet homepage |
 |---|---|---|
-| ![Initial Screen](screenshots/passphrase-login-1.png) | ![Login](screenshots/passphrase-login-2.png) | ![Wallet](screenshots/passphrase-login-2.png) |
-| Enter your passphrase and its confirmation| Enter passphrase to login. | The default wallet account is created and displyed on wallet homepage |
+| ![Initial Screen](screenshots/import-create-wallet-1.png) | ![Login](screenshots/import-create-wallet-2.png) | ![Wallet](screenshots/import-create-wallet-3.png) |
+| Paste the wallet private key. The imported wallet key is encrypted and added to the list of wallets|  | Create New wallet, creates a new wallet and store it securely | The second wallet in the lis is imported and the third one is created|
 
 ## Additional information
 You can get more information about massa by visiting the links below.
