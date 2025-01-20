@@ -27,7 +27,7 @@ class WalletModel extends WalletEntity {
     return WalletModel(
       address: data['address'] as String,
       encryptedKey: data['encrypted_key'] as String,
-      name: data['name'] ?? "No name",
+      name: data['name'] ?? (data['address'] as String).substring((data['address'] as String).length - 4),
     );
   }
 

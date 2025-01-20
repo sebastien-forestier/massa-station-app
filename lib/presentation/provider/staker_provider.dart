@@ -28,7 +28,6 @@ base class ExplorerProviderImpl extends StateNotifier<StakerState> implements St
   Future<void> getStakers(int pageNumber) async {
     state = StakerLoading();
     result = await useCase.getStakers(pageNumber);
-    print('staker result: $result');
     final response = switch (result) {
       Success(value: final response) => StakersSuccess(stakers: response),
       Failure(exception: final exception) => StakerFailure(message: 'Something went wrong: $exception'),

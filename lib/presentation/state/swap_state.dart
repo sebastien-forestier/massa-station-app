@@ -3,7 +3,7 @@ import 'package:dusa/tokens.dart';
 import 'package:mug/domain/entity/swap_entity.dart';
 
 // Enum to represent loading states
-enum SwapStatus { loading, success, error }
+enum SwapStatus { loading, swap, success, error }
 
 class DropdownItem {
   String name;

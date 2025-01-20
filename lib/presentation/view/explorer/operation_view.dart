@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Project imports:
 import 'package:mug/presentation/provider/operation_provider.dart';
-import 'package:mug/presentation/provider/setting_provider.dart';
 import 'package:mug/presentation/state/operation_state.dart';
 import 'package:mug/presentation/widget/common_padding.dart';
 import 'package:mug/presentation/widget/label_card.dart';
@@ -44,7 +43,6 @@ class _OperationViewState extends ConsumerState<OperationView> {
           },
           child: Consumer(
             builder: (context, ref, child) {
-              var isDarkTheme = ref.watch(settingProvider).darkTheme;
               return switch (ref.watch(operationProvider)) {
                 OperationInitial() => const Text('Operation information is loading....'),
                 OperationLoading() => const CircularProgressIndicator(),

@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:massa/massa.dart';
 import 'package:mug/data/model/block.dart';
 import 'package:mug/data/model/domain.dart';
 import 'package:mug/data/model/address_history.dart';
 import 'package:mug/data/model/stakers.dart';
+import 'package:mug/env/env.dart';
+import 'package:http/http.dart' as http;
 
 class ExplorerApi {
   late Uri baseUri;
@@ -67,6 +71,7 @@ class ExplorerApi {
       var data = Map<String, dynamic>.from(response);
       return ExplorerStakers.decode(data);
     } catch (e) {
+      print("error: ${e.toString()}");
       return null;
     }
   }
@@ -117,16 +122,22 @@ class ExplorerApi {
     domain = domain.trim();
     domain = domain.substring(0, domain.length - 6); //remove .massa part of the string
     const path = 'dns/info';
-    final Map<String, dynamic> params = {
-      'dns[]': domain,
-    };
+
+    final url = Uri.parse("https://${Env.explorerHost}/$path");
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode([domain]);
 
     try {
-      var response = await client.get(path, params: params);
-      print('domain response: $response');
-      var data = Map<String, dynamic>.from(response[domain]);
-      return DomainDetails.decode(data);
+      final response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        var data = Map<String, dynamic>.from(json.decode(response.body.toString())[domain]);
+        return DomainDetails.decode(data);
+      } else {
+        print('Error: ${response.statusCode} - ${response.body}');
+        return null;
+      }
     } catch (e) {
+      print(e.toString());
       return null;
     }
   }

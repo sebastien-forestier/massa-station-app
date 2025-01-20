@@ -35,6 +35,7 @@ final accountProvider = FutureProvider<Account>((ref) async {
   final defaultAccountKey = await ref.read(localStorageServiceProvider).getDefaultWalletKey();
   if (defaultAccountKey!.isEmpty) {
     //create a default account
+    print("creating default account...");
     final account = await Wallet().newAccount(AddressType.user, isMainnet ? NetworkType.MAINNET : NetworkType.BUILDNET);
     ref.read(localStorageServiceProvider).setDefaultWallet(account.address()); //set the default account
     return account;

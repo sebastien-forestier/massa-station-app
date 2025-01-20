@@ -32,7 +32,7 @@ class TransferView extends ConsumerWidget {
     final TextEditingController amountController = TextEditingController();
     final TextEditingController addressController = TextEditingController();
 
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final transactionFee = ref.watch(settingProvider).feeAmount;
 
     final screenTitle = ref.watch(screenTitleProvider);
@@ -93,7 +93,7 @@ class TransferView extends ConsumerWidget {
                                 // TextFormField
                                 Expanded(
                                   child: Form(
-                                    key: _formKey,
+                                    key: formKey,
                                     child: TextFormField(
                                       enabled: true,
                                       controller: amountController,
@@ -149,7 +149,7 @@ class TransferView extends ConsumerWidget {
                             message: "Please confirm the amount and recepient address before transfering your fund"),
                         FilledButton.tonalIcon(
                           onPressed: () async {
-                            if (!_formKey.currentState!.validate() ||
+                            if (!formKey.currentState!.validate() ||
                                 addressController.text.isEmpty ||
                                 addressController.text == addressEntity.address) {
                               informationSnackBarMessage(context, 'One of the entries is invalid. Try again!');

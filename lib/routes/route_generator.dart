@@ -4,6 +4,7 @@ import 'package:mug/domain/entity/address_entity.dart';
 import 'package:mug/mug.dart';
 import 'package:mug/presentation/view/explorer/block_view.dart';
 import 'package:mug/presentation/view/explorer/domain_view.dart';
+import 'package:mug/presentation/view/explorer/mns_view.dart';
 import 'package:mug/presentation/view/explorer/operation_view.dart';
 import 'package:mug/presentation/view/explorer/search_not_found_view.dart';
 import 'package:mug/presentation/view/wallet/transfer_view.dart';
@@ -112,7 +113,7 @@ class RouteGenerator {
         return _errorRoute(route: routeName, argsType: 'OperationDetails');
 
       case ExploreRoutes.domain:
-        if (args is String) {
+        if (args is DomainArguments) {
           return PageTransition(
             child: DomainView(args),
             duration: const Duration(milliseconds: transitionDuration),
@@ -120,6 +121,16 @@ class RouteGenerator {
           );
         }
         return _errorRoute(route: routeName, argsType: 'DomainView');
+
+      case ExploreRoutes.mns:
+        if (args is MNSArguments) {
+          return PageTransition(
+            child: MNSView(args),
+            duration: const Duration(milliseconds: transitionDuration),
+            type: transitionType,
+          );
+        }
+        return _errorRoute(route: routeName, argsType: 'MNSView');
 
       case ExploreRoutes.notFound:
         if (args is String) {

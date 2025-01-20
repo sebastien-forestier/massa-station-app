@@ -1,18 +1,14 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mug/presentation/provider/search_provider.dart';
 
-class NoSearchResult extends StatelessWidget {
+class NoSearchResult extends ConsumerWidget {
   final String searchText;
-  //final bool isDarkTheme;
-
-  const NoSearchResult({
-    super.key,
-    //required this.isDarkTheme,
-    required this.searchText,
-  });
+  const NoSearchResult({super.key, required this.searchText});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -46,6 +42,7 @@ class NoSearchResult extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 40),
+          if (searchText.contains(".massa")) Text("Click here to buy domain"),
         ],
       ),
     );

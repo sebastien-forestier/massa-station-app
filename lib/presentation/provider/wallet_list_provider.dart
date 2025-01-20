@@ -21,9 +21,7 @@ class WalletListNotifier extends AsyncNotifier<WalletData?> {
   Future<WalletData?> build() async {
     localStorageService = ref.read(localStorageServiceProvider);
     walletUseCase = ref.read(walletUseCaseProvider);
-
-    // Fetch existing wallets
-    return loadWallets();
+    return _loadWallets();
   }
 
   Future<void> createNewWallet() async {
@@ -49,7 +47,7 @@ class WalletListNotifier extends AsyncNotifier<WalletData?> {
       await localStorageService.storeWallets(WalletModel.encode(wallets));
       await localStorageService.setDefaultWallet(account.address());
     }
-    state = AsyncData(await loadWallets()); //Re-fetch the wallets to update the state
+    state = AsyncData(await _loadWallets()); //Re-fetch the wallets to update the state
   }
 
   /// Creates the initial wallet
@@ -81,19 +79,28 @@ class WalletListNotifier extends AsyncNotifier<WalletData?> {
       // Set the new wallet as the default
       await localStorageService.setDefaultWallet(account.address());
 
-      state = AsyncData(await loadWallets()); //Re-fetch the wallets to update the state
+      state = AsyncData(await _loadWallets()); //Re-fetch the wallets to update the state
     } catch (e, stack) {
       // Handle errors and update state
       state = AsyncValue.error(e, stack);
     }
   }
 
-  Future<WalletData?> loadWallets() async {
+  Future<void> loadWallets() async {
+    //state = const AsyncValue.loading(); // Set state to loading
+    try {
+      state = AsyncData(await _loadWallets()); //Re-fetch the wallets to update the state
+    } catch (e, stack) {
+      // Handle errors and update state
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  Future<WalletData?> _loadWallets() async {
     final result = await walletUseCase.loadWallets();
     switch (result) {
       case Success(value: final response):
         return response;
-
       case Failure(exception: final exception):
         return null;
     }
@@ -103,206 +110,3 @@ class WalletListNotifier extends AsyncNotifier<WalletData?> {
 final walletListProvider = AsyncNotifierProvider<WalletListNotifier, WalletData?>(() {
   return WalletListNotifier();
 });
-
-// abstract base class WalletListProvider extends StateNotifier<WalletsState> {
-//   WalletListProvider() : super(WalletInitial());
-
-//   late WalletData wallets;
-//   Future<void> loadWallets();
-//   Future<void> createWallet();
-//   Future<void> importWallet(String privateKey);
-//   Future<bool> isAccountDefault(String address);
-//   Future<String?> getWallet(String address);
-// }
-
-// base class WalletProviderImpl extends StateNotifier<WalletsState> implements WalletListProvider {
-//   final WalletUseCase useCase;
-//   final LocalStorageService localStorageService;
-//   @override
-//   late WalletData wallets;
-//   @override
-//   WalletProviderImpl({required this.useCase, required this.localStorageService}) : super(WalletInitial());
-
-//   @override
-//   Future<void> createWallet() async {
-//     print("create wallet is called..");
-//     state = WalletLoading();
-//     final result = await useCase.createWallet();
-//     switch (result) {
-//       case Success(value: final response):
-//         if (response.wallets.isNotEmpty) {
-//           state = WalletSuccess(wallets: response);
-//         } else {
-//           state = WalletEmpty(message: "No wallet and no passphrase set");
-//         }
-
-//       case Failure(exception: final exception):
-//         state = WalletFailure(message: 'Something went wrong: $exception');
-//     }
-//     _debug();
-//   }
-
-//   @override
-//   Future<void> loadWallets() async {
-//     state = WalletLoading();
-
-//     print("I am here... but wallet is empty");
-//     final result = await useCase.loadWallets();
-//     switch (result) {
-//       case Success(value: final response):
-//         print("I am here... but wallet is empty");
-//         if (response.wallets.isNotEmpty) {
-//           wallets = response;
-//           state = WalletSuccess(wallets: response);
-//         } else {
-//           state = WalletEmpty(message: "It feels lonely here! No wallet is created yet.");
-//         }
-
-//       case Failure(exception: final exception):
-//         state = WalletFailure(message: 'Something went wrong: $exception');
-//     }
-//     _debug();
-//   }
-
-//   @override
-//   Future<void> importWallet(String privateKey) async {
-//     state = WalletLoading();
-//     final result = await useCase.restoreWallet(privateKey);
-//     switch (result) {
-//       case Success(value: final response):
-//         if (response.wallets.isNotEmpty) {
-//           state = WalletSuccess(wallets: response);
-//         } else {
-//           state = WalletEmpty(message: "No wallet and no passphrase set");
-//         }
-//       case Failure(exception: final exception):
-//         state = WalletFailure(message: 'Something went wrong while importing wallet: $exception');
-//     }
-//     _debug();
-//   }
-
-//   @override
-//   Future<bool> isAccountDefault(String address) async {
-//     final defaultAddress = await localStorageService.getDefaultWallet();
-//     if (address == defaultAddress) {
-//       return true;
-//     } else {
-//       return false;
-//     }
-//   }
-
-//   @override
-//   Future<String?> getWallet(String address) async {
-//     return await localStorageService.getWalletKey(address);
-//   }
-
-//   void _debug() {
-//     log('User state: $state');
-//   }
-// }
-
-// final walletListProvider = StateNotifierProvider<WalletListProvider, WalletsState>((ref) {
-//   return WalletProviderImpl(
-//       useCase: ref.watch(walletUseCaseProvider), localStorageService: ref.watch(localStorageServiceProvider));
-// });
-// abstract base class WalletListProvider extends StateNotifier<WalletsState> {
-//   WalletListProvider() : super(WalletInitial());
-
-//   late WalletData wallets;
-//   Future<void> loadWallets();
-//   Future<void> createWallet();
-//   Future<void> importWallet(String privateKey);
-//   Future<bool> isAccountDefault(String address);
-//   Future<String?> getWallet(String address);
-// }
-
-// base class WalletProviderImpl extends StateNotifier<WalletsState> implements WalletListProvider {
-//   final WalletUseCase useCase;
-//   final LocalStorageService localStorageService;
-//   @override
-//   late WalletData wallets;
-//   @override
-//   WalletProviderImpl({required this.useCase, required this.localStorageService}) : super(WalletInitial());
-
-//   @override
-//   Future<void> createWallet() async {
-//     print("create wallet is called..");
-//     state = WalletLoading();
-//     final result = await useCase.createWallet();
-//     switch (result) {
-//       case Success(value: final response):
-//         if (response.wallets.isNotEmpty) {
-//           state = WalletSuccess(wallets: response);
-//         } else {
-//           state = WalletEmpty(message: "No wallet and no passphrase set");
-//         }
-
-//       case Failure(exception: final exception):
-//         state = WalletFailure(message: 'Something went wrong: $exception');
-//     }
-//     _debug();
-//   }
-
-//   @override
-//   Future<void> loadWallets() async {
-//     state = WalletLoading();
-
-//     print("I am here... but wallet is empty");
-//     final result = await useCase.loadWallets();
-//     switch (result) {
-//       case Success(value: final response):
-//         print("I am here... but wallet is empty");
-//         if (response.wallets.isNotEmpty) {
-//           wallets = response;
-//           state = WalletSuccess(wallets: response);
-//         } else {
-//           state = WalletEmpty(message: "It feels lonely here! No wallet is created yet.");
-//         }
-
-//       case Failure(exception: final exception):
-//         state = WalletFailure(message: 'Something went wrong: $exception');
-//     }
-//     _debug();
-//   }
-
-//   @override
-//   Future<void> importWallet(String privateKey) async {
-//     state = WalletLoading();
-//     final result = await useCase.restoreWallet(privateKey);
-//     switch (result) {
-//       case Success(value: final response):
-//         if (response.wallets.isNotEmpty) {
-//           state = WalletSuccess(wallets: response);
-//         } else {
-//           state = WalletEmpty(message: "No wallet and no passphrase set");
-//         }
-//       case Failure(exception: final exception):
-//         state = WalletFailure(message: 'Something went wrong while importing wallet: $exception');
-//     }
-//     _debug();
-//   }
-
-//   @override
-//   Future<bool> isAccountDefault(String address) async {
-//     final defaultAddress = await localStorageService.getDefaultWallet();
-//     if (address == defaultAddress) {
-//       return true;
-//     } else {
-//       return false;
-//     }
-//   }
-
-//   @override
-//   Future<String?> getWallet(String address) async {
-//     return await localStorageService.getWalletKey(address);
-//   }
-
-//   void _debug() {
-//     log('User state: $state');
-//   }
-// }
-
-// final walletListProvider = StateNotifierProvider<WalletListProvider, WalletsState>((ref) {
-//   return WalletProviderImpl(
-//       useCase: ref.watch(walletUseCaseProvider), localStorageService: ref.watch(localStorageServiceProvider));
-// });

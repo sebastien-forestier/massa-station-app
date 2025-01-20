@@ -61,6 +61,15 @@ class ExplorerRepositoryImpl implements ExplorerRepository {
       return Failure(exception: error);
     }
   }
+
+  @override
+  Future<Result<(String, bool), Exception>> buyDomain(String domainName, double domainPrice) async {
+    try {
+      return await dataSource.buyDomain(domainName, domainPrice);
+    } on Exception catch (error) {
+      return Failure(exception: error);
+    }
+  }
 }
 
 final explorerRepositoryProvider = Provider<ExplorerRepository>((ref) {

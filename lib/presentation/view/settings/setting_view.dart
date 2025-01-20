@@ -48,8 +48,6 @@ class _SettingViewState extends ConsumerState<SettingView> {
         // Save the value (add validation logic here if needed)
 
         final enteredValue = double.tryParse(_txFeeController.text);
-        print("if fee amount: $enteredValue");
-
         if (enteredValue != null && enteredValue >= 0.01) {
           ref.read(settingProvider.notifier).changeTxFee(feeAmount: enteredValue);
           informationSnackBarMessage(context, "The transaction fee is set to ${enteredValue.toStringAsFixed(4)} MAS");
@@ -57,7 +55,6 @@ class _SettingViewState extends ConsumerState<SettingView> {
       } else {
         // Update the TextField with the latest provider value
         final currentFee = ref.read(settingProvider).feeAmount;
-        print("else fee amount: $currentFee");
         _txFeeController.text = currentFee.toStringAsFixed(4);
       }
       _isTxFeeEditing = !_isTxFeeEditing;

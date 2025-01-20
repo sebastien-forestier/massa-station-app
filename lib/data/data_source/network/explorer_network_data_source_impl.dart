@@ -12,14 +12,14 @@ import 'package:mug/data/model/stakers.dart';
 import 'package:mug/domain/entity/entity.dart';
 import 'package:mug/service/explorer_api.dart';
 import 'package:mug/service/provider.dart';
+import 'package:mug/service/smart_contract_client.dart';
 import 'package:mug/utils/exception_handling.dart';
 
 class ExplorerNetworkDataSourceImpl implements ExplorerDataSource {
   final ExplorerApi api;
+  final SmartContractService smartContractService;
 
-  ExplorerNetworkDataSourceImpl({
-    required this.api,
-  });
+  ExplorerNetworkDataSourceImpl({required this.api, required this.smartContractService});
 
   @override
   Future<Result<AddressEntity, Exception>> getAddress(String address) async {
@@ -214,8 +214,31 @@ class ExplorerNetworkDataSourceImpl implements ExplorerDataSource {
       return Failure(exception: error);
     }
   }
+
+  @override
+  Future<Result<(String, bool), Exception>> buyDomain(String domainName, double domainPrice) async {
+    try {
+      final params = Args();
+      params.addString(domainName); //domain name
+      params.addString(smartContractService.account.address()); //target address
+      final (operation, isExecuted) = await smartContractService.client.scCall(
+          account: smartContractService.account,
+          functionName: "dnsAlloc",
+          functionParameters: params.serialise(),
+          smartContracAddress: CommonAddresses.MAINNET_DNS_ADDRESS.value,
+          coins: domainPrice,
+          fee: minimumFee,
+          maximumGas: toMAS(BigInt.from(GasLimit.MAX_GAS_EXECUTE_SC.value)));
+      return Success(value: (operation, isExecuted));
+    } on Exception catch (error) {
+      return Failure(exception: error);
+    }
+  }
 }
 
 final explorerNetworkDatasourceProvider = Provider<ExplorerDataSource>((ref) {
-  return ExplorerNetworkDataSourceImpl(api: ref.watch(explorerApiServiceProvider));
+  return ExplorerNetworkDataSourceImpl(
+    api: ref.watch(explorerApiServiceProvider),
+    smartContractService: ref.watch(smartContractServiceProvider),
+  );
 });

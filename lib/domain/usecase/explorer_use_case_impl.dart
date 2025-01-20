@@ -111,6 +111,15 @@ class ExplorerUseCaseImpl implements ExplorerUseCase {
       return Failure(exception: error);
     }
   }
+
+  @override
+  Future<Result<(String, bool), Exception>> buyDomain(String domainName, double domainPrice) async {
+    try {
+      return await repository.buyDomain(domainName, domainPrice);
+    } on Exception catch (error) {
+      return Failure(exception: error);
+    }
+  }
 }
 
 final explorerUseCaseProvider = Provider<ExplorerUseCase>((ref) {

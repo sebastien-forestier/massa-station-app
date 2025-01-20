@@ -6,12 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Project imports:
 import 'package:mug/presentation/provider/block_provider.dart';
-import 'package:mug/presentation/provider/setting_provider.dart';
 import 'package:mug/presentation/state/block_state.dart';
 import 'package:mug/presentation/widget/common_padding.dart';
 import 'package:mug/presentation/widget/label_card.dart';
 import 'package:mug/presentation/widget/short_card.dart';
-import 'package:mug/utils/string_helpers.dart';
 
 class BlockView extends ConsumerStatefulWidget {
   final String blockHash;
@@ -44,7 +42,6 @@ class _BlockViewState extends ConsumerState<BlockView> {
           },
           child: Consumer(
             builder: (context, ref, child) {
-              var isDarkTheme = ref.watch(settingProvider).darkTheme;
               return switch (ref.watch(blockProvider)) {
                 BlockInitial() => const Text('Block information is loading....'),
                 BlockLoading() => const CircularProgressIndicator(),
@@ -79,7 +76,6 @@ class _BlockViewState extends ConsumerState<BlockView> {
                           labelText: "Endorsements",
                           valueText: blockEntity.endorsements!.toString(),
                           leadingIcon: const Icon(Icons.check_circle, size: 24)),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -95,58 +91,6 @@ class _BlockViewState extends ConsumerState<BlockView> {
                         valueText: "${blockEntity.blockSize!} B",
                         leadingIcon: const Icon(Icons.storage, size: 24),
                       ),
-
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: [
-                      //     Expanded(
-                      //       child: Card(
-                      //         child: ListTile(
-                      //           title: Text(
-                      //             formatNumber(address.finalRolls.toDouble()),
-                      //             textAlign: TextAlign.center,
-                      //           ),
-                      //           subtitle: const Text("Final Rolls", textAlign: TextAlign.center),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //     Expanded(
-                      //       child: Card(
-                      //         child: ListTile(
-                      //           title: Text(
-                      //             formatNumber(address.candidateRolls.toDouble()),
-                      //             textAlign: TextAlign.center,
-                      //           ),
-                      //           subtitle: const Text("Candidate Rolls", textAlign: TextAlign.center),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   // crossAxisAlignment: CrossAxisAlignment.stretch,
-                      //   children: [
-                      //     Expanded(
-                      //       child: Card(
-                      //         child: ListTile(
-                      //           title: Text(formatNumber4(widget.staker.estimatedDailyReward),
-                      //               textAlign: TextAlign.center),
-                      //           subtitle: const Text("Est. Daily Reward", textAlign: TextAlign.center),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //     Expanded(
-                      //       child: Card(
-                      //         child: ListTile(
-                      //           title: Text("${formatNumber4(widget.staker.ownershipPercentage)} %",
-                      //               textAlign: TextAlign.center),
-                      //           subtitle: const Text("Ownerships", textAlign: TextAlign.center),
-                      //         ),
-                      //       ),
-                      //     )
-                      //   ],
-                      // ),
                     ],
                   ),
                 BlockFailure(message: final message) => Text(message),

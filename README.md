@@ -10,12 +10,30 @@ Massa Universal Mobile Gateway, abbreviated as (MUG) and hence resulting in the 
 ## Features
 MicroGate will initally have the following features:
 
+### Massa Wallet
+- Massa wallet  - with ability to create multiple wallets, restore wallet from private key, export wallet, send and receive transactions.
+### Dusa DEX
+- Dusa Integration - with ability to wrap Massa tokens, swap token between MAS and USDC, swap token between MASSA and WETH.
 ### Massa Explore
 - Massa explorer - with ability to list all massa addresses, search for an address, and view address details.
-- Massa wallet  - with ability to create multiple wallets, restore wallet from private key, export wallet, send and receive transactions.
-- Dusa Integration - with ability to wrap Massa tokens, swap token between MAS and USDC, swap token between MASSA and WETH.
+
 
 ## Development Status
+### Massa wallet
+- [x] Create wallet
+- [x] Store wallet in secure storage
+- [x] View wallet details
+- [x] Restore wallet from private key
+- [x] Export wallet private key and as QR code
+- [x] Send transaction from one address to another
+- [x] Receive transaction
+### Dusa Dex
+- [x] Wrap MAS to WMAS
+- [x] Unwrap WMAS to MAS
+- [x] Swap MAS to USDC.e
+- [x] Swap USDC.e to MAS
+- [x] Swap MAS to WETH
+- [x] Swap WETH to MAS
 ### Massa explorer
 - [x] List all staking addreses
 - [x] Search for an address
@@ -27,22 +45,15 @@ MicroGate will initally have the following features:
 - [x] Search for block
 - [x] View  view block details
 
-### Massa wallet
-- [x] Create wallet
-- [x] Store wallet in secure storage
-- [x] View wallet details
-- [ ] Restore wallet from private key
-- [ ] Export wallet private key and as QR code
-- [x] Send transaction from one address to another
-- [x] Receive transaction
-### Dusa Integration
-- [x] Wrap MAS to WMAS
-- [x] Unwrap WMAS to MAS
-- [x] Swap MAS to USDC.e
-- [x] Swap USDC.e to MAS
-- [x] Swap MAS to WETH
-- [x] Swap WETH to MAS
 
+## Usage Instructions
+
+Follow these steps to get started with the app:
+
+| Step 1: Login | Step 2: Explore Features | Step 3: View Details |
+|---|---|---|
+| ![Login Screen](screenshots/login.png) | ![Explore Features](screenshots/explore.png) | ![View Details](screenshots/details.png) |
+| Enter your credentials to log in. | Browse through the features available in the app. | Tap on a feature to see more details. |
 
 ## Additional information
 You can get more information about massa by visiting the links below.

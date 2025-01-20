@@ -151,7 +151,6 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
             _inputField(),
             _buildForgotPassphrase(),
             _buildLoginButton(),
-            //_buildBiometricAuthButton(context),
           ],
         ),
       ),

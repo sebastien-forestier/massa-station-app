@@ -8,6 +8,7 @@ import 'package:mug/presentation/provider/search_provider.dart';
 // Project imports:
 import 'package:mug/presentation/provider/staker_provider.dart';
 import 'package:mug/presentation/state/staker_state.dart';
+import 'package:mug/presentation/view/explorer/domain_view.dart';
 import 'package:mug/presentation/widget/button_widget.dart';
 import 'package:mug/routes/routes.dart';
 import 'package:mug/utils/number_helpers.dart';
@@ -16,7 +17,6 @@ import 'package:mug/presentation/widget/common_padding.dart';
 
 class ExplorerView extends ConsumerStatefulWidget {
   const ExplorerView({super.key});
-
   @override
   ConsumerState<ExplorerView> createState() => _ExplorerViewState();
 }
@@ -103,8 +103,6 @@ class _ExplorerViewState extends ConsumerState<ExplorerView> {
                           text: "Search",
                           onClicked: () async {
                             final searchType = ref.read(searchProvider.notifier).getSearchType(_searchText.text);
-                            print('search type: ${searchType.name}');
-
                             switch (searchType) {
                               case SearchType.address:
                                 await Navigator.pushNamed(
@@ -128,10 +126,9 @@ class _ExplorerViewState extends ConsumerState<ExplorerView> {
                                 await Navigator.pushNamed(
                                   context,
                                   ExploreRoutes.domain,
-                                  arguments: _searchText.text,
+                                  arguments: DomainArguments(domainName: _searchText.text, isNewDomain: false),
                                 );
                               case SearchType.unknown:
-                                //Container(child: const Text("Uknown body"));
                                 await Navigator.pushNamed(
                                   context,
                                   ExploreRoutes.notFound,

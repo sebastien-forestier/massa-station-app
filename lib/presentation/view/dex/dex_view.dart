@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:mug/constants/asset_names.dart';
 
 // Project imports:
 import 'package:mug/presentation/provider/setting_provider.dart';
@@ -14,7 +15,9 @@ import 'package:mug/presentation/provider/swap_provider.dart';
 import 'package:mug/presentation/state/swap_state.dart';
 import 'package:mug/presentation/widget/button_widget.dart';
 import 'package:mug/presentation/widget/common_padding.dart';
+import 'package:mug/presentation/widget/custom_label_widget.dart';
 import 'package:mug/presentation/widget/information_snack_message.dart';
+import 'package:mug/presentation/widget/success_information_widget.dart';
 import 'package:mug/utils/number_helpers.dart';
 import 'package:mug/utils/string_helpers.dart';
 
@@ -30,7 +33,7 @@ class _DexViewState extends ConsumerState<DexView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      ref.read(swapProvider.notifier).initialLoad(TokenName.WMAS, TokenName.USDC);
+      ref.read(swapProvider.notifier).initialLoad();
     });
   }
 
@@ -49,7 +52,7 @@ class _DexViewState extends ConsumerState<DexView> {
       body: CommonPadding(
         child: RefreshIndicator(
           onRefresh: () {
-            return ref.read(swapProvider.notifier).initialLoad(TokenName.WMAS, TokenName.USDC);
+            return ref.read(swapProvider.notifier).initialLoad();
           },
           child: Consumer(
             builder: (context, ref, child) {
@@ -61,7 +64,7 @@ class _DexViewState extends ConsumerState<DexView> {
                       child: CircularProgressIndicator(),
                     ),
                   ),
-                SwapStatus.success => Padding(
+                SwapStatus.swap => Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
@@ -171,22 +174,17 @@ class _DexViewState extends ConsumerState<DexView> {
                                           (TextEditingValue oldValue, TextEditingValue newValue) {
                                         var formatter = NumberFormat('###,###.####', 'en_US');
                                         var value = formatter.tryParse(newValue.text) ?? 0;
-
-                                        // If a decimal point was just added to the end of the value, keep it.
                                         if (newValue.text.endsWith('.') && '.'.allMatches(newValue.text).length == 1) {
                                           return newValue;
                                         }
-                                        // Otherwise, format the value correctly.
                                         return TextEditingValue(
                                           text: formatter.format(value),
                                         );
                                       })
-                                    ], // Text styling for dark theme
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 10), // Add some spacing between dropdown and text box
-
-                                // DropdownButton
+                                const SizedBox(width: 10),
                                 Column(
                                   children: [
                                     DropdownButton<String>(
@@ -222,39 +220,114 @@ class _DexViewState extends ConsumerState<DexView> {
                             if (swapState.showNotification!) {
                               informationSnackBarMessage(context, swapState.notificationMessage);
                             }
-                            //swapState.notificationMessage!
                           },
                         ),
-                        const SizedBox(height: 10),
-                        if (swapState.showNotification!)
-                          Card(
-                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                              Text(
-                                "Swap operation id: ${shortenString(swapState.notificationMessage!, 16)}",
-                                textAlign: TextAlign.left,
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    Clipboard.setData(ClipboardData(text: swapState.notificationMessage!))
-                                        .then((result) {
-                                      informationSnackBarMessage(
-                                          context, 'Copied operation ID: ${swapState.notificationMessage!}');
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    Icons.copy,
-                                  )),
-                              IconButton(
-                                  icon: const Icon(
-                                    Icons.close,
-                                  ),
-                                  onPressed: () {
-                                    notifier.resetNotification();
-                                  }),
-                            ]),
-                          ),
                       ],
                     ),
+                  ),
+                SwapStatus.success => Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      const SuccessInformationWidget(message: "Swap completed successfully!"),
+                      const SizedBox(height: 20),
+                      CustomLabelWidget(
+                        label: "Swapped from",
+                        value: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                child: Text(
+                              _fromAmountController.text,
+                              style: const TextStyle(fontSize: 26),
+                            )),
+                            const SizedBox(width: 10), // Add some spacing between dropdown and text box
+                            Row(
+                              children: [
+                                SvgPicture.asset(tokenItems[swapState.selectedDropdown1]!.iconPath,
+                                    semanticsLabel: swapState.selectedDropdown1, height: 40.0, width: 40.0),
+                                const SizedBox(width: 10),
+                                Text(swapState.selectedDropdown1!, style: const TextStyle(fontSize: 24))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      CustomLabelWidget(
+                        label: "Swapped to",
+                        value: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                child: Text(
+                              _toAmountController.text,
+                              style: const TextStyle(fontSize: 26),
+                            )),
+                            const SizedBox(width: 10), // Add some spacing between dropdown and text box
+                            Row(
+                              children: [
+                                SvgPicture.asset(tokenItems[swapState.selectedDropdown2]!.iconPath,
+                                    semanticsLabel: swapState.selectedDropdown2, height: 40.0, width: 40.0),
+                                const SizedBox(width: 10),
+                                Text(swapState.selectedDropdown2!, style: const TextStyle(fontSize: 24))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      CustomLabelWidget(
+                        label: "Transaction Fee ",
+                        value: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                child: Text(
+                              ref.watch(settingProvider).feeAmount.toString(),
+                              style: const TextStyle(fontSize: 26),
+                            )),
+                            const SizedBox(width: 10), // Add some spacing between dropdown and text box
+                            Row(
+                              children: [
+                                SvgPicture.asset(AssetName.mas, semanticsLabel: "MAS", height: 40.0, width: 40.0),
+                                const SizedBox(width: 10),
+                                const Text("MAS", style: TextStyle(fontSize: 24))
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      CustomLabelWidget(
+                        label: "Operation ID",
+                        value: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                          Text(
+                            shortenString(swapState.notificationMessage!, 26),
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(text: swapState.notificationMessage!)).then((result) {
+                                  informationSnackBarMessage(context, 'Operation ID copied');
+                                });
+                              },
+                              icon: const Icon(Icons.copy)),
+                        ]),
+                      ),
+                      const SizedBox(height: 10),
+                      FilledButton.tonalIcon(
+                        onPressed: () async {
+                          _fromAmountController.clear();
+                          _toAmountController.clear();
+                          await ref.read(swapProvider.notifier).initialLoad();
+                        },
+                        icon: const Icon(Icons.close),
+                        label: const Text('Close'),
+                        iconAlignment: IconAlignment.start,
+                      ),
+                    ],
                   ),
                 SwapStatus.error => const Text("Something went wrong!"),
               };

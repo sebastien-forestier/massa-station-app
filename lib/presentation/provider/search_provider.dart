@@ -66,6 +66,5 @@ class SearchProvider extends StateNotifier<Search> {
 }
 
 final searchProvider = StateNotifierProvider<SearchProvider, Search>((ref) {
-  print("search provider initalised...");
   return SearchProvider(localStorageService: ref.watch(localStorageServiceProvider));
 });

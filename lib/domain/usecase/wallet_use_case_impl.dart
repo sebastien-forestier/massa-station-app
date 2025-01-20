@@ -32,7 +32,6 @@ class WalletUseCaseImpl implements WalletUseCase {
       final account = await wallet.newAccount(AddressType.user, NetworkType.MAINNET);
       final WalletModel walletEntity =
           WalletModel(address: account.address(), encryptedKey: encryptAES(account.privateKey(), passphrase));
-      //get existing storated wallets
       List<WalletModel> wallets;
       final walletString = await localStorageService.getStoredWallets();
       if (walletString.isNotEmpty) {
@@ -50,21 +49,18 @@ class WalletUseCaseImpl implements WalletUseCase {
 
   @override
   Future<Result<WalletData, Exception>> loadWallets() async {
-    print("use case... loading wallet....");
     try {
       List<WalletModel> wallets;
       WalletData walletData = WalletData();
       final walletString = await localStorageService.getStoredWallets();
       if (walletString.isNotEmpty) {
-        print("wallet is not empty");
-        print("wallet string: $walletString");
         wallets = WalletModel.decode(walletString);
         List<String> walletAddresses = [];
         for (var w in wallets) {
           walletAddresses.add(w.address);
         }
 
-        print("wallet addresses: $walletAddresses");
+        //print("wallet addresses: $walletAddresses");
         final addressesResult = await repository.getAddresses(walletAddresses);
         final addressesEntity = switch (addressesResult) {
           Success(value: final resp) => resp,
@@ -72,12 +68,6 @@ class WalletUseCaseImpl implements WalletUseCase {
         };
         var i = 0;
         for (var w in wallets) {
-          // final addressResult = await repository.getAddress(w.address);
-          // final addressEntity = switch (addressResult) {
-          //   Success(value: final resp) => resp,
-          //   Failure() => null,
-          // };
-          //TODO: assumed order of the requested addresses is retailed. Otherwise, data may not be consistent
           w.addressInformation = addressesEntity![i];
           walletData.finalBalance += addressesEntity[i].finalBalance;
           walletData.rolls += addressesEntity[i].finalRolls;
@@ -126,15 +116,9 @@ class WalletUseCaseImpl implements WalletUseCase {
       if (walletString.isNotEmpty) {
         wallets = WalletModel.decode(walletString);
         //TODO: check if the wallet has any balance, do not delete it.
-        //final addressResult = await repository.getAddress(address);
-        //final addressEntity = switch (addressResult) {
-        //  Success(value: final resp) => {
-        //    if (resp.candidateBalance ==0 && resp.candidateRolls ==0){
-        print('number of wallets before delete: ${wallets.length}');
-        wallets.removeWhere((w) => w.address == address);
-        print('number of wallets after delete: ${wallets.length}');
-        await localStorageService.storeWallets(WalletModel.encode(wallets));
 
+        wallets.removeWhere((w) => w.address == address);
+        await localStorageService.storeWallets(WalletModel.encode(wallets));
         return loadWallets();
       } else {
         return Success(value: walletData);

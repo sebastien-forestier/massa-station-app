@@ -7,5 +7,6 @@ abstract interface class ExplorerUseCase {
   Future<Result<BlockEntity, Exception>> getBlock(String hash);
   Future<Result<OperationEntity, Exception>> getOperation(String hash);
   Future<Result<DomainEntity, Exception>> getDomain(String domainName);
+  Future<Result<(String, bool), Exception>> buyDomain(String domainName, double domainPrice);
   Future<Result<StakersEntity, Exception>> getStakers(int pageNumber);
 }

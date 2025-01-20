@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:dusa/dusa.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:massa/massa.dart';
 import 'package:mug/data/data_source/dex_data_source.dart';
@@ -30,8 +31,6 @@ class DexNetworkDataSourceImpl implements DexDataSource {
       final amountIn = doubleToMassaInt(amount);
       final (router, pair, binSteps, amounts, amountWithoutSlippage, fees) =
           await quoter.findBestPathFromAmountIn(token1, token2, BigInt.from(amountIn));
-
-      //TODO: what if this fails?
       final quoterEntinty = QuoterEntity(
           router: router,
           pair: pair,
@@ -41,7 +40,9 @@ class DexNetworkDataSourceImpl implements DexDataSource {
           fees: fees);
       return Success(value: quoterEntinty);
     } on Exception catch (error) {
-      print(error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
       return Failure(exception: error);
     }
   }
@@ -64,7 +65,9 @@ class DexNetworkDataSourceImpl implements DexDataSource {
           fees: fees);
       return Success(value: quoterEntinty);
     } on Exception catch (error) {
-      print(error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
       return Failure(exception: error);
     }
   }
@@ -75,7 +78,9 @@ class DexNetworkDataSourceImpl implements DexDataSource {
       final balance = await explorerDataSource.getAddress(smartContractService!.account.address());
       return balance;
     } on Exception catch (error) {
-      print(error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
       return Failure(exception: error);
     }
   }
@@ -84,11 +89,12 @@ class DexNetworkDataSourceImpl implements DexDataSource {
   Future<Result<BigInt, Exception>> getTokenBalance(TokenName tokenType) async {
     final token = Token(grpc: smartContractService!.client, token: tokenType);
     try {
-      print("smart contract address: ${smartContractService!.account.address()}");
       final resp = await token.balanceOf(smartContractService!.account.address());
       return Success(value: resp);
     } on Exception catch (error) {
-      print(error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
       return Failure(exception: error);
     }
   }
@@ -116,19 +122,10 @@ class DexNetworkDataSourceImpl implements DexDataSource {
         );
         return Success(value: (operation, isExecuted));
       } else {
-        print("amountIn: ${data.amountIn} ${data.token1.name}");
-        print("amountOut: ${data.amountOut} ${data.token2.name}");
-
         final quoter = Quoter(smartContractService!.client);
         final amountOut = doubleToMassaInt(data.amountOut);
         final (router, pair, binSteps, amounts, amountWithoutSlippage, fees) =
             await quoter.findBestPathFromAmountOut(data.token1, data.token2, BigInt.from(amountOut));
-
-        print('amount in: ${amounts[0]}');
-        print('amount out: ${amounts[1]}');
-        print('route: $router');
-        print('pair: $pair');
-        print('bin steps: $binSteps');
 
         final amountIn = bigIntToDecimal(amounts[0], getTokenDecimal(data.token1));
         final amountInWithSlippage = maximumAmoutIn(amountIn, 0.5);
@@ -147,7 +144,9 @@ class DexNetworkDataSourceImpl implements DexDataSource {
         return Success(value: (operation, isExecuted));
       }
     } on Exception catch (error) {
-      print(error.toString());
+      if (kDebugMode) {
+        print(error.toString());
+      }
       return Failure(exception: error);
     }
   }

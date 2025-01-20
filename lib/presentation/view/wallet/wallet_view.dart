@@ -10,7 +10,6 @@ import 'package:massa/massa.dart';
 import 'package:mug/data/model/transaction_history.dart';
 
 // Project imports:
-import 'package:mug/presentation/provider/address_provider.dart';
 import 'package:mug/presentation/provider/screen_title_provider.dart';
 import 'package:mug/presentation/provider/setting_provider.dart';
 import 'package:mug/presentation/provider/wallet_provider.dart';
@@ -19,8 +18,9 @@ import 'package:mug/presentation/widget/common_padding.dart';
 import 'package:mug/presentation/widget/default_account_widget.dart';
 import 'package:mug/presentation/widget/information_snack_message.dart';
 import 'package:mug/presentation/widget/private_key_bottomsheet_widget.dart';
+import 'package:mug/presentation/widget/rename_wallet_buttom_sheet.dart';
 import 'package:mug/routes/routes_name.dart';
-import 'package:mug/service/massa_icon/svg.dart';
+import 'package:mug/presentation/widget/massa_icon.dart';
 import 'package:mug/utils/number_helpers.dart';
 import 'package:mug/utils/string_helpers.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -43,13 +43,15 @@ class _WalletViewState extends ConsumerState<WalletView> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(walletProvider.notifier).getWalletInformation(widget.address, true);
       isAccountDefault = await ref.read(walletProvider.notifier).isAccountDefault(widget.address);
+      final walletName = await ref.read(walletProvider.notifier).getWalletName(widget.address);
+      ref.read(walletNameProvider.notifier).updateWalletName(walletName!);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = ref.watch(settingProvider).darkTheme;
-
+    final walletName = ref.watch(walletNameProvider);
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -58,7 +60,7 @@ class _WalletViewState extends ConsumerState<WalletView> {
       body: CommonPadding(
         child: RefreshIndicator(
           onRefresh: () {
-            return ref.read(addressProvider.notifier).getAddress(widget.address, true);
+            return ref.read(walletProvider.notifier).getWalletInformation(widget.address, true);
           },
           child: Consumer(
             builder: (context, ref, child) {
@@ -72,16 +74,11 @@ class _WalletViewState extends ConsumerState<WalletView> {
                         SizedBox(
                           width: 50,
                           height: 50,
-                          child: generateRadial(addressEntity.address),
-                          // child: AvatarGenerator(
-                          //   seed: addressEntity.address,
-                          //   tilePadding: 2.0,
-                          //   colors: const [Colors.white70, Colors.black, Colors.blue],
-                          // ),
+                          child: MassaIcon(addressEntity.address),
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          addressEntity.address.substring(addressEntity.address.length - 4),
+                          walletName,
                           style: const TextStyle(fontSize: 40),
                         ),
                       ]),
@@ -127,7 +124,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(fontSize: 18),
                                 ),
-                                //subtitle: const Text("MAS", textAlign: TextAlign.center),
                               ),
                             ),
                           ),
@@ -186,7 +182,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                           isFixedHeader: true,
                                           leftHandSideColBackgroundColor: Theme.of(context).canvasColor,
                                           rightHandSideColBackgroundColor: Theme.of(context).canvasColor,
-
                                           headerWidgets: [
                                             _buildHeaderItem('Hash', 100),
                                             _buildHeaderItem('Age', 110),
@@ -206,11 +201,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                             return _buildRightSideItem(history!, index);
                                           },
                                           itemCount: addressEntity.transactionHistory!.combinedHistory!.length,
-                                          // rowSeparatorWidget: const Divider(
-                                          //   color: Colors.black54,
-                                          //   height: 0.1,
-                                          //   thickness: 0.0,
-                                          // ),
                                         ),
                                       ),
                                     if (addressEntity.transactionHistory == null)
@@ -225,11 +215,21 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                "Wallet Name: ${addressEntity.address.substring(addressEntity.address.length - 4)}",
+                                                "Wallet Name: $walletName",
                                                 style: const TextStyle(fontSize: 18),
                                               ),
                                               OutlinedButton.icon(
-                                                  onPressed: () {}, label: const Text("Edit"), icon: Icon(Icons.edit)),
+                                                  onPressed: () async {
+                                                    final newWalletName = await walletRenameBottomSheet(
+                                                        context, addressEntity.address, isDarkTheme);
+                                                    if (newWalletName!.isNotEmpty) {
+                                                      ref
+                                                          .read(walletNameProvider.notifier)
+                                                          .updateWalletName(newWalletName);
+                                                    }
+                                                  },
+                                                  label: const Text("Edit"),
+                                                  icon: const Icon(Icons.edit)),
                                             ],
                                           ),
                                         ),
@@ -308,7 +308,7 @@ class _WalletViewState extends ConsumerState<WalletView> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(left: 32.0),
+                              padding: const EdgeInsets.only(left: 32.0, bottom: 16),
                               child: FilledButton.tonalIcon(
                                 onPressed: () async {
                                   ref.read(screenTitleProvider.notifier).updateTitle("Transfer Fund");
@@ -324,7 +324,7 @@ class _WalletViewState extends ConsumerState<WalletView> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(right: 32.0),
+                              padding: const EdgeInsets.only(right: 32.0, bottom: 16),
                               child: FilledButton.tonalIcon(
                                 onPressed: () {
                                   receiveBottomSheet(context, isDarkTheme, widget.address);
@@ -398,7 +398,8 @@ class _WalletViewState extends ConsumerState<WalletView> {
   Widget _buildRightSideItem(TransactionHistory history, int index) {
     return Row(
       children: [
-        _buildRightItem(computeAge(int.parse(history.blockTime!)), 110, index),
+        _buildRightItem(
+            ref.read(walletProvider.notifier).computeTimestampAge(int.parse(history.blockTime!)), 110, index),
         _buildRightItem(history.status!, 70, index),
         _buildRightItem(history.type!, 100, index),
         _buildRightItem(shortenString(history.from!, 12), 110, index),
@@ -433,14 +434,12 @@ class _WalletViewState extends ConsumerState<WalletView> {
   Future<String?> receiveBottomSheet(BuildContext context, bool isDarkTheme, String address) async {
     return showModalBottomSheet<String>(
       context: context,
-      isScrollControlled: true, // Allow the BottomSheet to resize
+      isScrollControlled: true,
       builder: (BuildContext context) {
         return SizedBox(
           height: 340,
           child: SingleChildScrollView(
-            // Allow scrolling if the content exceeds height
             child: Padding(
-              // padding: const EdgeInsets.all(16.0),
               padding: EdgeInsets.only(top: 20, right: 20, left: 20, bottom: MediaQuery.of(context).viewInsets.bottom),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start, // Align items to the top
@@ -452,7 +451,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
                   QrImageView(
                     data: address,
                     version: QrVersions.auto,
-                    //backgroundColor:
                     eyeStyle: QrEyeStyle(
                         color: (isDarkTheme == true) ? Colors.white : Colors.black, eyeShape: QrEyeShape.circle),
                     dataModuleStyle: QrDataModuleStyle(
@@ -484,48 +482,15 @@ class _WalletViewState extends ConsumerState<WalletView> {
     );
   }
 
-//TODO: move this function to the provider
-  String computeAge(int timestampMillis) {
-    // Convert input timestamp from milliseconds to DateTime
-    DateTime timestamp = DateTime.fromMillisecondsSinceEpoch(timestampMillis, isUtc: true);
-
-    // Get the current time in UTC
-    DateTime now = DateTime.now().toUtc();
-
-    // Calculate the difference as a Duration
-    Duration difference = now.difference(timestamp);
-
-    if (difference.inSeconds < 86400) {
-      // Less than a day, format as hh:mm:ss
-      int hours = difference.inHours;
-      int minutes = difference.inMinutes % 60;
-      int seconds = difference.inSeconds % 60;
-      return '${hours.toString().padLeft(2, '0')}h '
-          '${minutes.toString().padLeft(2, '0')}m '
-          '${seconds.toString().padLeft(2, '0')}s';
-    } else if (difference.inDays < 30) {
-      // Less than a month, format as d:hh:mm
-      int days = difference.inDays;
-      int hours = difference.inHours % 24;
-      int minutes = difference.inMinutes % 60;
-      return '${days}d ${hours.toString().padLeft(2, '0')}h '
-          '${minutes.toString().padLeft(2, '0')}m';
-    } else if (difference.inDays < 365) {
-      // Less than a year, format as m:d:h
-      int months = difference.inDays ~/ 30; // Approximate months
-      int days = difference.inDays % 30;
-      int hours = difference.inHours % 24;
-      return '${months}m ${days}d ${hours}h';
-    } else {
-      // Greater than or equal to a year, show years:months:days
-      int years = difference.inDays ~/ 365;
-      int months = (difference.inDays % 365) ~/ 30; // Approximate months
-      int days = (difference.inDays % 365) % 30;
-      return '${years}y ${months}m ${days}d';
-    }
+  Future<String?> walletRenameBottomSheet(BuildContext context, String address, bool isDarkTheme) async {
+    return await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) {
+        return RenameWalletBottomSheet(address: address);
+      },
+    );
   }
 
-// Function to display the Yes-No confirmation bottom sheet
   Future<bool?> privateKeyBottomSheet(BuildContext context, String privateKey, bool isDarkTheme) async {
     return await showModalBottomSheet<bool>(
       context: context,
@@ -535,7 +500,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
     );
   }
 
-// Function to display the Yes-No confirmation bottom sheet
   Future<bool?> defaultAccountBottomSheet(BuildContext context, String address) async {
     return await showModalBottomSheet<bool>(
       context: context,

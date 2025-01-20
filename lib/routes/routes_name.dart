@@ -13,6 +13,7 @@ class ExploreRoutes {
   static const String block = 'block';
   static const String operation = 'operation';
   static const String domain = 'domain';
+  static const String mns = 'mns';
   static const String notFound = 'not-found';
 }
 

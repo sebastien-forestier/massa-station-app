@@ -107,9 +107,7 @@ class LocalStorageService {
   Future<void> setInactivityTimeoutIndex({required int index}) async =>
       await sharedPreferences.setInt(StorageKeys.inactivityTimeout, index);
 
-//default: Same as inactivityTimeout
   int get focusTimeout => inactivityTimeout;
-  //  int get focusTimeout => sharedPreferences.getInt(_keyFocusTimeout) ?? 60;
 
   //for logout popup alert. default: 15 seconds
   int get preInactivityLogoutCounter => sharedPreferences.getInt(StorageKeys.preInactivityLogoutCounter) ?? 15;
@@ -172,28 +170,6 @@ class LocalStorageService {
     }
     return encryptedKey;
   }
-
-  // Future<String?> getDefaultWalletKey() async {
-  //   final key = await _secureStorage.read(key: StorageKeys.defaultWalletKey);
-  //   if (key != null) {
-  //     final passphrase = await this.passphrase;
-  //     return decryptAES(key, passphrase);
-  //   } else {
-  //     List<WalletModel> wallets;
-  //     final walletString = await getStoredWallets();
-  //     if (walletString.isNotEmpty) {
-  //       wallets = WalletModel.decode(walletString);
-  //       final passphrase = await this.passphrase;
-  //       return decryptAES(wallets[0].encryptedKey, passphrase);
-  //     }
-  //   }
-  //   return key;
-  // }
-
-//
-  // Future<void> setDefaultWalletAddress(String encryptedWalletKey) async {
-  //   return await _secureStorage.write(key: StorageKeys.defaultWalletKey, value: encryptedWalletKey);
-  // }
 
   Future<void> setDefaultWallet(String address) async {
     return await _secureStorage.write(key: StorageKeys.defaultWalletAddress, value: address);

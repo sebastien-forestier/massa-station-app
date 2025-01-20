@@ -13,6 +13,7 @@ import 'package:mug/utils/exception_handling.dart';
 abstract base class DomainProvider extends StateNotifier<DomainState> {
   DomainProvider() : super(DomainInitial());
   Future<void> getDomain(String domainName);
+  Future<(String, bool)> buyDomain(String domainName, double domainPrice);
 }
 
 base class DomainProviderImpl extends StateNotifier<DomainState> implements DomainProvider {
@@ -34,12 +35,21 @@ base class DomainProviderImpl extends StateNotifier<DomainState> implements Doma
     _debug();
   }
 
+  @override
+  Future<(String, bool)> buyDomain(String domainName, double domainPrice) async {
+    final result = await useCase.buyDomain(domainName, domainPrice);
+    final response = switch (result) {
+      Success(value: final response) => response,
+      Failure() => ("Something went wrong", false),
+    };
+    return response;
+  }
+
   void _debug() {
     log('staker state: $state');
   }
 }
 
 final domainProvider = StateNotifierProvider<DomainProvider, DomainState>((ref) {
-  print("domain provider initalised...");
   return DomainProviderImpl(useCase: ref.watch(explorerUseCaseProvider));
 });
