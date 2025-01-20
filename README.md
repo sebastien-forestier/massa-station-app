@@ -54,7 +54,7 @@ Follow these steps to complete the initial setup:
 
 | Step 1: Passphrase setup | Step 2: Login | Step 3: Wallet homepage |
 |---|---|---|
-| ![Initial Screen](screenshots/passphrase-login-1.png) | ![Login](screenshots/passphrase-login-2.png) | ![Wallet](screenshots/passphrase-login-2.png) |
+| ![Initial Screen](screenshots/passphrase-login-1.png) | ![Login](screenshots/passphrase-login-2.png) | ![Wallet](screenshots/passphrase-login-3.png) |
 | Enter your passphrase and its confirmation| Enter passphrase to login. | The default wallet account is created and displyed on wallet homepage |
 
 ### Import and create wallet
@@ -64,7 +64,16 @@ Follow these steps to import an existing wallet or create a new one:
 | Step 1: Import wallet | Step 2: Create wallet | Step 3: Wallet homepage |
 |---|---|---|
 | ![Initial Screen](screenshots/import-create-wallet-1.png) | ![Login](screenshots/import-create-wallet-2.png) | ![Wallet](screenshots/import-create-wallet-3.png) |
-| Paste the wallet private key. The imported wallet key is encrypted and added to the list of wallets|  | Create New wallet, creates a new wallet and store it securely | The second wallet in the lis is imported and the third one is created|
+| Paste the wallet private key. The imported wallet key is encrypted and added to the list of wallets| Create New wallet, creates a new wallet and store it securely | The second wallet in the lis is imported and the third one is created|
+
+### Wallet Details
+
+Follow these steps to import an existing wallet or create a new one:
+
+| Step 1: View tokens | Step 2: Create wallet | Step 3: Wallet homepage |
+|---|---|---|
+| ![Tokens](screenshots/wallet-details-1.png) | ![Transactions](screenshots/wallet-details-2.png) | ![Settings](screenshots/wallet-details-1.png) |
+| List of tokens associated with the wallet | List of transactions | Wallet settings where you can edit wallet name, show the wallet private key and set the wallet as default wallet|
 
 ## Additional information
 You can get more information about massa by visiting the links below.
