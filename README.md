@@ -105,12 +105,21 @@ Follow these steps to search for the address:
 
 ### Massa Explorer - Search Block
 
-Follow these steps to to swap tokens using dusa decentralised exchange:
+Follow these steps to search for block using block hash:
 
-| Step 1: Explorer Homepage| Step 2: Search Address | Step 3: Address details|
+| Step 1: Explorer Homepage| Step 2: Search Block | Step 3: Block details|
 |---|---|---|
 | ![Explorer](screenshots/explorer.png) | ![Search Block](screenshots/explorer-block-1.png) | ![Block details](screenshots/explorer-block-2.png) |
 | Explorer homepage with search bar| Search a block with block hash | View details of the searched block|
+
+### Massa Explorer - Search Operation
+
+Follow these steps to search for an operation using the operation hash:
+
+| Step 1: Explorer Homepage| Step 2: Search Operation | Step 3: Operation details|
+|---|---|---|
+| ![Explorer](screenshots/explorer.png) | ![Search Operation](screenshots/explorer-operation-1.png) | ![Operation details](screenshots/explorer-operation-2.png) |
+| Explorer homepage with search bar| Search an operation using operation hash | View details of an operation|
 
 ## Additional information
 You can get more information about massa by visiting the links below.
