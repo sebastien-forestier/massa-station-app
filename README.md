@@ -4,8 +4,11 @@
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 
+
 ## Introduction
-Massa Universal Mobile Gateway, abbreviated as (MUG) and hence resulting in the name microgateway -  abbreviated at (μG), is a universal mobile gatway for Massa Blockchain.
+Massa Universal Mobile Gateway, abbreviated as (MUG) and hence resulting in the name microgateway -  abbreviated at (μG), is a universal mobile gatway for Massa Blockchain. The icon for the app is designed to reflect this.
+
+![App Icon](assets/icons/mu.svg)
 
 ## Features
 MicroGate will initally have the following features:
@@ -40,6 +43,7 @@ MicroGate will initally have the following features:
 - [x] View address details
 - [x] Search for domain name
 - [x] View  domain name details
+- [x] Purchase a domain name if available
 - [x] Search for operation
 - [x] View  view operation details
 - [x] Search for block
@@ -83,7 +87,6 @@ Follow these steps to to send and receive tokens:
 |---|---|---|
 | ![Send](screenshots/send-receive-1.png) | ![Confirmation](screenshots/send-receive-2.png) | ![Receive](screenshots/send-receive-3.png) |
 | Past the recipent address or select from the list of addresses and enter the amount you want to transfer | This is a summary of the transaction | You can scan the address to receive to receive token|
-
 
 ### Dusa DEX - Swap tokens
 
@@ -130,11 +133,12 @@ Follow these steps to search for a domain name:
 | ![Explorer](screenshots/explorer.png) | ![Search Domain](screenshots/explorer-domain-1.png) | ![Domain details](screenshots/explorer-domain-2.png) |
 | Explorer homepage with search bar| Search a domain name. A domain name must end with .massa, e.g `deweb.massa` | View details of a domain name|
 
+### Massa Explorer - Buy Domain
 If the domain is not found, it likely that it is not yet purchase and you can purchase and own it. Follow these steps to purchase a domain.
 
 | Step 1: Search for domain| Step 2: Search Domain | Step 3: Domain details|
 |---|---|---|
-| ![Search domain](screenshots/explorer-buy-domain-1.png) | ![Ssearch Status](screenshots/explorer-buy-domain-2.png) | ![Domain purchase confirmation](screenshots/explorer-buy-domain-3.png) |
+| ![Search domain](screenshots/explorer-buy-domain-1.png) | ![Search Status](screenshots/explorer-buy-domain-2.png) | ![Domain purchase confirmation](screenshots/explorer-buy-domain-3.png) |
 | Search for the damain| Shows the details of the doamin that does not exist, e.g `ilovemassa.massa`. Click `Buy` to purchase it | Domain purchase confirmation|
 
 ### Others
