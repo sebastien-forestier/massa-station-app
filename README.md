@@ -70,7 +70,7 @@ Follow these steps to import an existing wallet or create a new one:
 
 Follow these steps to import an existing wallet or create a new one:
 
-| Step 1: View tokens | Step 2: Create wallet | Step 3: Wallet homepage |
+| Step 1: Wallet Tokens | Step 2: Wallet Transactions | Step 3: Wallet Settings |
 |---|---|---|
 | ![Tokens](screenshots/wallet-details-1.png) | ![Transactions](screenshots/wallet-details-2.png) | ![Settings](screenshots/wallet-details-1.png) |
 | List of tokens associated with the wallet | List of transactions | Wallet settings where you can edit wallet name, show the wallet private key and set the wallet as default wallet|
