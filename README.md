@@ -1,3 +1,8 @@
+
+<div align="center">
+  <img src="assets/icons/mu.svg" alt="App Icon" width="300"/>
+</div>
+
 # MicroGate (μG)
 [![pub.dev][pub-dev-shield]][pub-dev-url]
 [![Stars][stars-shield]][stars-url]
@@ -7,8 +12,6 @@
 
 ## Introduction
 Massa Universal Mobile Gateway, abbreviated as (MUG) and hence resulting in the name microgateway -  abbreviated at (μG), is a universal mobile gatway for Massa Blockchain. The icon for the app is designed to reflect this.
-
-![App Icon](assets/icons/mu.svg)
 
 ## Features
 MicroGate will initally have the following features:
