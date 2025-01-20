@@ -14,7 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final providerContainer = ProviderContainer();
   await providerContainer.read(asyncInitProvider).init();
-  providerContainer.read(accountProvider.future);
+  await providerContainer.read(accountProvider.future);
 
   final isAutoRotate = providerContainer.read(localStorageServiceProvider).isAutoRotate;
   await SystemChrome.setPreferredOrientations([

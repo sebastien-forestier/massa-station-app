@@ -181,7 +181,10 @@ class LocalStorageService {
 
   Future<String?> getDefaultWalletKey() async {
     final address = await _secureStorage.read(key: StorageKeys.defaultWalletAddress);
-    return await getWalletKey(address!);
+    if (address == null) {
+      return null;
+    }
+    return await getWalletKey(address);
   }
 
   //supporting functions
