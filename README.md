@@ -91,8 +91,17 @@ Follow these steps to to swap tokens using dusa decentralised exchange:
 
 | Step 1: List of tokens | Step 2: Transaction Confirmation | Step 3: Receive MAS|
 |---|---|---|
-| ![Tokens](screenshots/sdusa-dex-1.png) | ![Swap](screenshots/dusa-dex-2.png) | ![Confirmation](screenshots/dusa-dex-3.png) |
+| ![Tokens](screenshots/dusa-dex-1.png) | ![Swap](screenshots/dusa-dex-2.png) | ![Confirmation](screenshots/dusa-dex-3.png) |
 | Currently supported tokens are MAS, WMAS, USDC and WETH | Enter the amount and token you want to swap from | Confirmation after swaping|
+
+### Massa Explorer - Search Address
+
+Follow these steps to to swap tokens using dusa decentralised exchange:
+
+| Step 1: Explorer Homepage| Step 2: Search Address | Step 3: Address details|
+|---|---|---|
+| ![Explorer](screenshots/explorer.png) | ![Search Address](screenshots/explorer-address-1.png) | ![Address details](screenshots/explorer-address-2.png) |
+| Explorer homepage with search bar| Search an address | View details of the searched address|
 
 ## Additional information
 You can get more information about massa by visiting the links below.
