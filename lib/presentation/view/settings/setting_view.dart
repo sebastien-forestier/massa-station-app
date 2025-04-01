@@ -3,13 +3,12 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:massa/massa.dart';
 import 'package:mug/presentation/provider/setting_provider.dart';
+import 'package:mug/presentation/widget/help_information_widget.dart';
 
 // Project imports:
-import 'package:mug/presentation/widget/slipage_widget.dart';
-import 'package:mug/presentation/widget/information_snack_message.dart';
 import 'package:mug/presentation/widget/widget.dart';
-import 'package:mug/presentation/widget/common_padding.dart';
 
 class SettingView extends ConsumerStatefulWidget {
   const SettingView({super.key});
@@ -36,50 +35,6 @@ class _SettingViewState extends ConsumerState<SettingView> {
   }
 
   @override
-  void dispose() {
-    _txFeeController.dispose();
-    _gasFeeController.dispose();
-    super.dispose();
-  }
-
-  void _toggleTxFeeEditMode() {
-    setState(() {
-      if (_isTxFeeEditing) {
-        // Save the value (add validation logic here if needed)
-
-        final enteredValue = double.tryParse(_txFeeController.text);
-        if (enteredValue != null && enteredValue >= 0.01) {
-          ref.read(settingProvider.notifier).changeTxFee(feeAmount: enteredValue);
-          informationSnackBarMessage(context, "The transaction fee is set to ${enteredValue.toStringAsFixed(4)} MAS");
-        }
-      } else {
-        // Update the TextField with the latest provider value
-        final currentFee = ref.read(settingProvider).feeAmount;
-        _txFeeController.text = currentFee.toStringAsFixed(4);
-      }
-      _isTxFeeEditing = !_isTxFeeEditing;
-    });
-  }
-
-  void _toggleGasFeeEditMode() {
-    setState(() {
-      if (_isGasFeeEditing) {
-        // Save the value (add validation logic here if needed)
-        final enteredValue = double.tryParse(_gasFeeController.text);
-        if (enteredValue != null && enteredValue >= 0.01) {
-          ref.read(settingProvider.notifier).changeGasFee(gasFeeAmount: enteredValue);
-
-          informationSnackBarMessage(context, 'The gas fee is set to ${enteredValue.toStringAsFixed(4)} MAS');
-        }
-      } else {
-        final currentFee = ref.read(settingProvider).gasAmount;
-        _gasFeeController.text = currentFee.toStringAsFixed(4);
-      }
-      _isGasFeeEditing = !_isGasFeeEditing;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final minimumTxFee = ref.watch(settingProvider).feeAmount;
     final minimumGasFee = ref.watch(settingProvider).gasAmount;
@@ -93,19 +48,27 @@ class _SettingViewState extends ConsumerState<SettingView> {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Gas Fee:"),
+                  const Text("Max Gas Fee:"),
+                  const HelpInfo(
+                      message:
+                          'Maximum Gas fee is the minimum amount of coin required to perform a smart contract transaction on the blockchain."'),
                   const SizedBox(width: 10),
                   // Form Field
                   Expanded(
-                    child: TextFormField(
-                      controller: _gasFeeController,
-                      enabled: _isGasFeeEditing,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: minimumGasFee.toStringAsFixed(4),
-                      ),
-                      autocorrect: true,
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        _gasFeeController.text = ref.watch(settingProvider).gasAmount.toStringAsFixed(4);
+                        return TextFormField(
+                          controller: _gasFeeController,
+                          enabled: _isGasFeeEditing,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: minimumGasFee.toStringAsFixed(4),
+                          ),
+                          autocorrect: true,
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(width: 2),
@@ -126,19 +89,27 @@ class _SettingViewState extends ConsumerState<SettingView> {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Transaction Fee:"),
+                  const Text("Min Tx Fee:"),
+                  const HelpInfo(
+                      message:
+                          'Minimum Transaction fee is the minimum amount of coins required to perform a normal (non smart contract) transaction on the blockchain."'),
                   const SizedBox(width: 10),
                   // Form Field
                   Expanded(
-                    child: TextFormField(
-                      controller: _txFeeController,
-                      enabled: _isTxFeeEditing,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: minimumTxFee.toStringAsFixed(4),
-                      ),
-                      autocorrect: true,
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        _txFeeController.text = ref.watch(settingProvider).feeAmount.toStringAsFixed(4);
+                        return TextFormField(
+                          controller: _txFeeController,
+                          enabled: _isTxFeeEditing,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: minimumTxFee.toStringAsFixed(4),
+                          ),
+                          autocorrect: true,
+                        );
+                      },
                     ),
                   ),
                   // Edit/Save Icon
@@ -159,15 +130,58 @@ class _SettingViewState extends ConsumerState<SettingView> {
               leading: const Icon(Icons.double_arrow),
               title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                 const Text("Slipage:"),
+                const HelpInfo(
+                    message:
+                        'Slippage is the difference between the expected price of a swapping ond DEX and the actual price.'),
                 const SizedBox(width: 16),
                 SlippageWidget(),
               ]),
             ),
             const Divider(height: 1),
-            const InfoListTileWidget(),
+            const AboutWidget(),
           ],
         ),
       ),
     );
+  }
+
+  void _toggleGasFeeEditMode() {
+    setState(() {
+      if (_isGasFeeEditing) {
+        final enteredValue = double.tryParse(_gasFeeController.text);
+        if (enteredValue != null && enteredValue >= minimumFee * 10) {
+          ref.read(settingProvider.notifier).changeGasFee(gasFeeAmount: enteredValue);
+          informationSnackBarMessage(context, "The gas fee is changed!");
+        }
+      } else {
+        final currentFee = ref.read(settingProvider).gasAmount;
+        _gasFeeController.text = currentFee.toStringAsFixed(4);
+      }
+      _isGasFeeEditing = !_isGasFeeEditing;
+    });
+  }
+
+  void _toggleTxFeeEditMode() {
+    setState(() {
+      if (_isTxFeeEditing) {
+        final enteredValue = double.tryParse(_txFeeController.text);
+        if (enteredValue != null && enteredValue >= minimumFee) {
+          ref.read(settingProvider.notifier).changeTxFee(feeAmount: enteredValue);
+          informationSnackBarMessage(context, "The transaction fee changed!");
+        }
+      } else {
+        // Update the TextField with the latest provider value
+        final currentFee = ref.read(settingProvider).feeAmount;
+        _txFeeController.text = currentFee.toStringAsFixed(4);
+      }
+      _isTxFeeEditing = !_isTxFeeEditing;
+    });
+  }
+
+  @override
+  void dispose() {
+    _txFeeController.dispose();
+    _gasFeeController.dispose();
+    super.dispose();
   }
 }

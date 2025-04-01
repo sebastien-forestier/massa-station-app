@@ -205,6 +205,45 @@ Follow the steps below to set up and test the Flutter app on your computer:
 6. **Start Testing**
    The app will launch on the selected device/emulator. You can now interact with and test the app's features.
 
+### Building the App for Android and iOS
+
+Follow these steps to build the app for Android and iOS:
+
+#### Building for Android
+1. **Generate the APK**  
+   Run the following command to build the APK:
+   ```bash
+   flutter build apk --release
+   ```
+   The generated APK will be located in the `build/app/outputs/flutter-apk/` directory.
+
+2. **Generate the App Bundle**  
+   To upload the app to the Google Play Store, build an Android App Bundle (AAB):
+   ```bash
+   flutter build appbundle --release
+   ```
+   The generated AAB will be located in the `build/app/outputs/bundle/release/` directory.
+
+3. **Sign the APK/AAB**  
+   Ensure the APK or AAB is signed with your release key. Follow the [official Flutter guide](https://docs.flutter.dev/deployment/android) for signing and publishing.
+
+#### Building for iOS
+1. **Set Up Xcode**  
+   Open the project in Xcode:
+   ```bash
+   open ios/Runner.xcworkspace
+   ```
+
+2. **Select a Build Target**  
+   In Xcode, select your desired device or simulator as the build target.
+
+3. **Build the App**  
+   Build the app by selecting `Product > Archive` from the Xcode menu.
+
+4. **Sign and Distribute**  
+   Use Xcode's interface to sign the app with your Apple Developer account and distribute it via TestFlight or the App Store. Follow the [official Flutter guide](https://docs.flutter.dev/deployment/ios) for detailed instructions.
+
+
 ## Additional information
 You can get more information about massa by visiting the links below.
 ### Links

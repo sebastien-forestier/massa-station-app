@@ -1,6 +1,8 @@
 // Dart imports:
 
 // Package imports:
+import 'dart:ffi';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:massa/massa.dart';
 import 'package:mug/data/model/wallet_model.dart';
@@ -21,7 +23,9 @@ class WalletListNotifier extends AsyncNotifier<WalletData?> {
   Future<WalletData?> build() async {
     localStorageService = ref.read(localStorageServiceProvider);
     walletUseCase = ref.read(walletUseCaseProvider);
-    return _loadWallets();
+
+    final wallets = await _loadWallets();
+    return wallets;
   }
 
   Future<void> createNewWallet() async {
@@ -46,6 +50,8 @@ class WalletListNotifier extends AsyncNotifier<WalletData?> {
       wallets = [walletEntity];
       await localStorageService.storeWallets(WalletModel.encode(wallets));
       await localStorageService.setDefaultWallet(account.address());
+      ref.invalidate(accountProvider);
+      ref.invalidate(smartContractServiceProvider);
     }
     state = AsyncData(await _loadWallets()); //Re-fetch the wallets to update the state
   }
@@ -56,7 +62,15 @@ class WalletListNotifier extends AsyncNotifier<WalletData?> {
     try {
       final wallet = Wallet();
       final passphrase = await localStorageService.passphrase;
+
       final account = await wallet.addAccountFromSecretKey(privateKey, AddressType.user, NetworkType.MAINNET);
+
+      // Check if the account already exists
+      final existingWalletKey = await localStorageService.getWalletKey(account.address());
+      if (existingWalletKey != "") {
+        state = AsyncData(await _loadWallets());
+        return;
+      }
 
       final walletEntity = WalletModel(
         address: account.address(),
@@ -69,21 +83,30 @@ class WalletListNotifier extends AsyncNotifier<WalletData?> {
       if (walletString.isNotEmpty) {
         wallets = WalletModel.decode(walletString);
         wallets.add(walletEntity);
+        await localStorageService.storeWallets(WalletModel.encode(wallets));
       } else {
         wallets = [walletEntity];
+        await localStorageService.storeWallets(WalletModel.encode(wallets));
+        await localStorageService.setDefaultWallet(account.address());
+        ref.invalidate(accountProvider);
+        ref.invalidate(smartContractServiceProvider);
       }
-
-      // Store the updated wallet list
-      await localStorageService.storeWallets(WalletModel.encode(wallets));
-
-      // Set the new wallet as the default
-      await localStorageService.setDefaultWallet(account.address());
-
       state = AsyncData(await _loadWallets()); //Re-fetch the wallets to update the state
     } catch (e, stack) {
       // Handle errors and update state
       state = AsyncValue.error(e, stack);
     }
+  }
+
+  /// Creates the initial wallet
+  Future<bool> isWalletExisting(String privateKey) async {
+    final wallet = Wallet();
+    final account = await wallet.addAccountFromSecretKey(privateKey, AddressType.user, NetworkType.MAINNET);
+    final existingWalletKey = await localStorageService.getWalletKey(account.address());
+    if (existingWalletKey != "") {
+      return true;
+    }
+    return false;
   }
 
   Future<void> loadWallets() async {

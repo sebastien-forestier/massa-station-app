@@ -67,6 +67,5 @@ base class ExplorerProviderImpl extends StateNotifier<StakerState> implements St
 }
 
 final stakerProvider = StateNotifierProvider<StakerProvider, StakerState>((ref) {
-  print("staker provider initalised...");
   return ExplorerProviderImpl(useCase: ref.watch(explorerUseCaseProvider));
 });

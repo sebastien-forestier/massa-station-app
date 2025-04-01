@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Project imports:
 import 'package:mug/domain/usecase/explorer_use_case.dart';
 import 'package:mug/domain/usecase/explorer_use_case_impl.dart';
-import 'package:mug/presentation/state/address_state.dart';
 import 'package:mug/presentation/state/operation_state.dart';
 import 'package:mug/utils/exception_handling.dart';
 
@@ -41,6 +40,5 @@ base class OperationProviderImpl extends StateNotifier<OperationState> implement
 }
 
 final operationProvider = StateNotifierProvider<OperationProvider, OperationState>((ref) {
-  print("operation provider initalised...");
   return OperationProviderImpl(useCase: ref.watch(explorerUseCaseProvider));
 });

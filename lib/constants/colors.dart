@@ -14,6 +14,7 @@ const greenText = 0xFF64C17F; //green text
 
 //color palettes taken from https://github.com/Jam3/nice-color-palettes
 
+//These colors are used to generate address icon colors
 const colorPalettesInts = [
   [0xff69d2e7, 0xffa7dbd8, 0xffe0e4cc, 0xfff38630, 0xfffa6900],
   [0xfffe4365, 0xfffc9d9a, 0xfff9cdad, 0xffc8c8a9, 0xff83af9b],

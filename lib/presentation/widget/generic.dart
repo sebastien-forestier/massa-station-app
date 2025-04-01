@@ -39,16 +39,6 @@ class GenericDialog extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _buildIcon(BuildContext context) {
-  //   return Padding(
-  //     padding: EdgeInsets.only(bottom: 15),
-  //     child: Icon(
-  //       this.icon,
-  //       size: MediaQuery.of(context).size.width * 0.12,
-  //       color: NordColors.frost.darkest,
-  //     ),
-  //   );
   // }
 
   Widget _body(BuildContext context) {

@@ -19,9 +19,9 @@ class DexRepositoryImpl implements DexRepository {
 
   @override
   Future<Result<QuoterEntity, Exception>> findBestPathFromAmountIn(
-      TokenName token1, TokenName token2, double amount) async {
+      String accountAddress, TokenName token1, TokenName token2, double amount) async {
     try {
-      return await dataSource.findBestPathFromAmountIn(token1, token2, amount);
+      return await dataSource.findBestPathFromAmountIn(accountAddress, token1, token2, amount);
     } on Exception catch (error) {
       return Failure(exception: error);
     }
@@ -29,36 +29,40 @@ class DexRepositoryImpl implements DexRepository {
 
   @override
   Future<Result<QuoterEntity, Exception>> findBestPathFromAmountOut(
-      TokenName token1, TokenName token2, double amount) async {
+      String accountAddress, TokenName token1, TokenName token2, double amount) async {
     try {
-      return await dataSource.findBestPathFromAmountOut(token1, token2, amount);
+      return await dataSource.findBestPathFromAmountOut(accountAddress, token1, token2, amount);
     } on Exception catch (error) {
       return Failure(exception: error);
     }
   }
 
   @override
-  Future<Result<AddressEntity, Exception>> getMASBalance() async {
+  Future<Result<AddressEntity, Exception>> getMASBalance(
+    String accountAddress,
+  ) async {
     try {
-      return await dataSource.getMASBalance();
+      return await dataSource.getMASBalance(
+        accountAddress,
+      );
     } on Exception catch (error) {
       return Failure(exception: error);
     }
   }
 
   @override
-  Future<Result<BigInt, Exception>> getTokenBalance(TokenName tokenType) async {
+  Future<Result<BigInt, Exception>> getTokenBalance(String accountAddress, TokenName tokenType) async {
     try {
-      return await dataSource.getTokenBalance(tokenType);
+      return await dataSource.getTokenBalance(accountAddress, tokenType);
     } on Exception catch (error) {
       return Failure(exception: error);
     }
   }
 
   @override
-  Future<Result<(String, bool), Exception>> swapToken(SwapEntity data) async {
+  Future<Result<(String, bool), Exception>> swapToken(String accountAddress, SwapEntity data) async {
     try {
-      return await dataSource.swapToken(data);
+      return await dataSource.swapToken(accountAddress, data);
     } on Exception catch (error) {
       return Failure(exception: error);
     }

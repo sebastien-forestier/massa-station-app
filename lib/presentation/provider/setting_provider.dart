@@ -75,16 +75,20 @@ class SettingProvider extends StateNotifier<Setting> {
     _debug();
   }
 
-  Future<void> changeTxFee({required double feeAmount}) async {
-    state = state.copyWith(feeAmount: feeAmount);
-    await localStorageService.setMinimumFee(feeAmount);
+  Future<double> changeTxFee({required double feeAmount}) async {
+    final fee = await localStorageService.setMinimumFee(feeAmount);
+    state = state.copyWith(feeAmount: fee);
     _debug();
+    return fee;
   }
 
-  Future<void> changeGasFee({required double gasFeeAmount}) async {
-    state = state.copyWith(gasAmount: gasFeeAmount);
-    await localStorageService.setMinimumGassFee(gasFeeAmount);
+  Future<double> changeGasFee({required double gasFeeAmount}) async {
+    final fee = await localStorageService.setMinimumGassFee(gasFeeAmount);
+    state = state.copyWith(gasAmount: fee);
+
+    print("fee: $fee");
     _debug();
+    return fee;
   }
 
   Future<void> changeSlippage({required double slippage}) async {
@@ -111,6 +115,5 @@ class SettingProvider extends StateNotifier<Setting> {
 }
 
 final settingProvider = StateNotifierProvider<SettingProvider, Setting>((ref) {
-  print("setting provider initalised...");
   return SettingProvider(localStorageService: ref.watch(localStorageServiceProvider));
 });

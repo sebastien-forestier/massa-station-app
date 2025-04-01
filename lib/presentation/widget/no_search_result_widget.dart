@@ -1,7 +1,6 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mug/presentation/provider/search_provider.dart';
 
 class NoSearchResult extends ConsumerWidget {
   final String searchText;

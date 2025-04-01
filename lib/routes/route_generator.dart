@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mug/domain/entity/address_entity.dart';
 import 'package:mug/mug.dart';
+import 'package:mug/presentation/view/dex/swap_view.dart';
 import 'package:mug/presentation/view/explorer/block_view.dart';
 import 'package:mug/presentation/view/explorer/domain_view.dart';
 import 'package:mug/presentation/view/explorer/mns_view.dart';
@@ -145,7 +146,7 @@ class RouteGenerator {
 //Wallet routes
 
       case WalletRoutes.wallet:
-        if (args is String) {
+        if (args is WalletViewArg) {
           return PageTransition(
             child: WalletView(args),
             duration: const Duration(milliseconds: transitionDuration),
@@ -172,6 +173,16 @@ class RouteGenerator {
           duration: const Duration(milliseconds: transitionDuration),
           type: transitionType,
         );
+
+      case DexRoutes.swap:
+        if (args is String) {
+          return PageTransition(
+            child: SwapView(args),
+            duration: const Duration(milliseconds: transitionDuration),
+            type: transitionType,
+          );
+        }
+        return _errorRoute(route: routeName, argsType: 'SwapView');
 
       default:
         return _errorRoute(route: routeName);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mug/constants/constants.dart';
 
 class NotFoundView extends ConsumerWidget {
   final String searchText;
@@ -32,7 +33,7 @@ class NotFoundView extends ConsumerWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: Constants.verticalSpacing),
               Text(
                 'Sorry, we couldn\'t find any results for "$searchText". Please try another term.',
                 style: TextStyle(
@@ -40,7 +41,6 @@ class NotFoundView extends ConsumerWidget {
                   color: Colors.grey[400],
                 ),
               ),
-              const SizedBox(height: 40),
             ],
           ),
         ),

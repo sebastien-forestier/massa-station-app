@@ -32,9 +32,6 @@ class App extends ConsumerWidget {
       darkTheme: ThemeData.dark(
         useMaterial3: true,
       ),
-      //localizationsDelegates: context.localizationDelegates,
-      //supportedLocales: context.supportedLocales,
-      //locale: context.locale,
       home: const AuthView(),
     );
   }

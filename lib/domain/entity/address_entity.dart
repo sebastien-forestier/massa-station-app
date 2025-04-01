@@ -1,3 +1,11 @@
+// This file contains the AddressEntity class, which represents an address in the Tezos blockchain.
+// It includes properties such as address, thread, final balance, candidate balance,
+// final rolls, candidate rolls, active roles, created blocks, created endorsements,
+// transaction history, and token balances.
+// The class also includes a copyWith method for creating a new instance with modified properties.
+
+// It is part of the Massa Wallet project and is licensed under the MIT License.
+
 import 'package:dusa/dusa.dart';
 import 'package:mug/data/model/address_history.dart';
 

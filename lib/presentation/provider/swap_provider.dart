@@ -14,7 +14,7 @@ import 'package:mug/utils/exception_handling.dart';
 
 abstract base class SwapProvider extends StateNotifier<SwapState> {
   SwapProvider(super._state);
-  Future<void> initialLoad();
+  Future<void> initialLoad(String accountAddress);
   void selectDropdown1(String? newValue);
   void selectDropdown2(String? newValue);
   void updateValues(double? value1, double? value2);
@@ -50,8 +50,9 @@ base class SwapProviderImpl extends StateNotifier<SwapState> implements SwapProv
         ));
 
   @override
-  Future<void> initialLoad() async {
+  Future<void> initialLoad(String accountAddress) async {
     state = SwapState(
+      accountAddress: accountAddress,
       selectedDropdown1: "MAS",
       selectedDropdown2: "USDC",
       allItems: tokenItems,
@@ -63,7 +64,9 @@ base class SwapProviderImpl extends StateNotifier<SwapState> implements SwapProv
   @override
   Future<void> updateSwapRate() async {
     state = state.copyWith(status: SwapStatus.loading);
-    await _getTokenBalances();
+    await _getTokenBalances(
+      state.accountAddress!,
+    );
 
     if ((state.selectedDropdown1 == 'MAS' && state.selectedDropdown2 == 'WMAS') ||
         (state.selectedDropdown1 == 'WMAS' && state.selectedDropdown2 == 'MAS')) {
@@ -74,7 +77,7 @@ base class SwapProviderImpl extends StateNotifier<SwapState> implements SwapProv
     final token1 = tokenItems[state.selectedDropdown1]!.token;
     final token2 = tokenItems[state.selectedDropdown2]!.token;
     if (state.selectedDropdown2 != 'MAS') {
-      final result = await useCase.findBestPathFromAmountIn(TokenName.WMAS, token2, 1.0);
+      final result = await useCase.findBestPathFromAmountIn(state.accountAddress!, TokenName.WMAS, token2, 1.0);
       switch (result) {
         case Success(value: final response):
           final entity = SwapEntity(
@@ -97,7 +100,7 @@ base class SwapProviderImpl extends StateNotifier<SwapState> implements SwapProv
           state = state.copyWith(status: SwapStatus.error);
       }
     } else {
-      final result = await useCase.findBestPathFromAmountOut(TokenName.WMAS, token1, 1.0);
+      final result = await useCase.findBestPathFromAmountOut(state.accountAddress!, TokenName.WMAS, token1, 1.0);
       switch (result) {
         case Success(value: final response):
           final entity = SwapEntity(
@@ -122,23 +125,27 @@ base class SwapProviderImpl extends StateNotifier<SwapState> implements SwapProv
     }
   }
 
-  Future<void> _getTokenBalances() async {
+  Future<void> _getTokenBalances(String accountAddress) async {
     //get token 1 balances
     double balance1 = 0.0;
     if (state.selectedDropdown1 != "MAS") {
       final token1 = tokenItems[state.selectedDropdown1]!.token;
-      balance1 = await _getTokenBalance(token1);
+      balance1 = await _getTokenBalance(accountAddress, token1);
     } else {
-      balance1 = await _getMassaBalance();
+      balance1 = await _getMassaBalance(
+        accountAddress,
+      );
     }
 
     //get token 2 balances
     double balance2 = 0.0;
     if (state.selectedDropdown2 != "MAS") {
       final token2 = tokenItems[state.selectedDropdown2]!.token;
-      balance2 = await _getTokenBalance(token2);
+      balance2 = await _getTokenBalance(accountAddress, token2);
     } else {
-      balance2 = await _getMassaBalance();
+      balance2 = await _getMassaBalance(
+        accountAddress,
+      );
     }
 
     state = state.copyWith(
@@ -147,9 +154,11 @@ base class SwapProviderImpl extends StateNotifier<SwapState> implements SwapProv
     );
   }
 
-  Future<double> _getMassaBalance() async {
+  Future<double> _getMassaBalance(String accountAddress) async {
     double balance = 0.0;
-    final massaBalance = await useCase.getMASBalance();
+    final massaBalance = await useCase.getMASBalance(
+      accountAddress,
+    );
     switch (massaBalance) {
       case Success(value: final value):
         balance = value.finalBalance;
@@ -160,9 +169,9 @@ base class SwapProviderImpl extends StateNotifier<SwapState> implements SwapProv
     return balance;
   }
 
-  Future<double> _getTokenBalance(TokenName token) async {
+  Future<double> _getTokenBalance(String accountAddress, TokenName token) async {
     double balance = 0.0;
-    final tokenBalance = await useCase.getTokenBalance(token);
+    final tokenBalance = await useCase.getTokenBalance(accountAddress, token);
     switch (tokenBalance) {
       case Success(value: final value):
         balance = value;
@@ -214,7 +223,7 @@ base class SwapProviderImpl extends StateNotifier<SwapState> implements SwapProv
       token1: token1,
       token2: token2,
     );
-    final result = await useCase.swapToken(entity);
+    final result = await useCase.swapToken(state.accountAddress!, entity);
     switch (result) {
       case Success(value: final value):
         state = state.copyWith(status: SwapStatus.success, showNotification: true, notificationMessage: value.$1);

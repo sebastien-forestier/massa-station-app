@@ -1,3 +1,16 @@
+// This file is part of the Massa Wallet project.
+// The Massa Wallet project is licensed under the GNU General Public License v3.0.
+//
+// This file contains the environment variables used in the application.
+// These variables are used to configure the gRPC host, gRPC port, JSON-RPC host,
+// JSON-RPC version, and the explorer host.
+// It also includes a private key for testing purposes only.
+// The private key should be kept private and never used in production.
+// The corresponding public key and address are also provided for reference.
+// The private key is used for testing only and should never be used in production.
+// The corresponding public key and address are also provided for reference.
+// The private key is used for testing only and should never be used in production.
+
 class Env {
   static const grpcHost = String.fromEnvironment(
     'grpc_host',

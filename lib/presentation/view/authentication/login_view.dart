@@ -15,11 +15,8 @@ import 'package:local_session_timeout/local_session_timeout.dart';
 // Project imports:
 import 'package:mug/presentation/provider/local_session_timeout_provider.dart';
 import 'package:mug/routes/routes.dart';
-import 'package:mug/service/local_storage_service.dart';
 import 'package:mug/service/provider.dart';
-import 'package:mug/presentation/widget/generic.dart';
-import 'package:mug/presentation/widget/button_widget.dart';
-import 'package:mug/presentation/widget/information_snack_message.dart';
+import 'package:mug/presentation/widget/widget.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   final bool? isKeyboardFocused;
@@ -47,18 +44,15 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
   bool _isHidden = true;
   bool _isLocked = false;
   late StreamController<SessionState> _session;
-  late LocalStorageService _storage;
   bool isPasswordValid = false;
 
   @override
   void initState() {
-    _storage = ref.read(localStorageServiceProvider);
-
     super.initState();
-    _noOfAllowedAttempts = _storage.noOfLogginAttemptAllowed;
+    _noOfAllowedAttempts = ref.read(localStorageServiceProvider).noOfLogginAttemptAllowed;
     _isKeyboardFocused = widget.isKeyboardFocused ?? true;
-    forcePassphraseInput = _storage.biometricAttemptAllTimeCount % 5 == 0;
-    _lockoutTime = _storage.bruteforceLockOutTime;
+    forcePassphraseInput = ref.read(localStorageServiceProvider).biometricAttemptAllTimeCount % 5 == 0;
+    _lockoutTime = ref.read(localStorageServiceProvider).bruteforceLockOutTime;
 
     // BiometricAuth:
     auth.isDeviceSupported().then(
@@ -76,7 +70,7 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
 
   @override
   Future<void> afterFirstLayout(BuildContext context) async {
-    if (_storage.isBiometricAuthEnabled && (widget.isKeyboardFocused ?? true)) {
+    if (ref.read(localStorageServiceProvider).isBiometricAuthEnabled && (widget.isKeyboardFocused ?? true)) {
       await _authenticate();
     }
   }
@@ -171,8 +165,8 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
             },
           );
         },
-        allowedLoginAttempts: _storage.noOfLogginAttemptAllowed,
-        lockoutTime: _storage.bruteforceLockOutTime,
+        allowedLoginAttempts: ref.read(localStorageServiceProvider).noOfLogginAttemptAllowed,
+        lockoutTime: ref.read(localStorageServiceProvider).bruteforceLockOutTime,
       );
 
       return StreamBuilder(
@@ -234,7 +228,7 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
   }
 
   Future<void> validatePassword(String passphrase) async {
-    final pass = await _storage.verifyPassphrase(passphrase);
+    final pass = await ref.read(localStorageServiceProvider).verifyPassphrase(passphrase);
     if (pass) {
       setState(() {
         isPasswordValid = pass;
@@ -295,7 +289,9 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
                 elevation: 5.0,
               ),
               onPressed:
-                  (_storage.isBiometricAuthEnabled && !forcePassphraseInput && !_isLocked) ? _authenticate : null,
+                  (ref.read(localStorageServiceProvider).isBiometricAuthEnabled && !forcePassphraseInput && !_isLocked)
+                      ? _authenticate
+                      : null,
               child: const Wrap(
                 children: <Widget>[
                   Icon(
@@ -331,17 +327,17 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
   Future<void> _login(String passphrase) async {
     const verifyPassphrase = 'Verifying your passphrase!';
     const snackMsgWrongEncryptionPhrase = 'Wrong passphrase!';
-    if (await _storage.verifyPassphrase(passphrase)) {
+    if (await ref.read(localStorageServiceProvider).verifyPassphrase(passphrase)) {
       informationSnackBarMessage(context, verifyPassphrase);
 
       // re-enable biometric auth
-      if (forcePassphraseInput) _storage.incrementBiometricAttemptAllTimeCount();
+      if (forcePassphraseInput) ref.read(localStorageServiceProvider).incrementBiometricAttemptAllTimeCount();
 
-      print("user login status before starting session: ${_storage.isUserActive}");
+      print("user login status before starting session: ${ref.read(localStorageServiceProvider).isUserActive}");
 
       // start listening for session inactivity on successful login
       _session.add(SessionState.startListening);
-      _storage.setLoginStatus(true);
+      ref.read(localStorageServiceProvider).setLoginStatus(true);
       await Navigator.pushReplacementNamed(
         context,
         AuthRoutes.home,
@@ -378,7 +374,7 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
 
   Future<bool> _authenticate() async {
     bool authenticated = false;
-    print(_storage.biometricAttemptAllTimeCount);
+    print(ref.read(localStorageServiceProvider).biometricAttemptAllTimeCount);
     if (_supportState == _BiometricState.unsupported) {
       showGenericDialog(
         context: context,
@@ -392,7 +388,7 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
         message: "Still remember your passphrase? Use passphrase to login this time.",
       );
     } else {
-      _storage.incrementBiometricAttemptAllTimeCount();
+      ref.read(localStorageServiceProvider).incrementBiometricAttemptAllTimeCount();
       try {
         authenticated = await auth.authenticate(
           localizedReason: 'Login using your biometric credential',
@@ -401,10 +397,10 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
       } catch (e) {
         //print(e);
       }
-      if (authenticated) await _login(await _storage.passphrase);
+      if (authenticated) await _login(await ref.read(localStorageServiceProvider).passphrase);
     }
     setState(() {
-      forcePassphraseInput = _storage.biometricAttemptAllTimeCount % 5 == 0;
+      forcePassphraseInput = ref.read(localStorageServiceProvider).biometricAttemptAllTimeCount % 5 == 0;
     });
     return authenticated;
   }

@@ -1,7 +1,7 @@
 class StakerEntity {
   final String address;
   final int rank;
-  final String rolls;
+  final int rolls;
   final double ownershipPercentage;
   final double estimatedDailyReward;
 

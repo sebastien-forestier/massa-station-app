@@ -1,3 +1,8 @@
+// This file contains the asset names used in the application.
+// It includes the paths to the SVG icons used in the app.
+// These asset names are used to reference the icons in the codebase.
+// The asset names are organized in a class for better maintainability.
+//
 class AssetName {
   static const String charlie = 'assets/icons/charlie.svg';
   static const String dai = 'assets/icons/dai.svg';

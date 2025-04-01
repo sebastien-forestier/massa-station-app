@@ -7,9 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Project imports:
 import 'package:mug/presentation/provider/block_provider.dart';
 import 'package:mug/presentation/state/block_state.dart';
-import 'package:mug/presentation/widget/common_padding.dart';
-import 'package:mug/presentation/widget/label_card.dart';
-import 'package:mug/presentation/widget/short_card.dart';
+import 'package:mug/presentation/widget/widget.dart';
 
 class BlockView extends ConsumerStatefulWidget {
   final String blockHash;

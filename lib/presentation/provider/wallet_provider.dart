@@ -165,5 +165,3 @@ class WalletNameNotifier extends StateNotifier<String> {
 final walletNameProvider = StateNotifierProvider<WalletNameNotifier, String>((ref) {
   return WalletNameNotifier();
 });
-
-//TODO: Combine the two wallet providers into one and refactor all the codes

@@ -14,7 +14,7 @@ import 'package:mug/utils/exception_handling.dart';
 
 abstract base class DexProvider extends StateNotifier<DexState> {
   DexProvider() : super(DexInitial());
-  Future<void> initialLoad(TokenName token1, TokenName token2);
+  Future<void> initialLoad(String accountAddress, TokenName token1, TokenName token2);
 }
 
 base class DexProviderImpl extends StateNotifier<DexState> implements DexProvider {
@@ -23,10 +23,10 @@ base class DexProviderImpl extends StateNotifier<DexState> implements DexProvide
   DexProviderImpl({required this.useCase}) : super(DexInitial());
 
   @override
-  Future<void> initialLoad(TokenName token1, TokenName token2) async {
+  Future<void> initialLoad(String accountAddress, TokenName token1, TokenName token2) async {
     state = DexLoading();
 
-    final result = await useCase.findBestPathFromAmountIn(TokenName.WMAS, TokenName.USDC, 1.0);
+    final result = await useCase.findBestPathFromAmountIn(accountAddress, TokenName.WMAS, TokenName.USDC, 1.0);
 
     switch (result) {
       case Success(value: final response):
@@ -39,7 +39,9 @@ base class DexProviderImpl extends StateNotifier<DexState> implements DexProvide
 
         //get token1/massa balance
         double balance = 0.0;
-        final massaBalance = await useCase.getMASBalance();
+        final massaBalance = await useCase.getMASBalance(
+          accountAddress,
+        );
         switch (massaBalance) {
           case Success(value: final value):
             balance = value.finalBalance;
@@ -49,7 +51,7 @@ base class DexProviderImpl extends StateNotifier<DexState> implements DexProvide
 
         //get token 2 balance
         double balance2 = 0.0;
-        final usdcBalance = await useCase.getTokenBalance(TokenName.USDC);
+        final usdcBalance = await useCase.getTokenBalance(accountAddress, TokenName.USDC);
         switch (usdcBalance) {
           case Success(value: final value):
             balance2 = value;

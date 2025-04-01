@@ -18,9 +18,9 @@ class DexUseCaseImpl implements DexUseCase {
 
   @override
   Future<Result<QuoterEntity, Exception>> findBestPathFromAmountIn(
-      TokenName token1, TokenName token2, double amount) async {
+      String accountAddress, TokenName token1, TokenName token2, double amount) async {
     try {
-      return await repository.findBestPathFromAmountIn(token1, token2, amount);
+      return await repository.findBestPathFromAmountIn(accountAddress, token1, token2, amount);
     } on Exception catch (error) {
       return Failure(exception: error);
     }
@@ -28,27 +28,31 @@ class DexUseCaseImpl implements DexUseCase {
 
   @override
   Future<Result<QuoterEntity, Exception>> findBestPathFromAmountOut(
-      TokenName token1, TokenName token2, double amount) async {
+      String accountAddress, TokenName token1, TokenName token2, double amount) async {
     try {
-      return await repository.findBestPathFromAmountOut(token1, token2, amount);
+      return await repository.findBestPathFromAmountOut(accountAddress, token1, token2, amount);
     } on Exception catch (error) {
       return Failure(exception: error);
     }
   }
 
   @override
-  Future<Result<AddressEntity, Exception>> getMASBalance() async {
+  Future<Result<AddressEntity, Exception>> getMASBalance(
+    String accountAddress,
+  ) async {
     try {
-      return await repository.getMASBalance();
+      return await repository.getMASBalance(
+        accountAddress,
+      );
     } on Exception catch (error) {
       return Failure(exception: error);
     }
   }
 
   @override
-  Future<Result<double, Exception>> getTokenBalance(TokenName tokenType) async {
+  Future<Result<double, Exception>> getTokenBalance(accountAddress, TokenName tokenType) async {
     try {
-      final result = await repository.getTokenBalance(tokenType);
+      final result = await repository.getTokenBalance(accountAddress, tokenType);
       return switch (result) {
         Success(value: final value) => Success(value: bigIntToDecimal(value, getTokenDecimal(tokenType))),
         Failure(exception: final exception) => Failure(exception: Exception("unable to get token balance: $exception"))
@@ -59,9 +63,9 @@ class DexUseCaseImpl implements DexUseCase {
   }
 
   @override
-  Future<Result<(String, bool), Exception>> swapToken(SwapEntity data) async {
+  Future<Result<(String, bool), Exception>> swapToken(String accountAddress, SwapEntity data) async {
     try {
-      return await repository.swapToken(data);
+      return await repository.swapToken(accountAddress, data);
     } on Exception catch (error) {
       return Failure(exception: error);
     }

@@ -27,7 +27,7 @@ class ExplorerUseCaseImpl implements ExplorerUseCase {
     try {
       if (getTokenBalance) {
         //get WMAS token
-        final wmasResult = await dexRepository.getTokenBalance(TokenName.WMAS);
+        final wmasResult = await dexRepository.getTokenBalance(address, TokenName.WMAS);
         if (wmasResult is Success) {
           BigInt value = (wmasResult as Success).value;
           tokenBalances.add(
@@ -41,7 +41,7 @@ class ExplorerUseCaseImpl implements ExplorerUseCase {
         }
 
         //get USDC token
-        final usdcResult = await dexRepository.getTokenBalance(TokenName.USDC);
+        final usdcResult = await dexRepository.getTokenBalance(address, TokenName.USDC);
         if (usdcResult is Success) {
           BigInt value = (usdcResult as Success).value;
           tokenBalances.add(TokenBalance(
@@ -53,7 +53,7 @@ class ExplorerUseCaseImpl implements ExplorerUseCase {
         }
 
         //get WETH token
-        final wethResult = await dexRepository.getTokenBalance(TokenName.WETH);
+        final wethResult = await dexRepository.getTokenBalance(address, TokenName.WETH);
         if (wethResult is Success) {
           BigInt value = (wethResult as Success).value;
           tokenBalances.add(TokenBalance(

@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 // Package imports:
 
 // Project imports:
-import 'package:mug/presentation/widget/common_padding.dart';
-import 'package:mug/presentation/widget/information_card_widget.dart';
-import 'package:mug/presentation/widget/label_card.dart';
+import 'package:mug/presentation/widget/widget.dart';
 
 class MNSArguments {
   final bool isSuccess;

@@ -17,9 +17,6 @@ class AddressSelectorWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TextEditingController to manage the text field
-    //final TextEditingController addressController = TextEditingController();
-
     // Watch the walletProvider
     final walletAsyncValue = ref.watch(walletListProvider);
 
@@ -42,20 +39,6 @@ class AddressSelectorWidget extends ConsumerWidget {
                     border: InputBorder.none, // Removes internal border for seamless look
                   ),
                   style: const TextStyle(color: Colors.white, fontSize: 16),
-                  // validator: (value) {
-                  //   if (value == null || value.isEmpty) {
-                  //     return 'Please enter a value';
-                  //   }
-                  //   try {
-                  //     final enteredValue = double.parse(value);
-                  //     if (enteredValue > addressEntity.finalBalance - 0.01) {
-                  //       return 'Value should not exceed ${addressEntity.finalBalance - 0.01}';
-                  //     }
-                  //   } catch (e) {
-                  //     return 'Please enter a valid decimal number';
-                  //   }
-                  //   return null;
-                  // },
                 ),
               ),
             ],

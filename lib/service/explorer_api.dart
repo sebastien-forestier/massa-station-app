@@ -1,3 +1,12 @@
+// This file contains the ExplorerApi class which is used to interact with the Massa Explorer API.
+// It provides methods to fetch address details, block details, operation details,
+// stakers information, address transaction history, and domain details.
+// The class uses the http package to make network requests and handle responses.
+// It also includes error handling for network requests and response parsing.
+// The ExplorerApi class is a singleton and is initialized with a base URI.
+//
+// It is part of the Massa Wallet project and is licensed under the MIT License.
+
 import 'dart:convert';
 
 import 'package:massa/massa.dart';

@@ -7,10 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Project imports:
 import 'package:mug/presentation/provider/operation_provider.dart';
 import 'package:mug/presentation/state/operation_state.dart';
-import 'package:mug/presentation/widget/common_padding.dart';
-import 'package:mug/presentation/widget/label_card.dart';
-import 'package:mug/presentation/widget/no_search_result_widget.dart';
-import 'package:mug/presentation/widget/short_card.dart';
+import 'package:mug/presentation/widget/widget.dart';
 
 class OperationView extends ConsumerStatefulWidget {
   final String operationHash;

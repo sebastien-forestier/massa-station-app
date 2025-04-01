@@ -6,11 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Project imports:
 import 'package:mug/presentation/provider/domain_provider.dart';
 import 'package:mug/presentation/state/domain_state.dart';
-import 'package:mug/presentation/widget/common_padding.dart';
-import 'package:mug/presentation/widget/information_card_widget.dart';
-import 'package:mug/presentation/widget/label_card.dart';
-import 'package:mug/presentation/widget/mns_widget.dart';
-import 'package:mug/presentation/widget/short_card.dart';
+import 'package:mug/presentation/widget/widget.dart';
 
 class DomainArguments {
   final String domainName;

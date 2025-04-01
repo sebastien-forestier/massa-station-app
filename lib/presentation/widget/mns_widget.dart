@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:massa/massa.dart';
 import 'package:mug/presentation/provider/domain_provider.dart';
 import 'package:mug/presentation/provider/wallet_provider.dart';
-import 'package:mug/presentation/view/explorer/domain_view.dart';
 import 'package:mug/presentation/view/explorer/mns_view.dart';
 
 // Project imports:
@@ -50,7 +49,7 @@ class MNSWidget extends ConsumerWidget {
                     leadingIcon: const Icon(Icons.attach_money, size: 30),
                   ),
                   LabelCard(
-                    labelText: "Available Balance",
+                    labelText: "Available Balance (default account)",
                     valueText: "${formatNumber2(snapshot.data!.finalBalance)} MAS",
                     leadingIcon: const Icon(Icons.credit_card, size: 30),
                   ),

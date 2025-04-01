@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mug/constants/asset_names.dart';
+import 'package:mug/constants/constants.dart';
 import 'package:mug/domain/entity/address_entity.dart';
 
 // Project imports:
@@ -14,14 +15,10 @@ import 'package:mug/presentation/provider/screen_title_provider.dart';
 import 'package:mug/presentation/provider/setting_provider.dart';
 import 'package:mug/presentation/provider/transfer_provider.dart';
 import 'package:mug/presentation/state/transfer_state.dart';
-import 'package:mug/presentation/widget/address_selector_widget.dart';
-import 'package:mug/presentation/widget/common_padding.dart';
-import 'package:mug/presentation/widget/custom_label_widget.dart';
-import 'package:mug/presentation/widget/information_card_widget.dart';
-import 'package:mug/presentation/widget/information_snack_message.dart';
-import 'package:mug/presentation/widget/success_information_widget.dart';
+import 'package:mug/presentation/widget/widget.dart';
 import 'package:mug/utils/number_helpers.dart';
 import 'package:mug/utils/string_helpers.dart';
+import 'package:mug/utils/validate_address.dart';
 
 class TransferView extends ConsumerWidget {
   final AddressEntity addressEntity;
@@ -53,9 +50,9 @@ class TransferView extends ConsumerWidget {
                       children: [
                         Card(
                           child: ListTile(
-                            leading: const Text(
+                            leading: Text(
                               "Available Balance",
-                              style: TextStyle(fontSize: 18),
+                              style: TextStyle(fontSize: Constants.fontSize),
                             ),
                             title: Text(
                               "${formatNumber4(addressEntity.finalBalance)} MAS",
@@ -68,7 +65,17 @@ class TransferView extends ConsumerWidget {
                         const SizedBox(height: 10),
                         CustomLabelWidget(
                             label: "Sending Address",
-                            value: Text(addressEntity.address, style: const TextStyle(fontSize: 20))),
+                            //value: Text(addressEntity.address, style: const TextStyle(fontSize: 20))),
+                            value: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Text(shortenString(addressEntity.address, 26), style: const TextStyle(fontSize: 20)),
+                              IconButton(
+                                  onPressed: () {
+                                    Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
+                                      informationSnackBarMessage(context, "Address copied!");
+                                    });
+                                  },
+                                  icon: const Icon(Icons.copy)),
+                            ])),
                         const SizedBox(height: 10),
                         CustomLabelWidget(
                           label: "Recipient Address",
@@ -146,9 +153,14 @@ class TransferView extends ConsumerWidget {
                         ),
                         const SizedBox(height: 10),
                         const InformationCardWidget(
-                            message: "Please confirm the amount and recepient address before transfering your fund"),
+                            message: "Please confirm the amount and recipient address before transferring your fund"),
                         FilledButton.tonalIcon(
                           onPressed: () async {
+                            if (!isAddressValid(addressController.text)) {
+                              informationSnackBarMessage(context, 'Invalid address. Please enter a valid address');
+                              return;
+                            }
+
                             if (!formKey.currentState!.validate() ||
                                 addressController.text.isEmpty ||
                                 addressController.text == addressEntity.address) {
@@ -156,6 +168,7 @@ class TransferView extends ConsumerWidget {
                               return;
                             }
                             final amount = double.parse(amountController.text);
+
                             final recipientAddress = addressController.text;
                             await ref
                                 .read(transferProvider.notifier)
@@ -176,11 +189,31 @@ class TransferView extends ConsumerWidget {
                         const SizedBox(height: 20),
                         CustomLabelWidget(
                             label: "Sending Address",
-                            value: Text(transfersEntity.sendingAddress!, style: const TextStyle(fontSize: 20))),
+                            value: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Text(shortenString(transfersEntity.sendingAddress!, 26),
+                                  style: const TextStyle(fontSize: 20)),
+                              IconButton(
+                                  onPressed: () {
+                                    Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
+                                      informationSnackBarMessage(context, "Address copied!");
+                                    });
+                                  },
+                                  icon: const Icon(Icons.copy)),
+                            ])),
                         const SizedBox(height: 10),
                         CustomLabelWidget(
                             label: "Receipient Address",
-                            value: Text(transfersEntity.recipientAddress!, style: const TextStyle(fontSize: 20))),
+                            value: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                              Text(shortenString(transfersEntity.recipientAddress!, 26),
+                                  style: const TextStyle(fontSize: 20)),
+                              IconButton(
+                                  onPressed: () {
+                                    Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
+                                      informationSnackBarMessage(context, "Address copied!");
+                                    });
+                                  },
+                                  icon: const Icon(Icons.copy)),
+                            ])),
                         const SizedBox(height: 10),
                         CustomLabelWidget(
                           label: "Amount Transfered",

@@ -13,6 +13,7 @@ class DropdownItem {
 }
 
 class SwapState {
+  final String? accountAddress;
   final String? selectedDropdown1;
   final String? selectedDropdown2;
   final double? balance1;
@@ -27,6 +28,7 @@ class SwapState {
   final SwapStatus status;
 
   SwapState({
+    this.accountAddress,
     this.selectedDropdown1,
     this.selectedDropdown2,
     this.balance1,
@@ -43,6 +45,7 @@ class SwapState {
 
   // Create a copyWith method to update parts of the state
   SwapState copyWith({
+    String? accountAddress,
     String? selectedDropdown1,
     String? selectedDropdown2,
     double? balance1,
@@ -56,6 +59,7 @@ class SwapState {
     SwapStatus? status,
   }) {
     return SwapState(
+      accountAddress: accountAddress ?? this.accountAddress,
       selectedDropdown1: selectedDropdown1 ?? this.selectedDropdown1,
       selectedDropdown2: selectedDropdown2 ?? this.selectedDropdown2,
       balance1: balance1 ?? this.balance1,

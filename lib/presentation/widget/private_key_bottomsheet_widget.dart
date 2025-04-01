@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mug/constants/constants.dart';
 import 'package:mug/presentation/widget/information_snack_message.dart';
 import 'package:mug/utils/string_helpers.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -16,8 +17,8 @@ class PrivateKeyBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("PRIVATE KEY", style: TextStyle(fontSize: 20, color: Colors.blue)),
-          const SizedBox(height: 10),
+          Text("PRIVATE KEY", style: TextStyle(fontSize: Constants.fontSizeLarge, color: Colors.blue)),
+          SizedBox(height: Constants.verticalSpacing),
           QrImageView(
             data: privateKey,
             version: QrVersions.auto,
@@ -31,13 +32,15 @@ class PrivateKeyBottomSheet extends StatelessWidget {
           const SizedBox(height: 10),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text(
-              shortenString(privateKey, 24),
+              shortenString(privateKey, Constants.shortedAddressLength),
               textAlign: TextAlign.left,
             ),
             IconButton(
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: privateKey)).then((result) {
-                    informationSnackBarMessage(context, 'Private key copied');
+                    if (context.mounted) {
+                      informationSnackBarMessage(context, 'Private key copied');
+                    }
                   });
                   Navigator.pop(context);
                 },

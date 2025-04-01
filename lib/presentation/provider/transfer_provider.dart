@@ -44,6 +44,5 @@ base class TransferProviderImpl extends StateNotifier<TransferState> implements 
 }
 
 final transferProvider = StateNotifierProvider<TransferProvider, TransferState>((ref) {
-  print("transfer provider initalised...");
   return TransferProviderImpl(ref, useCase: ref.watch(transferUseCaseProvider));
 });

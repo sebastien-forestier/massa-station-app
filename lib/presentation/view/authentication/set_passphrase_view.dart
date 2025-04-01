@@ -10,13 +10,9 @@ import 'package:flutter_svg/svg.dart';
 
 // Project imports:
 import 'package:mug/routes/routes_name.dart';
-import 'package:mug/service/local_storage_service.dart';
 import 'package:mug/service/provider.dart';
 import 'package:mug/utils/passphrase_util.dart';
-import 'package:mug/presentation/widget/footer.dart';
-import 'package:mug/presentation/widget/generic.dart';
-import 'package:mug/presentation/widget/button_widget.dart';
-import 'package:mug/presentation/widget/information_snack_message.dart';
+import 'package:mug/presentation/widget/widget.dart';
 
 class SetPassphraseView extends ConsumerStatefulWidget {
   final bool? isKeyboardFocused;
@@ -38,7 +34,6 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
   final _focusSecond = FocusNode();
   bool _isHiddenFirst = true;
   bool _isHiddenConfirm = true;
-  late LocalStorageService _storage;
 
   final navigatorKey = GlobalKey<NavigatorState>();
   NavigatorState? get _navigator => navigatorKey.currentState;
@@ -46,7 +41,6 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
   @override
   void initState() {
     super.initState();
-    _storage = ref.read(localStorageServiceProvider);
   }
 
   @override
@@ -287,7 +281,7 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
       if (enteredPassphrase == enteredPassphraseConfirm) {
         informationSnackBarMessage(context, 'Passphrase set!');
 
-        await _storage.setPassphrase(enteredPassphrase);
+        await ref.read(localStorageServiceProvider).setPassphrase(enteredPassphrase);
         TextInput.finishAutofillContext();
         await Navigator.pushReplacementNamed(
           context,

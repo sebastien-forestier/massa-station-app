@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:massa/massa.dart';
 import 'package:mug/data/model/wallet_model.dart';
 import 'package:mug/utils/encryption/aes_encryption.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -126,14 +125,26 @@ class LocalStorageService {
 
   Future<void> setIsAutoRotate(bool flag) async => await sharedPreferences.setBool(StorageKeys.isAutoRotate, flag);
 
-  Future<void> setMinimumGassFee(double minimumGassFee) async =>
-      sharedPreferences.setDouble(StorageKeys.minimumGassFee, minimumGassFee);
-  double get minimumGassFee =>
-      sharedPreferences.getDouble(StorageKeys.minimumGassFee) ?? toMAS(BigInt.from(GasLimit.MIN_GAS_CALL.value));
+  Future<double> setMinimumGassFee(double minimumGassFee) async {
+    if (minimumGassFee < 1.0) {
+      minimumGassFee = 1.0;
+    }
+    sharedPreferences.setDouble(StorageKeys.minimumGassFee, minimumGassFee);
+    return minimumGassFee;
+  }
 
-  Future<void> setMinimumFee(double minimumFee) async =>
-      sharedPreferences.setDouble(StorageKeys.minimumFee, minimumFee);
-  double get minimumFee => sharedPreferences.getDouble(StorageKeys.minimumFee) ?? 0.01;
+  double get minimumGassFee =>
+      sharedPreferences.getDouble(StorageKeys.minimumGassFee) ?? 0.01 * 100; //default: 0.01 * 100 = 1.0
+
+  Future<double> setMinimumFee(double minimumFee) async {
+    if (minimumFee < 0.01 || minimumFee > 1.0) {
+      minimumFee = 0.01;
+    }
+    sharedPreferences.setDouble(StorageKeys.minimumFee, minimumFee);
+    return minimumFee;
+  }
+
+  double get minimumFee => sharedPreferences.getDouble(StorageKeys.minimumFee) ?? 0.01; //default: 0.01
 
   Future<void> setSlipage(double slippage) async => sharedPreferences.setDouble(StorageKeys.slippageAmount, slippage);
   double get slippage => sharedPreferences.getDouble(StorageKeys.slippageAmount) ?? 0.5;
@@ -154,6 +165,7 @@ class LocalStorageService {
   }
 
   Future<String?> getWalletKey(String address) async {
+    print("getWalletKey $address");
     List<WalletModel> wallets;
     final walletString = await getStoredWallets();
     String encryptedKey = "";

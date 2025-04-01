@@ -13,6 +13,7 @@ import 'package:mug/domain/entity/address_entity.dart';
 // Project imports:
 import 'package:mug/domain/entity/quoter_entity.dart';
 import 'package:mug/domain/entity/swap_entity.dart';
+import 'package:mug/service/local_storage_service.dart';
 import 'package:mug/service/provider.dart';
 import 'package:mug/service/smart_contract_client.dart';
 import 'package:mug/utils/exception_handling.dart';
@@ -20,13 +21,16 @@ import 'package:mug/utils/exception_handling.dart';
 class DexNetworkDataSourceImpl implements DexDataSource {
   final SmartContractService? smartContractService;
   final ExplorerDataSource explorerDataSource;
+  final LocalStorageService localStorageService;
 
-  DexNetworkDataSourceImpl({this.smartContractService, required this.explorerDataSource});
+  DexNetworkDataSourceImpl(
+      {this.smartContractService, required this.explorerDataSource, required this.localStorageService});
 
   @override
   Future<Result<QuoterEntity, Exception>> findBestPathFromAmountIn(
-      TokenName token1, TokenName token2, double amount) async {
+      String accountAddress, TokenName token1, TokenName token2, double amount) async {
     try {
+      await _updateSmartcontractClientAccount(accountAddress);
       final quoter = Quoter(smartContractService!.client);
       final amountIn = doubleToMassaInt(amount);
       final (router, pair, binSteps, amounts, amountWithoutSlippage, fees) =
@@ -49,8 +53,9 @@ class DexNetworkDataSourceImpl implements DexDataSource {
 
   @override
   Future<Result<QuoterEntity, Exception>> findBestPathFromAmountOut(
-      TokenName token1, TokenName token2, double amount) async {
+      String accountAddress, TokenName token1, TokenName token2, double amount) async {
     try {
+      await _updateSmartcontractClientAccount(accountAddress);
       final quoter = Quoter(smartContractService!.client);
       final amountOut = doubleToMassaInt(amount);
       final (router, pair, binSteps, amounts, amountWithoutSlippage, fees) =
@@ -73,9 +78,10 @@ class DexNetworkDataSourceImpl implements DexDataSource {
   }
 
   @override
-  Future<Result<AddressEntity, Exception>> getMASBalance() async {
+  Future<Result<AddressEntity, Exception>> getMASBalance(String accountAddress) async {
     try {
-      final balance = await explorerDataSource.getAddress(smartContractService!.account.address());
+      await _updateSmartcontractClientAccount(accountAddress);
+      final balance = await explorerDataSource.getAddress(accountAddress);
       return balance;
     } on Exception catch (error) {
       if (kDebugMode) {
@@ -86,7 +92,8 @@ class DexNetworkDataSourceImpl implements DexDataSource {
   }
 
   @override
-  Future<Result<BigInt, Exception>> getTokenBalance(TokenName tokenType) async {
+  Future<Result<BigInt, Exception>> getTokenBalance(String accountAddress, TokenName tokenType) async {
+    await _updateSmartcontractClientAccount(accountAddress);
     final token = Token(grpc: smartContractService!.client, token: tokenType);
     try {
       final resp = await token.balanceOf(smartContractService!.account.address());
@@ -100,9 +107,10 @@ class DexNetworkDataSourceImpl implements DexDataSource {
   }
 
   @override
-  Future<Result<(String, bool), Exception>> swapToken(SwapEntity data) async {
-    final address = smartContractService!.account.address();
+  Future<Result<(String, bool), Exception>> swapToken(String accountAddress, SwapEntity data) async {
+    //final address = smartContractService!.account.address();
     try {
+      await _updateSmartcontractClientAccount(accountAddress);
       final swap = Swap(smartContractService!.client);
 
       if (data.selectedToken1 == "MAS" && data.selectedToken2 == "WMAS") {
@@ -117,7 +125,7 @@ class DexNetworkDataSourceImpl implements DexDataSource {
           decimalToBigInt(data.amountOut, getTokenDecimal(data.token2)),
           data.binSteps!,
           data.tokenPath!,
-          address,
+          accountAddress,
           CommonConstants.txDeadline,
         );
         return Success(value: (operation, isExecuted));
@@ -138,7 +146,7 @@ class DexNetworkDataSourceImpl implements DexDataSource {
           amounts[1],
           binSteps,
           router,
-          address,
+          accountAddress,
           CommonConstants.txDeadline,
         );
         return Success(value: (operation, isExecuted));
@@ -150,10 +158,22 @@ class DexNetworkDataSourceImpl implements DexDataSource {
       return Failure(exception: error);
     }
   }
+
+  Future<void> _updateSmartcontractClientAccount(String address) async {
+    if (smartContractService!.account.address() == address) {
+      return;
+    }
+    final privateKey = await localStorageService.getWalletKey(address);
+    final account = await Wallet().addAccountFromSecretKey(
+        privateKey!, AddressType.user, smartContractService!.isBuildnet ? NetworkType.BUILDNET : NetworkType.MAINNET);
+    smartContractService!.updateAccount(account.privateKey());
+  }
 }
 
 final dexNetworkDatasourceProvider = Provider<DexDataSource>((ref) {
   return DexNetworkDataSourceImpl(
-      smartContractService: ref.watch(smartContractServiceProvider),
-      explorerDataSource: ref.watch(explorerNetworkDatasourceProvider));
+    smartContractService: ref.watch(smartContractServiceProvider),
+    explorerDataSource: ref.watch(explorerNetworkDatasourceProvider),
+    localStorageService: ref.watch(localStorageServiceProvider),
+  );
 });

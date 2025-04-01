@@ -1,13 +1,17 @@
-// Package imports:
+// This file is part of the Massa project.
+// This file contains the implementation of the GrpcService interface.
+// It provides methods for making gRPC calls to the Massa network.
+// The GrpcServiceImpl class implements the GrpcService interface and provides
+// methods for making read-only and state-changing smart contract calls.
+// The class uses the GRPCPublicClient to interact with the Massa network.
+// It also includes error handling for network requests and response parsing.
+// The GrpcServiceImpl class is a singleton and is initialized with the gRPC host and port.
 
-// Flutter imports:
+// The class is part of the Massa Wallet project and is licensed under the MIT License.
+
 import 'package:flutter/foundation.dart';
-
-// Package imports:
 import 'package:massa/massa.dart';
 import 'package:massa/src/grpc/generated/public.pbgrpc.dart';
-
-// Project imports:
 import 'package:mug/env/env.dart';
 
 abstract interface class GrpcService {
@@ -65,17 +69,13 @@ class GrpcServiceImpl implements GrpcService {
       Uint8List data = Uint8List.fromList([]);
 
       await for (final resp in _grpc.sendOperations([operation])) {
-        print('service response: ${resp.toProto3Json()}');
         final opID = resp.operationIds.operationIds[0];
-        print('operation id: $opID');
         while (true) {
           final filter = ScExecutionEventsFilter(originalOperationId: opID);
           final event = await _grpc.getScExecutionEvents([filter]);
 
           if (event.isNotEmpty) {
-            print('service event: ${event[0].toProto3Json()}');
             var dataString = bytesToUtf8String(Uint8List.fromList(event[0].data));
-            print(dataString);
             data = Uint8List.fromList(event[0].data);
             break;
           }

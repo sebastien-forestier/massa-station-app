@@ -17,9 +17,9 @@ import 'package:mug/utils/exception_handling.dart';
 
 class ExplorerNetworkDataSourceImpl implements ExplorerDataSource {
   final ExplorerApi api;
-  final SmartContractService smartContractService;
+  final SmartContractService? smartContractService;
 
-  ExplorerNetworkDataSourceImpl({required this.api, required this.smartContractService});
+  ExplorerNetworkDataSourceImpl({required this.api, this.smartContractService});
 
   @override
   Future<Result<AddressEntity, Exception>> getAddress(String address) async {
@@ -111,7 +111,6 @@ class ExplorerNetworkDataSourceImpl implements ExplorerDataSource {
   Future<Result<StakersEntity, Exception>> getStakers(int pageNumber) async {
     try {
       final ExplorerStakers? response = await api.getStakers(pageNumber);
-      print("staker response: ${response?.stakers?.length}");
       if (response == null) {
         return Failure(exception: Exception("No data found 111"));
       }
@@ -122,7 +121,7 @@ class ExplorerNetworkDataSourceImpl implements ExplorerDataSource {
           data.add(StakerEntity(
               address: element.hash!,
               rank: Constants.pageSize * pageNumber + count,
-              rolls: element.rollsCountValue!,
+              rolls: element.rollsCount!,
               ownershipPercentage: element.percentageOfShare!,
               estimatedDailyReward: element.percentageOfShare! * Constants.totalDailyReward / 100.00));
           count++;
@@ -220,9 +219,9 @@ class ExplorerNetworkDataSourceImpl implements ExplorerDataSource {
     try {
       final params = Args();
       params.addString(domainName); //domain name
-      params.addString(smartContractService.account.address()); //target address
-      final (operation, isExecuted) = await smartContractService.client.scCall(
-          account: smartContractService.account,
+      params.addString(smartContractService!.account.address()); //target address
+      final (operation, isExecuted) = await smartContractService!.client.scCall(
+          account: smartContractService!.account,
           functionName: "dnsAlloc",
           functionParameters: params.serialise(),
           smartContracAddress: CommonAddresses.MAINNET_DNS_ADDRESS.value,

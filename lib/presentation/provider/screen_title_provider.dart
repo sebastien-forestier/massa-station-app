@@ -11,6 +11,5 @@ class ScreenTitleNotifier extends StateNotifier<String> {
 
 // Provider for ScreenTitleNotifier
 final screenTitleProvider = StateNotifierProvider<ScreenTitleNotifier, String>((ref) {
-  print("screen title provider initalised...");
   return ScreenTitleNotifier();
 });

@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mug/constants/constants.dart';
 import 'package:mug/presentation/provider/search_provider.dart';
 
 // Project imports:
 import 'package:mug/presentation/provider/staker_provider.dart';
 import 'package:mug/presentation/state/staker_state.dart';
 import 'package:mug/presentation/view/explorer/domain_view.dart';
-import 'package:mug/presentation/widget/button_widget.dart';
 import 'package:mug/routes/routes.dart';
 import 'package:mug/utils/number_helpers.dart';
 import 'package:mug/utils/string_helpers.dart';
-import 'package:mug/presentation/widget/common_padding.dart';
+import 'package:mug/presentation/widget/widget.dart';
 
 class ExplorerView extends ConsumerStatefulWidget {
   const ExplorerView({super.key});
@@ -90,7 +90,7 @@ class _ExplorerViewState extends ConsumerState<ExplorerView> {
                                   hintText: 'Search address/block/operation/mns...',
                                   prefixIcon: Icon(Icons.search),
                                 ),
-                                style: const TextStyle(fontSize: 12.0),
+                                style: TextStyle(fontSize: Constants.fontSizeExtraSmall),
                                 textAlignVertical: TextAlignVertical.center,
                               ),
                             ),
@@ -152,9 +152,9 @@ class _ExplorerViewState extends ConsumerState<ExplorerView> {
                               },
                               child: Card(
                                 child: ListTile(
-                                  leading: Text(staker.rank.toString(), style: const TextStyle(fontSize: 14)),
+                                  leading: Text(staker.rank.toString(), style: TextStyle(fontSize: Constants.fontSize)),
                                   title: Text(
-                                    shortenString(staker.address, 20),
+                                    shortenString(staker.address, Constants.shortedAddressLength),
                                   ),
                                   subtitle: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +166,8 @@ class _ExplorerViewState extends ConsumerState<ExplorerView> {
                                   trailing: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(staker.rolls.toString(), style: const TextStyle(fontSize: 16)),
+                                      Text(formatNumber(staker.rolls.toDouble()),
+                                          style: TextStyle(fontSize: Constants.fontSize)),
                                       const Text("rolls"),
                                     ],
                                   ),

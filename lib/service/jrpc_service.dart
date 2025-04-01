@@ -1,7 +1,13 @@
-// Package imports:
-import 'package:massa/massa.dart';
+// This file contains the implementation of the JrpcService interface.
+// It provides methods for making JSON-RPC calls to the Massa network.
+// The JrpcServiceImpl class implements the JrpcService interface and provides
+// methods for getting stakers, addresses, and a list of addresses.
+// The class uses the JsonrpcPublicApi to interact with the Massa network.
+// It also includes error handling for network requests and response parsing.
+// The JrpcServiceImpl class is a singleton and is initialized with the JSON-RPC host and version.
 
-// Project imports:
+// The class is part of the Massa Wallet project and is licensed under the MIT License.
+import 'package:massa/massa.dart';
 import 'package:mug/env/env.dart';
 
 abstract interface class JrpcService {

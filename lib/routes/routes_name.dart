@@ -30,4 +30,5 @@ class WalletRoutes {
 
 class DexRoutes {
   static const String dex = 'dex';
+  static const String swap = 'swap';
 }

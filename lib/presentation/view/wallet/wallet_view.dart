@@ -6,28 +6,28 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart' as ht;
-import 'package:massa/massa.dart';
-import 'package:mug/data/model/transaction_history.dart';
+import 'package:mug/constants/constants.dart';
 
 // Project imports:
 import 'package:mug/presentation/provider/screen_title_provider.dart';
 import 'package:mug/presentation/provider/setting_provider.dart';
 import 'package:mug/presentation/provider/wallet_provider.dart';
 import 'package:mug/presentation/state/wallet_state.dart';
-import 'package:mug/presentation/widget/common_padding.dart';
-import 'package:mug/presentation/widget/default_account_widget.dart';
-import 'package:mug/presentation/widget/information_snack_message.dart';
-import 'package:mug/presentation/widget/private_key_bottomsheet_widget.dart';
-import 'package:mug/presentation/widget/rename_wallet_buttom_sheet.dart';
+import 'package:mug/presentation/widget/widget.dart';
 import 'package:mug/routes/routes_name.dart';
-import 'package:mug/presentation/widget/massa_icon.dart';
 import 'package:mug/utils/number_helpers.dart';
 import 'package:mug/utils/string_helpers.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class WalletView extends ConsumerStatefulWidget {
+class WalletViewArg {
   final String address;
-  const WalletView(this.address, {super.key});
+  final bool hasBalance;
+  WalletViewArg(this.address, this.hasBalance);
+}
+
+class WalletView extends ConsumerStatefulWidget {
+  final WalletViewArg arg;
+  const WalletView(this.arg, {super.key});
 
   @override
   ConsumerState<WalletView> createState() => _WalletViewState();
@@ -41,10 +41,8 @@ class _WalletViewState extends ConsumerState<WalletView> {
     super.initState();
     // Trigger wallet information loading
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      ref.read(walletProvider.notifier).getWalletInformation(widget.address, true);
-      isAccountDefault = await ref.read(walletProvider.notifier).isAccountDefault(widget.address);
-      final walletName = await ref.read(walletProvider.notifier).getWalletName(widget.address);
-      ref.read(walletNameProvider.notifier).updateWalletName(walletName!);
+      ref.read(walletProvider.notifier).getWalletInformation(widget.arg.address, widget.arg.hasBalance);
+      isAccountDefault = await ref.read(walletProvider.notifier).isAccountDefault(widget.arg.address);
     });
   }
 
@@ -60,7 +58,7 @@ class _WalletViewState extends ConsumerState<WalletView> {
       body: CommonPadding(
         child: RefreshIndicator(
           onRefresh: () {
-            return ref.read(walletProvider.notifier).getWalletInformation(widget.address, true);
+            return ref.read(walletProvider.notifier).getWalletInformation(widget.arg.address, widget.arg.hasBalance);
           },
           child: Consumer(
             builder: (context, ref, child) {
@@ -74,12 +72,12 @@ class _WalletViewState extends ConsumerState<WalletView> {
                         SizedBox(
                           width: 50,
                           height: 50,
-                          child: MassaIcon(addressEntity.address),
+                          child: AddressIcon(addressEntity.address),
                         ),
                         const SizedBox(width: 10),
                         Text(
                           walletName,
-                          style: const TextStyle(fontSize: 40),
+                          style: TextStyle(fontSize: Constants.fontSizeExtraLarge),
                         ),
                       ]),
                       Row(
@@ -90,14 +88,16 @@ class _WalletViewState extends ConsumerState<WalletView> {
                               child: ListTile(
                                 title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                                   Text(
-                                    shortenString(addressEntity.address, 26),
+                                    shortenString(addressEntity.address, Constants.shortedAddressLength),
                                     textAlign: TextAlign.left,
-                                    style: const TextStyle(fontSize: 18),
+                                    style: TextStyle(fontSize: Constants.fontSize),
                                   ),
                                   IconButton(
                                       onPressed: () {
                                         Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
-                                          informationSnackBarMessage(context, "Wallet address copied!");
+                                          if (context.mounted) {
+                                            informationSnackBarMessage(context, "Wallet address copied!");
+                                          }
                                         });
                                       },
                                       icon: const Icon(Icons.copy)),
@@ -115,14 +115,14 @@ class _WalletViewState extends ConsumerState<WalletView> {
                           Expanded(
                             child: Card(
                               child: ListTile(
-                                leading: const Text(
+                                leading: Text(
                                   "Balance",
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(fontSize: Constants.fontSize),
                                 ),
                                 title: Text(
                                   "${formatNumber4(addressEntity.finalBalance + addressEntity.finalRolls * 100.00)} MAS",
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(fontSize: 18),
+                                  style: TextStyle(fontSize: Constants.fontSize),
                                 ),
                               ),
                             ),
@@ -130,22 +130,22 @@ class _WalletViewState extends ConsumerState<WalletView> {
                         ],
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: Constants.verticalSpacing),
                       // Tabs for Assets and Transactions
                       Expanded(
                         child: DefaultTabController(
                           length: 3,
                           child: Column(
                             children: [
-                              const TabBar(
-                                tabs: [
+                              TabBar(
+                                tabs: const [
                                   Tab(text: 'TOKENS'),
                                   Tab(text: 'TRANSACTIONS'),
                                   Tab(text: 'SETTING'),
                                 ],
                                 labelColor: Colors.blue,
                                 unselectedLabelColor: Colors.grey,
-                                //labelStyle: TextStyle(fontSize: 14),
+                                labelStyle: TextStyle(fontSize: Constants.fontSizeExtraSmall),
                               ),
                               Expanded(
                                 child: TabBarView(
@@ -164,7 +164,7 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                                   width: 40.0),
                                               title: Text(
                                                 '${addressEntity.tokenBalances?[index].balance}  ${addressEntity.tokenBalances?[index].name.name}',
-                                                style: const TextStyle(fontSize: 18),
+                                                style: TextStyle(fontSize: Constants.fontSize),
                                               ),
                                             ),
                                             Divider(thickness: 0.5, color: Colors.brown[500]),
@@ -183,22 +183,22 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                           leftHandSideColBackgroundColor: Theme.of(context).canvasColor,
                                           rightHandSideColBackgroundColor: Theme.of(context).canvasColor,
                                           headerWidgets: [
-                                            _buildHeaderItem('Hash', 100),
-                                            _buildHeaderItem('Age', 110),
-                                            _buildHeaderItem('Status', 70),
-                                            _buildHeaderItem('Type', 100),
-                                            _buildHeaderItem('From', 110),
-                                            _buildHeaderItem('To', 110),
-                                            _buildHeaderItem('Amount', 120),
-                                            _buildHeaderItem('Fee', 80),
+                                            buildHeaderItem('Hash', 100),
+                                            buildHeaderItem('Age', 110),
+                                            buildHeaderItem('Status', 70),
+                                            buildHeaderItem('Type', 100),
+                                            buildHeaderItem('From', 110),
+                                            buildHeaderItem('To', 110),
+                                            buildHeaderItem('Amount', 120),
+                                            buildHeaderItem('Fee', 80),
                                           ],
                                           leftSideItemBuilder: (context, index) {
                                             final history = addressEntity.transactionHistory?.combinedHistory?[index];
-                                            return _buildLeftSideItem(shortenString(history!.hash!, 10), index);
+                                            return buildLeftSideItem(context, shortenString(history!.hash!, 10), index);
                                           },
                                           rightSideItemBuilder: (context, index) {
                                             final history = addressEntity.transactionHistory?.combinedHistory?[index];
-                                            return _buildRightSideItem(history!, index);
+                                            return buildRightSideItem(ref, history!, index);
                                           },
                                           itemCount: addressEntity.transactionHistory!.combinedHistory!.length,
                                         ),
@@ -208,7 +208,7 @@ class _WalletViewState extends ConsumerState<WalletView> {
 
                                     Column(
                                       children: [
-                                        const SizedBox(height: 16),
+                                        SizedBox(height: Constants.verticalSpacing),
                                         Padding(
                                           padding: const EdgeInsets.all(8),
                                           child: Row(
@@ -216,7 +216,7 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                             children: [
                                               Text(
                                                 "Wallet Name: $walletName",
-                                                style: const TextStyle(fontSize: 18),
+                                                style: TextStyle(fontSize: Constants.fontSize),
                                               ),
                                               OutlinedButton.icon(
                                                   onPressed: () async {
@@ -239,16 +239,19 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              const Text(
+                                              Text(
                                                 "Private Key: ***",
-                                                style: TextStyle(fontSize: 18),
+                                                style: TextStyle(fontSize: Constants.fontSize),
                                               ),
                                               OutlinedButton.icon(
                                                   onPressed: () async {
                                                     final wallet = await ref
                                                         .read(walletProvider.notifier)
                                                         .getWalletKey(addressEntity.address);
-                                                    await privateKeyBottomSheet(context, wallet!, isDarkTheme);
+
+                                                    if (context.mounted) {
+                                                      await privateKeyBottomSheet(context, wallet!, isDarkTheme);
+                                                    }
                                                   },
                                                   label: const Text("Show"),
                                                   icon: const Icon(Icons.lock_open)),
@@ -262,13 +265,13 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               isAccountDefault
-                                                  ? const Text(
+                                                  ? Text(
                                                       "Default Account: Yes",
-                                                      style: TextStyle(fontSize: 18),
+                                                      style: TextStyle(fontSize: Constants.fontSize),
                                                     )
-                                                  : const Text(
+                                                  : Text(
                                                       "Default Account: No",
-                                                      style: TextStyle(fontSize: 18),
+                                                      style: TextStyle(fontSize: Constants.fontSize),
                                                     ),
                                               if (!isAccountDefault)
                                                 OutlinedButton.icon(
@@ -279,8 +282,10 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                                         ref
                                                             .read(walletProvider.notifier)
                                                             .setDefaultAccount(addressEntity.address);
-                                                        informationSnackBarMessage(
-                                                            context, "The wallet is set as a default wallet");
+                                                        if (context.mounted) {
+                                                          informationSnackBarMessage(
+                                                              context, "The wallet is set as a default wallet");
+                                                        }
                                                         setState(() {
                                                           isAccountDefault = true;
                                                         });
@@ -311,6 +316,11 @@ class _WalletViewState extends ConsumerState<WalletView> {
                               padding: const EdgeInsets.only(left: 32.0, bottom: 16),
                               child: FilledButton.tonalIcon(
                                 onPressed: () async {
+                                  if (addressEntity.finalBalance < 2 * ref.read(settingProvider).feeAmount) {
+                                    informationSnackBarMessage(
+                                        context, "Wallet balance is less than the required fee amount");
+                                    return;
+                                  }
                                   ref.read(screenTitleProvider.notifier).updateTitle("Transfer Fund");
                                   await Navigator.pushNamed(
                                     context,
@@ -327,7 +337,7 @@ class _WalletViewState extends ConsumerState<WalletView> {
                               padding: const EdgeInsets.only(right: 32.0, bottom: 16),
                               child: FilledButton.tonalIcon(
                                 onPressed: () {
-                                  receiveBottomSheet(context, isDarkTheme, widget.address);
+                                  receiveBottomSheet(context, isDarkTheme, widget.arg.address);
                                 },
                                 icon: Transform.rotate(
                                   angle: 3.14,
@@ -346,86 +356,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
               };
             },
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderItem(String label, double width) {
-    return Container(
-      width: width,
-      height: 56,
-      //color: Colors.blue,
-      decoration: BoxDecoration(
-        color: Colors.grey[850],
-        border: Border(
-          bottom: BorderSide(color: Colors.brown[900]!, width: 0.1),
-        ),
-      ),
-      child: Center(
-        child: Text(
-          label,
-          textAlign: TextAlign.left,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLeftSideItem(String text, int index) {
-    return Container(
-      width: 100,
-      height: 52,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: index % 2 == 0 ? Colors.grey[900] : Colors.grey[800],
-        border: Border(
-          bottom: BorderSide(color: Colors.brown[900]!, width: 0.1),
-        ),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRightSideItem(TransactionHistory history, int index) {
-    return Row(
-      children: [
-        _buildRightItem(
-            ref.read(walletProvider.notifier).computeTimestampAge(int.parse(history.blockTime!)), 110, index),
-        _buildRightItem(history.status!, 70, index),
-        _buildRightItem(history.type!, 100, index),
-        _buildRightItem(shortenString(history.from!, 12), 110, index),
-        _buildRightItem(shortenString(history.to!, 12), 110, index),
-        _buildRightItem('${toMAS(BigInt.parse(history.value!))} MAS', 120, index),
-        _buildRightItem('${toMAS(BigInt.parse(history.transactionFee!))} MAS', 80, index),
-      ],
-    );
-  }
-
-  Widget _buildRightItem(String text, double width, int index) {
-    return Container(
-      width: width,
-      height: 52,
-      alignment: Alignment.centerLeft,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      decoration: BoxDecoration(
-        color: index % 2 == 0 ? Colors.grey[900] : Colors.grey[800],
-        border: Border(
-          bottom: BorderSide(color: Colors.brown[900]!, width: 0.1),
-        ),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white,
         ),
       ),
     );
@@ -458,16 +388,18 @@ class _WalletViewState extends ConsumerState<WalletView> {
                     ),
                     size: 180.0,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: Constants.verticalSpacing),
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Text(
-                      shortenString(address, 24),
+                      shortenString(address, Constants.shortedAddressLength),
                       textAlign: TextAlign.left,
                     ),
                     IconButton(
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: address)).then((result) {
-                            informationSnackBarMessage(context, "Wallet address copied!");
+                            if (context.mounted) {
+                              informationSnackBarMessage(context, "Wallet address copied!");
+                            }
                           });
                           Navigator.pop(context);
                         },
@@ -485,6 +417,7 @@ class _WalletViewState extends ConsumerState<WalletView> {
   Future<String?> walletRenameBottomSheet(BuildContext context, String address, bool isDarkTheme) async {
     return await showModalBottomSheet<String>(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
         return RenameWalletBottomSheet(address: address);
       },
