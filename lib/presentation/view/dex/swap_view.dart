@@ -11,8 +11,10 @@ import 'package:mug/constants/asset_names.dart';
 // Project imports:
 import 'package:mug/presentation/provider/setting_provider.dart';
 import 'package:mug/presentation/provider/swap_provider.dart';
+import 'package:mug/presentation/provider/wallet_list_provider.dart';
 import 'package:mug/presentation/state/swap_state.dart';
 import 'package:mug/presentation/widget/widget.dart';
+import 'package:mug/routes/routes.dart';
 import 'package:mug/utils/number_helpers.dart';
 import 'package:mug/utils/string_helpers.dart';
 
@@ -62,166 +64,170 @@ class _DexViewState extends ConsumerState<SwapView> {
                   ),
                 SwapStatus.swap => Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        CustomLabelWidget(
-                            label: "Account Address",
-                            value: Text(widget.accountAddress, style: const TextStyle(fontSize: 20))),
-                        Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey[700]!, // Border color
-                                width: 1.5, // Border width
-                              ),
-                              borderRadius: BorderRadius.circular(12), // Rounded corners
-                            ),
-                            child: Row(
-                              children: [
-                                // TextFormField
-                                Expanded(
-                                  child: TextFormField(
-                                    enabled: true,
-                                    controller: _fromAmountController,
-                                    onChanged: (value) {
-                                      final value1 = double.parse(_fromAmountController.text.replaceAll(',', ''));
-                                      _toAmountController.text = notifier.computeExchangeResult(value1).toString();
-                                    },
-                                    //keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
-                                      hintText: '0.0000',
-                                      border: InputBorder.none, // Removes internal border for seamless look
-                                    ),
-                                    style: const TextStyle(color: Colors.white, fontSize: 26),
-                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d*)?')),
-                                    ],
-                                  ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CustomLabelWidget(
+                              label: "Account Address",
+                              value: Text(widget.accountAddress, style: const TextStyle(fontSize: 20))),
+                          Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey[700]!, // Border color
+                                  width: 1.5, // Border width
                                 ),
-                                const SizedBox(width: 10), // Add some spacing between dropdown and text box
+                                borderRadius: BorderRadius.circular(12), // Rounded corners
+                              ),
+                              child: Row(
+                                children: [
+                                  // TextFormField
+                                  Expanded(
+                                    child: TextFormField(
+                                      enabled: true,
+                                      controller: _fromAmountController,
+                                      onChanged: (value) {
+                                        final value1 = double.parse(_fromAmountController.text.replaceAll(',', ''));
+                                        _toAmountController.text = notifier.computeExchangeResult(value1).toString();
+                                      },
+                                      //keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        hintText: '0.0000',
+                                        border: InputBorder.none, // Removes internal border for seamless look
+                                      ),
+                                      style: const TextStyle(color: Colors.white, fontSize: 26),
+                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d*)?')),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10), // Add some spacing between dropdown and text box
 
-                                // DropdownButton
-                                Column(
-                                  children: [
-                                    DropdownButton<String>(
-                                      value: swapState.selectedDropdown1,
-                                      items: _getDropdownItems(swapState.allItems),
-                                      onChanged: (String? newValue) {
-                                        notifier.selectDropdown1(newValue);
-                                      },
-                                      underline: const SizedBox(), // Removes the underline
-                                      style: const TextStyle(color: Colors.white, fontSize: 16), // Text styling
-                                      dropdownColor:
-                                          Colors.grey[900], // Optional: Set dropdown background color for dark theme
-                                    ),
-                                    Text(
-                                      "Balance: ${formatNumber4(swapState.balance1!)}",
-                                      style: const TextStyle(color: Colors.grey, fontSize: 14),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: FloatingActionButton(
-                            onPressed: () {
-                              notifier.flipTokens();
-                              _fromAmountController.clear();
-                              _toAmountController.clear();
-                            },
-                            backgroundColor: isDarkTheme ? ThemeData.dark().focusColor : ThemeData.light().focusColor,
-                            elevation: 2.0,
-                            child: const Icon(Icons.swap_vert, size: 28, color: Colors.white),
-                          ),
-                        ),
-                        Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey[700]!, // Border color
-                                width: 1.5, // Border width
-                              ),
-                              borderRadius: BorderRadius.circular(12), // Rounded corners
-                            ),
-                            child: Row(
-                              children: [
-                                // TextFormField
-                                Expanded(
-                                  child: TextFormField(
-                                    enabled: false,
-                                    controller: _toAmountController,
-                                    //onChanged: (value) {},
-                                    keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
-                                      hintText: '0.0000',
-                                      border: InputBorder.none, // Removes internal border for seamless look
-                                    ),
-                                    style: const TextStyle(color: Colors.white, fontSize: 26),
-                                    inputFormatters: [
-                                      TextInputFormatter.withFunction(
-                                          (TextEditingValue oldValue, TextEditingValue newValue) {
-                                        var formatter = NumberFormat('###,###.####', 'en_US');
-                                        var value = formatter.tryParse(newValue.text) ?? 0;
-                                        if (newValue.text.endsWith('.') && '.'.allMatches(newValue.text).length == 1) {
-                                          return newValue;
-                                        }
-                                        return TextEditingValue(
-                                          text: formatter.format(value),
-                                        );
-                                      })
+                                  // DropdownButton
+                                  Column(
+                                    children: [
+                                      DropdownButton<String>(
+                                        value: swapState.selectedDropdown1,
+                                        items: _getDropdownItems(swapState.allItems),
+                                        onChanged: (String? newValue) {
+                                          notifier.selectDropdown1(newValue);
+                                        },
+                                        underline: const SizedBox(), // Removes the underline
+                                        style: const TextStyle(color: Colors.white, fontSize: 16), // Text styling
+                                        dropdownColor:
+                                            Colors.grey[900], // Optional: Set dropdown background color for dark theme
+                                      ),
+                                      Text(
+                                        "Balance: ${formatNumber4(swapState.balance1!)}",
+                                        style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                      )
                                     ],
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Column(
-                                  children: [
-                                    DropdownButton<String>(
-                                      value: swapState.selectedDropdown2,
-                                      items: _getDropdownItems(swapState.allItems),
-                                      onChanged: (String? newValue) {
-                                        notifier.selectDropdown2(newValue);
-                                      },
-                                      underline: const SizedBox(), // Removes the underline
-                                      style: const TextStyle(color: Colors.white, fontSize: 16), // Text styling
-                                      dropdownColor:
-                                          Colors.grey[900], // Optional: Set dropdown background color for dark theme
-                                    ),
-                                    Text(
-                                      "Balance: ${formatNumber4(swapState.balance2!)}",
-                                      style: const TextStyle(color: Colors.grey, fontSize: 14),
-                                    )
-                                  ],
-                                )
-                              ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text("1 MAS = ${swapState.exchangeRate} ${notifier.getOtherTokenName()}"),
-                        ButtonWidget(
-                          isDarkTheme: isDarkTheme,
-                          text: "Swap",
-                          onClicked: () {
-                            final value1 = double.parse(_fromAmountController.text.replaceAll(',', ''));
-                            final value2 = double.parse(_toAmountController.text.replaceAll(',', ''));
-                            notifier.swap(value1, value2);
-                            if (swapState.showNotification!) {
-                              informationSnackBarMessage(context, swapState.notificationMessage);
-                            }
-                          },
-                        ),
-                      ],
+                          SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: FloatingActionButton(
+                              onPressed: () {
+                                notifier.flipTokens();
+                                _fromAmountController.clear();
+                                _toAmountController.clear();
+                              },
+                              backgroundColor: isDarkTheme ? ThemeData.dark().focusColor : ThemeData.light().focusColor,
+                              elevation: 2.0,
+                              child: const Icon(Icons.swap_vert, size: 28, color: Colors.white),
+                            ),
+                          ),
+                          Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.grey[700]!, // Border color
+                                  width: 1.5, // Border width
+                                ),
+                                borderRadius: BorderRadius.circular(12), // Rounded corners
+                              ),
+                              child: Row(
+                                children: [
+                                  // TextFormField
+                                  Expanded(
+                                    child: TextFormField(
+                                      enabled: false,
+                                      controller: _toAmountController,
+                                      //onChanged: (value) {},
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        hintText: '0.0000',
+                                        border: InputBorder.none, // Removes internal border for seamless look
+                                      ),
+                                      style: const TextStyle(color: Colors.white, fontSize: 26),
+                                      inputFormatters: [
+                                        TextInputFormatter.withFunction(
+                                            (TextEditingValue oldValue, TextEditingValue newValue) {
+                                          var formatter = NumberFormat('###,###.####', 'en_US');
+                                          var value = formatter.tryParse(newValue.text) ?? 0;
+                                          if (newValue.text.endsWith('.') &&
+                                              '.'.allMatches(newValue.text).length == 1) {
+                                            return newValue;
+                                          }
+                                          return TextEditingValue(
+                                            text: formatter.format(value),
+                                          );
+                                        })
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Column(
+                                    children: [
+                                      DropdownButton<String>(
+                                        value: swapState.selectedDropdown2,
+                                        items: _getDropdownItems(swapState.allItems),
+                                        onChanged: (String? newValue) {
+                                          notifier.selectDropdown2(newValue);
+                                        },
+                                        underline: const SizedBox(), // Removes the underline
+                                        style: const TextStyle(color: Colors.white, fontSize: 16), // Text styling
+                                        dropdownColor:
+                                            Colors.grey[900], // Optional: Set dropdown background color for dark theme
+                                      ),
+                                      Text(
+                                        "Balance: ${formatNumber4(swapState.balance2!)}",
+                                        style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                      )
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text("1 MAS = ${swapState.exchangeRate} ${notifier.getOtherTokenName()}"),
+                          ButtonWidget(
+                            isDarkTheme: isDarkTheme,
+                            text: "Swap",
+                            onClicked: () {
+                              final value1 = double.parse(_fromAmountController.text.replaceAll(',', ''));
+                              final value2 = double.parse(_toAmountController.text.replaceAll(',', ''));
+                              notifier.swap(value1, value2);
+                              if (swapState.showNotification!) {
+                                informationSnackBarMessage(context, swapState.notificationMessage);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 SwapStatus.success => Column(
@@ -318,9 +324,11 @@ class _DexViewState extends ConsumerState<SwapView> {
                       const SizedBox(height: 10),
                       FilledButton.tonalIcon(
                         onPressed: () async {
-                          _fromAmountController.clear();
-                          _toAmountController.clear();
-                          await ref.read(swapProvider.notifier).initialLoad(widget.accountAddress);
+                          // _fromAmountController.clear();
+                          // _toAmountController.clear();
+                          // await ref.read(swapProvider.notifier).initialLoad(widget.accountAddress);
+                          await ref.read(walletListProvider.notifier).loadWallets();
+                          await Navigator.pushNamed(context, DexRoutes.dex);
                         },
                         icon: const Icon(Icons.close),
                         label: const Text('Close'),
@@ -328,7 +336,8 @@ class _DexViewState extends ConsumerState<SwapView> {
                       ),
                     ],
                   ),
-                SwapStatus.error => const Text("Something went wrong!"),
+                SwapStatus.error => const Text(
+                    "Could not open the swap view, due to insufficient funds for covering gass and transaction fee! You need to have a balance of at least 10 MAS in your wallet."),
               };
             },
           ),

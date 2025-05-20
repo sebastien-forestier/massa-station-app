@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:massa/massa.dart';
 import 'package:mug/data/model/transaction_history.dart';
 import 'package:mug/presentation/provider/wallet_provider.dart';
-import 'package:mug/presentation/widget/button_widget.dart';
 import 'package:mug/presentation/widget/information_snack_message.dart';
 import 'package:mug/utils/string_helpers.dart';
 
