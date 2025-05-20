@@ -3,21 +3,45 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mug/presentation/provider/wallet_list_provider.dart';
 import 'package:mug/utils/string_helpers.dart';
 
-class AddressSelectorWidget extends ConsumerWidget {
+class AddressSelectorWidget extends ConsumerStatefulWidget {
   final String currentAddress;
   final TextEditingController addressController;
-  //final GlobalKey<FormState> formKey;
 
   const AddressSelectorWidget({
     required this.currentAddress,
     required this.addressController,
-    //required this.formKey,
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the walletProvider
+  ConsumerState<AddressSelectorWidget> createState() => _AddressSelectorWidgetState();
+}
+
+class _AddressSelectorWidgetState extends ConsumerState<AddressSelectorWidget> {
+  String? _selectedAddress;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.addressController.addListener(_handleTextChange);
+  }
+
+  @override
+  void dispose() {
+    widget.addressController.removeListener(_handleTextChange);
+    super.dispose();
+  }
+
+  void _handleTextChange() {
+    if (_selectedAddress != null && widget.addressController.text != _selectedAddress) {
+      setState(() {
+        _selectedAddress = null;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final walletAsyncValue = ref.watch(walletListProvider);
 
     return Padding(
@@ -27,25 +51,27 @@ class AddressSelectorWidget extends ConsumerWidget {
         children: [
           Row(
             children: [
-              // TextFormField
               Expanded(
                 child: TextFormField(
                   enabled: true,
                   maxLines: 3,
-                  controller: addressController,
-                  onChanged: (value) {},
+                  controller: widget.addressController,
+                  onChanged: (value) {
+                    // The listener will handle resetting the dropdown
+                  },
                   decoration: const InputDecoration(
-                    hintText: 'Please enter the recipent address here or select the address from the list.',
-                    border: InputBorder.none, // Removes internal border for seamless look
+                    hintText: 'Please paste the recipent address here',
+                    border: InputBorder.none,
                   ),
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 5),
+          const Divider(thickness: 1, color: Colors.blue, height: 24),
           const Text(
-            "Select Address from List",
+            "OR Transer to your address",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -54,10 +80,10 @@ class AddressSelectorWidget extends ConsumerWidget {
               if (walletData == null || walletData.wallets.isEmpty) {
                 return const Text("No available addresses to select.");
               }
-              // Filter out the current address
-              final wallets = walletData.wallets.where((wallet) => wallet.address != currentAddress).toList();
+              final wallets = walletData.wallets.where((wallet) => wallet.address != widget.currentAddress).toList();
 
               return DropdownButtonFormField<String>(
+                value: _selectedAddress,
                 items: wallets
                     .map(
                       (wallet) => DropdownMenuItem(
@@ -67,15 +93,18 @@ class AddressSelectorWidget extends ConsumerWidget {
                     )
                     .toList(),
                 onChanged: (selectedAddress) {
-                  if (selectedAddress != null) {
-                    addressController.text = selectedAddress; // Populate the text field
-                  }
+                  setState(() {
+                    _selectedAddress = selectedAddress;
+                    if (selectedAddress != null) {
+                      widget.addressController.text = selectedAddress;
+                    }
+                  });
                 },
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                  hintText: 'Select the recipient address',
                 ),
-                hint: const Text('Select an address'),
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),

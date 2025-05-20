@@ -29,16 +29,19 @@ If something doesn't make sense, please let us know so we can reproduce the bug 
 ## 1.2.0
 ### Added
 - Added dedicated view for changing wallet name.
-- Added dedicate view for importing wallet
-- Added provider to handle wallet name change dynamically
+- Added dedicate view for importing wallet.
+- Added provider to handle wallet name change dynamically.
+- Added clear description on the Transfer Fund widget to ensure there is a clear distinction between the pasted recipient address and the one selected from the dropdown
 
 ### Fixed
 - Wallet rename issue
+- Issue related to Send and Receive buttons being invisble for some devices
 
 ### Changed
 - Removed bottom sheet for changing wallet name.
 - Removed bottom sheet for importing existing wallet
 - Updated dependencies to the latest stable versions.
+- Changed the fund transfer dropdown menu to ensure that it is reset when a new address is pasted
 
 
 ## 1.1.0
