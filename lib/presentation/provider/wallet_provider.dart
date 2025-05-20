@@ -89,6 +89,7 @@ base class WalletProviderImpl extends StateNotifier<WalletState> implements Wall
     for (int i = 0; i < wallets.length; i++) {
       if (wallets[i].address == address) {
         wallets[i] = wallets[i].copyWith(name: name);
+        break;
       }
     }
     await localStorageService.storeWallets(WalletModel.encode(wallets));
@@ -154,14 +155,37 @@ final walletProvider = StateNotifierProvider<WalletProvider, WalletState>((ref) 
 
 // Notifier to manage the wallet name state
 class WalletNameNotifier extends StateNotifier<String> {
-  WalletNameNotifier() : super(''); // Initialize with an empty string
+  final LocalStorageService localStorageService;
 
-  void updateWalletName(String newName) {
+  WalletNameNotifier({required this.localStorageService}) : super(''); // Initialize with an empty string
+
+  Future<void> loadWalletName(String address) async {
+    final walletString = await localStorageService.getStoredWallets();
+    final wallets = WalletModel.decode(walletString);
+    for (int i = 0; i < wallets.length; i++) {
+      if (wallets[i].address == address) {
+        state = wallets[i].name ?? address.substring(address.length - 4);
+        return;
+      }
+    }
+    state = address.substring(address.length - 4); // Fallback to last 4 characters of the address
+  }
+
+  Future<void> updateWalletName(String address, String newName) async {
+    //save wallet to the database first
+    final walletString = await localStorageService.getStoredWallets();
+    final wallets = WalletModel.decode(walletString);
+    for (int i = 0; i < wallets.length; i++) {
+      if (wallets[i].address == address) {
+        wallets[i] = wallets[i].copyWith(name: newName);
+      }
+    }
+    await localStorageService.storeWallets(WalletModel.encode(wallets));
     state = newName;
   }
 }
 
-// Provider for the WalletNameNotifier
 final walletNameProvider = StateNotifierProvider<WalletNameNotifier, String>((ref) {
-  return WalletNameNotifier();
+  final localStorageService = ref.watch(localStorageServiceProvider);
+  return WalletNameNotifier(localStorageService: localStorageService);
 });

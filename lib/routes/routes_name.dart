@@ -25,6 +25,7 @@ class WalletRoutes {
   static const String send = 'send';
   static const String receive = 'receive';
   static const String wallet = 'wallet';
+  static const String walleName = 'wallet-name';
   static const String transfer = 'transfer';
 }
 

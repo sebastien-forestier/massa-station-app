@@ -76,7 +76,7 @@ class WalletsView extends ConsumerWidget {
                         onTap: () async {
                           final hasBalance =
                               wallet.addressInformation!.finalBalance >= ref.read(settingProvider).feeAmount;
-                          final WalletViewArg walletViewArg = WalletViewArg(wallet.address, hasBalance);
+                          final WalletViewArg walletViewArg = WalletViewArg(wallet.address, wallet.name, hasBalance);
                           await Navigator.pushNamed(
                             context,
                             WalletRoutes.wallet,

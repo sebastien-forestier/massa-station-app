@@ -8,6 +8,7 @@ import 'package:mug/presentation/view/explorer/domain_view.dart';
 import 'package:mug/presentation/view/explorer/mns_view.dart';
 import 'package:mug/presentation/view/explorer/operation_view.dart';
 import 'package:mug/presentation/view/explorer/search_not_found_view.dart';
+import 'package:mug/presentation/view/wallet/edit_wallet_view.dart';
 import 'package:mug/presentation/view/wallet/transfer_view.dart';
 import 'package:mug/presentation/view/wallet/wallet_view.dart';
 
@@ -155,6 +156,16 @@ class RouteGenerator {
         }
         return _errorRoute(route: routeName, argsType: 'Account Details');
 
+      case WalletRoutes.walleName:
+        if (args is String) {
+          return PageTransition(
+            child: EditWalletNameView(address: args),
+            duration: const Duration(milliseconds: transitionDuration),
+            type: transitionType,
+          );
+        }
+        return _errorRoute(route: routeName, argsType: 'Wallet Name');
+
       case WalletRoutes.transfer:
         if (args is AddressEntity) {
           return PageTransition(
@@ -163,7 +174,7 @@ class RouteGenerator {
             type: transitionType,
           );
         }
-        return _errorRoute(route: routeName, argsType: 'Account Details');
+        return _errorRoute(route: routeName, argsType: 'Token Transfer');
 
 //Dex routes
 

@@ -165,7 +165,6 @@ class LocalStorageService {
   }
 
   Future<String?> getWalletKey(String address) async {
-    print("getWalletKey $address");
     List<WalletModel> wallets;
     final walletString = await getStoredWallets();
     String encryptedKey = "";
