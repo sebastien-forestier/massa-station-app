@@ -19,7 +19,7 @@ class _AboutState extends State<AboutWidget> {
         width: 40,
       ),
       applicationName: 'MUG',
-      applicationVersion: 'Version 1.1.0',
+      applicationVersion: 'Version 1.2.0',
       applicationLegalese: '\u{a9} 2025 Massa',
     );
   }
