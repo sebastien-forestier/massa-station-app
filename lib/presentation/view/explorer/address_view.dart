@@ -190,7 +190,7 @@ class _AddressViewState extends ConsumerState<AddressView> {
                                           },
                                           rightSideItemBuilder: (context, index) {
                                             final history = addressEntity.transactionHistory?.combinedHistory?[index];
-                                            return buildRightSideItem(ref, history!, index);
+                                            return buildRightSideItem(ref, context, history!, index);
                                           },
                                           itemCount: addressEntity.transactionHistory!.combinedHistory!.length,
                                         ),

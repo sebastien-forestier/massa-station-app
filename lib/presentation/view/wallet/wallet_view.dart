@@ -200,11 +200,11 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                           ],
                                           leftSideItemBuilder: (context, index) {
                                             final history = addressEntity.transactionHistory?.combinedHistory?[index];
-                                            return buildLeftSideItem(context, shortenString(history!.hash!, 10), index);
+                                            return buildLeftSideItem(context, history!.hash!, index);
                                           },
                                           rightSideItemBuilder: (context, index) {
                                             final history = addressEntity.transactionHistory?.combinedHistory?[index];
-                                            return buildRightSideItem(ref, history!, index);
+                                            return buildRightSideItem(ref, context, history!, index);
                                           },
                                           itemCount: addressEntity.transactionHistory!.combinedHistory!.length,
                                         ),
