@@ -9,6 +9,7 @@ import 'package:mug/presentation/view/explorer/mns_view.dart';
 import 'package:mug/presentation/view/explorer/operation_view.dart';
 import 'package:mug/presentation/view/explorer/search_not_found_view.dart';
 import 'package:mug/presentation/view/wallet/edit_wallet_view.dart';
+import 'package:mug/presentation/view/wallet/import_wallet_view.dart';
 import 'package:mug/presentation/view/wallet/transfer_view.dart';
 import 'package:mug/presentation/view/wallet/wallet_view.dart';
 
@@ -145,6 +146,12 @@ class RouteGenerator {
         return _errorRoute(route: routeName, argsType: 'NotFound');
 
 //Wallet routes
+      case WalletRoutes.importWallet:
+        return PageTransition(
+          child: const ImportWalletView(),
+          duration: const Duration(milliseconds: transitionDuration),
+          type: transitionType,
+        );
 
       case WalletRoutes.wallet:
         if (args is WalletViewArg) {
@@ -154,7 +161,7 @@ class RouteGenerator {
             type: transitionType,
           );
         }
-        return _errorRoute(route: routeName, argsType: 'Account Details');
+        return _errorRoute(route: routeName, argsType: 'Walet Details');
 
       case WalletRoutes.walleName:
         if (args is String) {

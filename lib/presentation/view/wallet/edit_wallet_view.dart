@@ -126,17 +126,6 @@ class _EditWalletNameViewState extends ConsumerState<EditWalletNameView> {
                       setState(() {
                         _isSaving = true;
                       });
-                      await ref.read(walletNameProvider.notifier).updateWalletName(
-                            widget.address,
-                            _nameController.text.trim(),
-                          );
-                      await ref.read(walletListProvider.notifier).loadWallets();
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Wallet name saved!')),
-                        );
-                        Navigator.of(context).pop(true);
-                      }
                     }
                   },
                   onTap: () {

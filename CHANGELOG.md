@@ -29,20 +29,17 @@ If something doesn't make sense, please let us know so we can reproduce the bug 
 ## 1.2.0
 ### Added
 - Added dedicated view for changing wallet name.
+- Added dedicate view for importing wallet
 - Added provider to handle wallet name change dynamically
 
 ### Fixed
-- Wallet rename
-- Fixed validation of funds.
-- Fixed adddress validation.
-- Fixed keyboard layout.
+- Wallet rename issue
 
 ### Changed
-- Removed creation of the first wallet automatically.
+- Removed bottom sheet for changing wallet name.
+- Removed bottom sheet for importing existing wallet
 - Updated dependencies to the latest stable versions.
-- Removed all unused widgets.
-- Changed the font size.
-- Changed the default gas fee.
+
 
 ## 1.1.0
 ### Added

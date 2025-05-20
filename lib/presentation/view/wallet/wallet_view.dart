@@ -11,7 +11,6 @@ import 'package:mug/constants/constants.dart';
 // Project imports:
 import 'package:mug/presentation/provider/screen_title_provider.dart';
 import 'package:mug/presentation/provider/setting_provider.dart';
-import 'package:mug/presentation/provider/wallet_list_provider.dart';
 import 'package:mug/presentation/provider/wallet_provider.dart';
 import 'package:mug/presentation/state/wallet_state.dart';
 import 'package:mug/presentation/widget/widget.dart';
@@ -232,13 +231,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                                       WalletRoutes.walleName,
                                                       arguments: addressEntity.address,
                                                     );
-                                                    // final newWalletName = await walletRenameBottomSheet(
-                                                    //     context, addressEntity.address, isDarkTheme);
-                                                    // if (newWalletName!.isNotEmpty) {
-                                                    //   ref
-                                                    //       .read(walletProvider.notifier)
-                                                    //       .renameWallet(addressEntity.address, newWalletName);
-                                                    // }
                                                   },
                                                   label: const Text("Edit"),
                                                   icon: const Icon(Icons.edit)),
@@ -370,6 +362,61 @@ class _WalletViewState extends ConsumerState<WalletView> {
           ),
         ),
       ),
+      bottomNavigationBar: Consumer(
+        builder: (context, ref, child) {
+          final walletState = ref.watch(walletProvider);
+          if (walletState is! WalletSuccess) {
+            return const SizedBox.shrink();
+          }
+          final addressEntity = walletState.addressEntity;
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 8,
+              top: 8,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: FilledButton.tonalIcon(
+                    onPressed: () async {
+                      if (addressEntity.finalBalance < 2 * ref.read(settingProvider).feeAmount) {
+                        informationSnackBarMessage(context, "Wallet balance is less than the required fee amount");
+                        return;
+                      }
+                      ref.read(screenTitleProvider.notifier).updateTitle("Transfer Fund");
+                      await Navigator.pushNamed(
+                        context,
+                        WalletRoutes.transfer,
+                        arguments: addressEntity,
+                      );
+                    },
+                    icon: const Icon(Icons.arrow_outward),
+                    label: const Text('Send'),
+                    iconAlignment: IconAlignment.start,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: FilledButton.tonalIcon(
+                    onPressed: () {
+                      receiveBottomSheet(context, isDarkTheme, widget.arg.address);
+                    },
+                    icon: Transform.rotate(
+                      angle: 3.14,
+                      child: const Icon(Icons.arrow_outward),
+                    ),
+                    label: const Text('Receive'),
+                    iconAlignment: IconAlignment.start,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -422,16 +469,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
             ),
           ),
         );
-      },
-    );
-  }
-
-  Future<String?> walletRenameBottomSheet(BuildContext context, String address, bool isDarkTheme) async {
-    return await showModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return RenameWalletBottomSheet(address: address);
       },
     );
   }
