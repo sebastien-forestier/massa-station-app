@@ -20,14 +20,47 @@ import 'package:mug/utils/number_helpers.dart';
 import 'package:mug/utils/string_helpers.dart';
 import 'package:mug/utils/validate_address.dart';
 
-class TransferView extends ConsumerWidget {
+class TransferView extends ConsumerStatefulWidget {
   final AddressEntity addressEntity;
   const TransferView(this.addressEntity, {super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final TextEditingController amountController = TextEditingController();
-    final TextEditingController addressController = TextEditingController();
+  ConsumerState<TransferView> createState() => _TransferViewState();
+}
+
+class _TransferViewState extends ConsumerState<TransferView> {
+  late final TextEditingController amountController;
+  late final TextEditingController addressController;
+  bool _showWarning = true;
+
+  @override
+  void initState() {
+    super.initState();
+    amountController = TextEditingController();
+    addressController = TextEditingController();
+    
+    // Listen for changes to update warning visibility
+    amountController.addListener(_updateWarningVisibility);
+    addressController.addListener(_updateWarningVisibility);
+  }
+
+  @override
+  void dispose() {
+    amountController.removeListener(_updateWarningVisibility);
+    addressController.removeListener(_updateWarningVisibility);
+    amountController.dispose();
+    addressController.dispose();
+    super.dispose();
+  }
+
+  void _updateWarningVisibility() {
+    setState(() {
+      _showWarning = addressController.text.isEmpty || amountController.text.isEmpty;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     final formKey = GlobalKey<FormState>();
     final transactionFee = ref.watch(settingProvider).feeAmount;
@@ -45,7 +78,7 @@ class TransferView extends ConsumerWidget {
         child: CommonPadding(
           child: RefreshIndicator(
             onRefresh: () {
-              return ref.read(addressProvider.notifier).getAddress(addressEntity.address, false);
+              return ref.read(addressProvider.notifier).getAddress(widget.addressEntity.address, false);
             },
             child: Consumer(
               builder: (context, ref, child) {
@@ -61,7 +94,7 @@ class TransferView extends ConsumerWidget {
                               style: TextStyle(fontSize: Constants.fontSize),
                             ),
                             title: Text(
-                              "${formatNumber4(addressEntity.finalBalance)} MAS",
+                              "${formatNumber4(widget.addressEntity.finalBalance)} MAS",
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 18),
                             ),
@@ -73,10 +106,10 @@ class TransferView extends ConsumerWidget {
                             label: "Sending Address",
                             //value: Text(addressEntity.address, style: const TextStyle(fontSize: 20))),
                             value: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                              Text(shortenString(addressEntity.address, 26), style: const TextStyle(fontSize: 20)),
+                              Text(shortenString(widget.addressEntity.address, 26), style: const TextStyle(fontSize: 20)),
                               IconButton(
                                   onPressed: () {
-                                    Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
+                                    Clipboard.setData(ClipboardData(text: widget.addressEntity.address)).then((result) {
                                       informationSnackBarMessage(context, "Address copied!");
                                     });
                                   },
@@ -86,7 +119,7 @@ class TransferView extends ConsumerWidget {
                         CustomLabelWidget(
                           label: "Recipient Address",
                           value: AddressSelectorWidget(
-                              currentAddress: addressEntity.address, addressController: addressController),
+                              currentAddress: widget.addressEntity.address, addressController: addressController),
                         ),
                         const SizedBox(height: 10),
                         Card(
@@ -127,8 +160,8 @@ class TransferView extends ConsumerWidget {
                                         }
                                         try {
                                           final enteredValue = double.parse(value);
-                                          if (enteredValue > addressEntity.finalBalance - transactionFee) {
-                                            return 'Value should not exceed ${addressEntity.finalBalance - transactionFee}';
+                                          if (enteredValue > widget.addressEntity.finalBalance - transactionFee) {
+                                            return 'Value should not exceed ${widget.addressEntity.finalBalance - transactionFee}';
                                           }
                                         } catch (e) {
                                           return 'Please enter a valid decimal number';
@@ -158,32 +191,42 @@ class TransferView extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        const InformationCardWidget(
-                            message: "Please confirm the amount and recipient address before transferring your fund"),
-                        FilledButton.tonalIcon(
-                          onPressed: () async {
-                            if (!isAddressValid(addressController.text)) {
-                              informationSnackBarMessage(context, 'Invalid address. Please enter a valid address');
-                              return;
-                            }
+                        // Only show warning if address or amount is empty
+                        if (_showWarning)
+                          const InformationCardWidget(
+                              message: "Please confirm the amount and recipient address before transferring your fund"),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: FilledButton.tonalIcon(
+                              onPressed: () async {
+                                if (!isAddressValid(addressController.text)) {
+                                  informationSnackBarMessage(context, 'Invalid address. Please enter a valid address');
+                                  return;
+                                }
 
-                            if (!formKey.currentState!.validate() ||
-                                addressController.text.isEmpty ||
-                                addressController.text == addressEntity.address) {
-                              informationSnackBarMessage(context, 'One of the entries is invalid. Try again!');
-                              return;
-                            }
-                            final amount = double.parse(amountController.text);
+                                if (!formKey.currentState!.validate() ||
+                                    addressController.text.isEmpty ||
+                                    addressController.text == widget.addressEntity.address) {
+                                  informationSnackBarMessage(context, 'One of the entries is invalid. Try again!');
+                                  return;
+                                }
+                                final amount = double.parse(amountController.text);
 
-                            final recipientAddress = addressController.text;
-                            await ref
-                                .read(transferProvider.notifier)
-                                .transfer(addressEntity.address, recipientAddress, amount);
-                          },
-                          icon: const Icon(Icons.arrow_outward),
-                          label: const Text('Send'),
-                          iconAlignment: IconAlignment.start,
+                                final recipientAddress = addressController.text;
+                                await ref
+                                    .read(transferProvider.notifier)
+                                    .transfer(widget.addressEntity.address, recipientAddress, amount);
+                              },
+                              icon: const Icon(Icons.arrow_outward, size: 28),
+                              label: const Text('Send', style: TextStyle(fontSize: 18)),
+                              iconAlignment: IconAlignment.start,
+                            ),
+                          ),
                         ),
+                        const SizedBox(height: 40), // Extra padding for phone overlay menu
                       ],
                     ),
                   TransferLoading() => const CircularProgressIndicator(),
@@ -200,7 +243,7 @@ class TransferView extends ConsumerWidget {
                                   style: const TextStyle(fontSize: 20)),
                               IconButton(
                                   onPressed: () {
-                                    Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
+                                    Clipboard.setData(ClipboardData(text: widget.addressEntity.address)).then((result) {
                                       informationSnackBarMessage(context, "Address copied!");
                                     });
                                   },
@@ -214,7 +257,7 @@ class TransferView extends ConsumerWidget {
                                   style: const TextStyle(fontSize: 20)),
                               IconButton(
                                   onPressed: () {
-                                    Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
+                                    Clipboard.setData(ClipboardData(text: widget.addressEntity.address)).then((result) {
                                       informationSnackBarMessage(context, "Address copied!");
                                     });
                                   },
@@ -275,7 +318,7 @@ class TransferView extends ConsumerWidget {
                             ),
                             IconButton(
                                 onPressed: () {
-                                  Clipboard.setData(ClipboardData(text: addressEntity.address)).then((result) {
+                                  Clipboard.setData(ClipboardData(text: widget.addressEntity.address)).then((result) {
                                     informationSnackBarMessage(context, 'Operation ID copied');
                                   });
                                 },

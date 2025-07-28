@@ -49,29 +49,36 @@ class _AddressSelectorWidgetState extends ConsumerState<AddressSelectorWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  enabled: true,
-                  maxLines: 3,
-                  controller: widget.addressController,
-                  onChanged: (value) {
-                    // The listener will handle resetting the dropdown
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Please paste the recipent address here',
-                    border: InputBorder.none,
-                  ),
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ],
+          // Title for paste area
+          const Text(
+            "Please paste the recipient address here:",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 8),
+          // Visible container for pasting address
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade400),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: TextFormField(
+              enabled: true,
+              maxLines: 3,
+              controller: widget.addressController,
+              onChanged: (value) {
+                // The listener will handle resetting the dropdown
+              },
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              ),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+          const SizedBox(height: 16),
           const Divider(thickness: 1, color: Colors.blue, height: 24),
           const Text(
-            "OR Transer to your address",
+            "Or send to one of my addresses:",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
