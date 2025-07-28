@@ -26,6 +26,19 @@ void main() async {
     ]
   ]);
 
+  // Hide status bar completely but keep app background extending to top
+  await SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.immersive,
+    overlays: [],
+  );
+  
+  // Make status bar area match app background
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.grey[900], // App background color
+    ),
+  );
+
   Animate.restartOnHotReload = true;
   runApp(UncontrolledProviderScope(container: providerContainer, child: Mug()));
 }

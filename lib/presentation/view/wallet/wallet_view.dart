@@ -35,7 +35,6 @@ class WalletView extends ConsumerStatefulWidget {
 }
 
 class _WalletViewState extends ConsumerState<WalletView> {
-  bool isAccountDefault = false;
 
   @override
   void initState() {
@@ -43,7 +42,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
     // Trigger wallet information loading
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       ref.read(walletProvider.notifier).getWalletInformation(widget.arg.address, widget.arg.hasBalance);
-      isAccountDefault = await ref.read(walletProvider.notifier).isAccountDefault(widget.arg.address);
       await ref.read(walletNameProvider.notifier).loadWalletName(widget.arg.address);
     });
   }
@@ -260,44 +258,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                                   },
                                                   label: const Text("Show"),
                                                   icon: const Icon(Icons.lock_open)),
-                                            ],
-                                          ),
-                                        ),
-                                        Divider(thickness: 0.5, color: Colors.brown[500]),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              isAccountDefault
-                                                  ? Text(
-                                                      "Default Account: Yes",
-                                                      style: TextStyle(fontSize: Constants.fontSize),
-                                                    )
-                                                  : Text(
-                                                      "Default Account: No",
-                                                      style: TextStyle(fontSize: Constants.fontSize),
-                                                    ),
-                                              if (!isAccountDefault)
-                                                OutlinedButton.icon(
-                                                    onPressed: () async {
-                                                      final response = await defaultAccountBottomSheet(
-                                                          context, addressEntity.address);
-                                                      if (response!) {
-                                                        ref
-                                                            .read(walletProvider.notifier)
-                                                            .setDefaultAccount(addressEntity.address);
-                                                        if (context.mounted) {
-                                                          informationSnackBarMessage(
-                                                              context, "The wallet is set as a default wallet");
-                                                        }
-                                                        setState(() {
-                                                          isAccountDefault = true;
-                                                        });
-                                                      }
-                                                    },
-                                                    label: const Text("Set"),
-                                                    icon: const Icon(Icons.edit)),
                                             ],
                                           ),
                                         ),
