@@ -2,6 +2,7 @@
 
 // Package imports:
 import 'package:dusa/dusa.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mug/constants/asset_names.dart';
 import 'package:mug/domain/entity/entity.dart';
@@ -175,9 +176,15 @@ base class SwapProviderImpl extends StateNotifier<SwapState> implements SwapProv
     switch (tokenBalance) {
       case Success(value: final value):
         balance = value;
+        if (kDebugMode) {
+          print('DEBUG: Final balance for $token: $balance');
+        }
         break;
       case Failure():
         balance = 0.0;
+        if (kDebugMode) {
+          print('DEBUG: Failed to get balance for $token, setting to 0.0');
+        }
     }
     return balance;
   }

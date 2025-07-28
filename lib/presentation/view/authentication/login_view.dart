@@ -85,9 +85,16 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text(
-            'Login',
-          ),
+          title: MediaQuery.of(context).orientation == Orientation.portrait
+              ? Image.asset(
+                  'assets/icons/massa_station_full.png',
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  fit: BoxFit.contain,
+                )
+              : Image.asset(
+                  'assets/icons/massa_station_full.png',
+                  height: 40,
+                ),
           centerTitle: true,
         ),
         body: Consumer(
@@ -102,13 +109,7 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
                     padding: EdgeInsets.only(bottom: bottom),
                     child: Column(
                       children: [
-                        const SizedBox(height: 120),
-                        SvgPicture.asset(
-                          'assets/icons/mu.svg',
-                          height: 200,
-                          width: 200,
-                        ),
-                        const SizedBox(height: 20),
+                        const Spacer(),
                         _buildLoginWorkflow(context: context),
                         const Spacer(),
                       ],
@@ -143,8 +144,9 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
           children: [
             _buildTimeOut(),
             _inputField(),
-            _buildForgotPassphrase(),
             _buildLoginButton(),
+            const SizedBox(height: 60), // Add significant spacing
+            _buildForgotPassphrase(),
           ],
         ),
       ),
@@ -348,28 +350,74 @@ class _LoginViewState extends ConsumerState<LoginView> with AfterLayoutMixin<Log
   }
 
   Widget _buildForgotPassphrase() {
-    const String cantRecoverPassphraseMsg = "Can't decrypt without phrase!";
-    double fontSize = 10;
-
-    return Container(
-      alignment: Alignment.centerRight,
-      child: TextButton(
-        child: Text(
-          cantRecoverPassphraseMsg,
-          style: TextStyle(
-            fontSize: fontSize,
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            child: const Text(
+              "Can't decrypt without phrase!",
+              style: TextStyle(fontSize: 10),
+            ),
+            onPressed: () {
+              showGenericDialog(
+                context: context,
+                icon: Icons.info_outline,
+                message:
+                    'There is no way to access your wallet and digital assets without the passphrase. With great security comes the great responsibility of remembering the passphrase!',
+              );
+            },
           ),
         ),
-        onPressed: () {
-          showGenericDialog(
-            context: context,
-            icon: Icons.info_outline,
-            message:
-                'There is no way to access your wallet and digital assets without the passphrase. With great security comes the great responsibility of remembering the passphrase!',
-          );
-        },
-      ),
+        Container(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            child: const Text(
+              "Forgot Passphrase? Clear All Data",
+              style: TextStyle(fontSize: 12, color: Colors.red),
+            ),
+            onPressed: () {
+              _showClearDataDialog();
+            },
+          ),
+        ),
+      ],
     );
+  }
+
+  void _showClearDataDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Clear All Data'),
+          content: const Text(
+            'This will permanently delete all wallets, settings, and data. You will lose access to all your funds unless you have backed up your wallet keys.\n\nThis action cannot be undone!',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _clearAllData();
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Clear All Data'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _clearAllData() async {
+    await ref.read(localStorageServiceProvider).clearAllData();
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, AuthRoutes.authWall, arguments: false);
+    }
   }
 
   Future<bool> _authenticate() async {

@@ -20,9 +20,6 @@ class DexView extends ConsumerWidget {
     final walletState = ref.watch(walletListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Wallet'),
-      ),
       body: RefreshIndicator(
         onRefresh: () {
           return ref.read(walletListProvider.notifier).loadWallets();
@@ -41,6 +38,16 @@ class DexView extends ConsumerWidget {
             }
             return Column(
               children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Text(
+                    'Select Wallet',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: ListView.builder(
                     itemCount: wallets.wallets.length,

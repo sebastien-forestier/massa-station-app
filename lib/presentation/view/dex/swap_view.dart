@@ -42,20 +42,15 @@ class _DexViewState extends ConsumerState<SwapView> {
   Widget build(BuildContext context) {
     final swapState = ref.watch(swapProvider);
     final notifier = ref.read(swapProvider.notifier);
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text('Swap Tokens'),
-      ),
-      body: CommonPadding(
-        child: RefreshIndicator(
-          onRefresh: () {
-            return ref.read(swapProvider.notifier).initialLoad(widget.accountAddress);
-          },
-          child: Consumer(
-            builder: (context, ref, child) {
-              var isDarkTheme = ref.watch(settingProvider).darkTheme;
-              return switch (swapState.status) {
+    return CommonPadding(
+      child: RefreshIndicator(
+        onRefresh: () {
+          return ref.read(swapProvider.notifier).initialLoad(widget.accountAddress);
+        },
+        child: Consumer(
+          builder: (context, ref, child) {
+            var isDarkTheme = ref.watch(settingProvider).darkTheme;
+            return switch (swapState.status) {
                 SwapStatus.loading => Container(
                     color: Colors.black.withOpacity(0.0), // Semi-transparent overlay
                     child: const Center(
@@ -115,7 +110,14 @@ class _DexViewState extends ConsumerState<SwapView> {
                                         value: swapState.selectedDropdown1,
                                         items: _getDropdownItems(swapState.allItems),
                                         onChanged: (String? newValue) {
-                                          notifier.selectDropdown1(newValue);
+                                          if (newValue == swapState.selectedDropdown2) {
+                                            // If user selects the same coin as dropdown2, swap them
+                                            notifier.flipTokens();
+                                            _fromAmountController.clear();
+                                            _toAmountController.clear();
+                                          } else {
+                                            notifier.selectDropdown1(newValue);
+                                          }
                                         },
                                         underline: const SizedBox(), // Removes the underline
                                         style: const TextStyle(color: Colors.white, fontSize: 16), // Text styling
@@ -195,7 +197,14 @@ class _DexViewState extends ConsumerState<SwapView> {
                                         value: swapState.selectedDropdown2,
                                         items: _getDropdownItems(swapState.allItems),
                                         onChanged: (String? newValue) {
-                                          notifier.selectDropdown2(newValue);
+                                          if (newValue == swapState.selectedDropdown1) {
+                                            // If user selects the same coin as dropdown1, swap them
+                                            notifier.flipTokens();
+                                            _fromAmountController.clear();
+                                            _toAmountController.clear();
+                                          } else {
+                                            notifier.selectDropdown2(newValue);
+                                          }
                                         },
                                         underline: const SizedBox(), // Removes the underline
                                         style: const TextStyle(color: Colors.white, fontSize: 16), // Text styling
@@ -324,11 +333,11 @@ class _DexViewState extends ConsumerState<SwapView> {
                       const SizedBox(height: 10),
                       FilledButton.tonalIcon(
                         onPressed: () async {
-                          // _fromAmountController.clear();
-                          // _toAmountController.clear();
-                          // await ref.read(swapProvider.notifier).initialLoad(widget.accountAddress);
+                          _fromAmountController.clear();
+                          _toAmountController.clear();
+                          await ref.read(swapProvider.notifier).initialLoad(widget.accountAddress);
                           await ref.read(walletListProvider.notifier).loadWallets();
-                          await Navigator.pushNamed(context, DexRoutes.dex);
+                          // Stay on the same wallet, don't navigate away
                         },
                         icon: const Icon(Icons.close),
                         label: const Text('Close'),
@@ -342,8 +351,7 @@ class _DexViewState extends ConsumerState<SwapView> {
             },
           ),
         ),
-      ),
-    );
+      );
   }
 
   List<DropdownMenuItem<String>> _getDropdownItems(Map<String, DropdownItem> items) {

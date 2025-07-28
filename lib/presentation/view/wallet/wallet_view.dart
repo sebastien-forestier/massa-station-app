@@ -55,10 +55,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
     final walletName = ref.watch(walletNameProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text('Wallet Details'),
-      ),
       body: CommonPadding(
         child: RefreshIndicator(
           onRefresh: () {
@@ -108,8 +104,6 @@ class _WalletViewState extends ConsumerState<WalletView> {
                                         },
                                         icon: const Icon(Icons.copy)),
                                   ]),
-                                  subtitle:
-                                      Text("Threat: ${addressEntity.thread.toString()}", textAlign: TextAlign.center),
                                 ),
                               ),
                             ),
@@ -121,14 +115,21 @@ class _WalletViewState extends ConsumerState<WalletView> {
                             Expanded(
                               child: Card(
                                 child: ListTile(
-                                  leading: Text(
-                                    "Balance",
-                                    style: TextStyle(fontSize: Constants.fontSize),
-                                  ),
-                                  title: Text(
-                                    "${formatNumber4(addressEntity.finalBalance + addressEntity.finalRolls * 100.00)} MAS",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: Constants.fontSize),
+                                  title: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Balance: ${formatNumber4(addressEntity.finalBalance)} MAS",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontSize: Constants.fontSize),
+                                      ),
+                                      if (addressEntity.finalRolls > 0)
+                                        Text(
+                                          "Rolls: ${addressEntity.finalRolls}",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontSize: Constants.fontSize),
+                                        ),
+                                    ],
                                   ),
                                 ),
                               ),

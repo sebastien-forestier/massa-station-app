@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mug/presentation/provider/setting_provider.dart';
 import 'package:mug/presentation/provider/wallet_list_provider.dart';
+import 'package:mug/presentation/provider/wallet_selection_provider.dart';
 import 'package:mug/presentation/view/wallet/wallet_view.dart';
 
 // Project imports:
@@ -20,9 +21,6 @@ class WalletsView extends ConsumerWidget {
     final walletState = ref.watch(walletListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Wallets'),
-      ),
       body: RefreshIndicator(
         onRefresh: () {
           return ref.read(walletListProvider.notifier).loadWallets();
@@ -77,11 +75,7 @@ class WalletsView extends ConsumerWidget {
                           final hasBalance =
                               wallet.addressInformation!.finalBalance >= ref.read(settingProvider).feeAmount;
                           final WalletViewArg walletViewArg = WalletViewArg(wallet.address, wallet.name, hasBalance);
-                          await Navigator.pushNamed(
-                            context,
-                            WalletRoutes.wallet,
-                            arguments: walletViewArg,
-                          );
+                          ref.read(walletSelectionProvider.notifier).selectWallet(walletViewArg);
                         },
                         child: Card(
                           child: ListTile(
@@ -122,11 +116,36 @@ class WalletsView extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stackTrace) => const Center(
+          error: (error, stackTrace) => Center(
               child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Text("An error has occurred, please try again later or report the issue to Massa Team"),
-          )),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.wifi_off, size: 64, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "Connection error",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Please check your internet connection",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        ref.read(walletListProvider.notifier).loadWallets();
+                      },
+                      icon: const Icon(Icons.refresh),
+                      label: const Text("Retry"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ),
       ),
     );

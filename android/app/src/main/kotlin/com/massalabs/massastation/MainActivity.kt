@@ -1,4 +1,4 @@
-package com.example.mug
+package com.massalabs.massastation
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -8,72 +8,33 @@ import 'package:mug/constants/colors.dart';
 
 Widget AddressIcon(String address) {
   var seed = getSeed(address);
-  int iIndex = randBetwen(0, 992, seed.iSeed);
 
-  Random random = Random(seed.ySeed);
+  // Expanded color palette (removed dark colors including black)
+  final colors = <String>[
+    "red", "lightblue", "green", "yellow", "orange", "purple", "pink", "cyan", 
+    "lime", "teal", "amber", "lightgreen", "deeporange", 
+    "lightcoral", "forestgreen", "gold", "crimson", "mediumorchid",
+    "hotpink", "springgreen", "deepskyblue", "orangered", "mediumspringgreen",
+    "tomato", "royalblue", "limegreen", "magenta", "coral"
+  ];
 
-  // Decide randomly whether to pick from the positive or negative range
-  bool pickPositive1 = random.nextBool();
-  bool pickPositive2 = random.nextBool();
-
-  double xpos;
-  if (pickPositive1) {
-    xpos = generateRandomInRange(0.2, 0.4, seed.xSeed); // Positive range
-  } else {
-    xpos = generateRandomInRange(-0.4, -0.2, seed.xSeed); // Negative range
-  }
-
-  double ypos;
-  if (pickPositive2) {
-    ypos = generateRandomInRange(0.2, 0.4, seed.ySeed); // Positive range
-  } else {
-    ypos = generateRandomInRange(-0.4, -0.2, seed.ySeed); // Negative range
-  }
-  var colours = colorPalettesInts[iIndex];
-
-  final pcolours = <String>["red", "blue", "green", "white", "yellow", "orange", "purple"];
-  final cIndex = randBetwen(0, 6, seed.ySeed);
+  final part1Index = randBetwen(0, colors.length - 1, seed.ySeed);
+  final part2Index = randBetwen(0, colors.length - 1, seed.iSeed);
+  final part3Index = randBetwen(0, colors.length - 1, (seed.xSeed + seed.ySeed) % 1000000);
 
   final svg = '''<svg xmlns="http://www.w3.org/2000/svg" width="132" height="132">
-    <path fill="${pcolours[cIndex]}" opacity="1.00000"
-        d="m90.495 64.545 8.34-14.436-3.948-6.84-16.701-.012 9.669-16.734a42.623 42.623 0 0 0-8.376-3.738L66.318 45.531l3.966 6.84h16.701l-8.346 14.454 3.942 6.852h25.521c.702-2.934 1.104-6 1.167-9.132H90.495zm-28.14 34.98h7.899l8.364-14.442 9.114 15.774a43.221 43.221 0 0 0 7.422-5.391L82.581 73.677h-7.908l-8.364 14.457-8.343-14.457h-7.914l-12.57 21.789a43.272 43.272 0 0 0 7.422 5.394l9.111-15.771 8.34 14.436zM54 66.828l-8.34-14.457h16.686l3.972-6.84-13.161-22.746a42.72 42.72 0 0 0-8.376 3.738l9.663 16.728h-16.68l-3.954 6.837 8.34 14.457H23.364a42.93 42.93 0 0 0 1.167 9.132h25.518L54 66.828z" />
+    <!-- Top right part -->
+    <path fill="${colors[part1Index]}" opacity="1.00000"
+        d="m90.495 64.545 8.34-14.436-3.948-6.84-16.701-.012 9.669-16.734a42.623 42.623 0 0 0-8.376-3.738L66.318 45.531l3.966 6.84h16.701l-8.346 14.454 3.942 6.852h25.521c.702-2.934 1.104-6 1.167-9.132H90.495z" />
+    <!-- Bottom part -->
+    <path fill="${colors[part2Index]}" opacity="1.00000"
+        d="m62.355 99.525h7.899l8.364-14.442 9.114 15.774a43.221 43.221 0 0 0 7.422-5.391L82.581 73.677h-7.908l-8.364 14.457-8.343-14.457h-7.914l-12.57 21.789a43.272 43.272 0 0 0 7.422 5.394l9.111-15.771 8.34 14.436z" />
+    <!-- Top left part -->
+    <path fill="${colors[part3Index]}" opacity="1.00000"
+        d="M54 66.828l-8.34-14.457h16.686l3.972-6.84-13.161-22.746a42.72 42.72 0 0 0-8.376 3.738l9.663 16.728h-16.68l-3.954 6.837 8.34 14.457H23.364a42.93 42.93 0 0 0 1.167 9.132h25.518L54 66.828z" />
 </svg>''';
 
-  return Stack(
-    children: [
-      // Background image
-      Positioned.fill(
-        child: SvgPicture.string(svg),
-      ),
-      // Sphere overlay
-      Center(
-        child: Container(
-          width: 200,
-          height: 200,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              center: Alignment(xpos, ypos), // Light source
-              radius: 0.8,
-              colors: [
-                Color(colours[0]).withValues(alpha: 0.4), // Bright spot
-                Color(colours[4]).withValues(alpha: 0.6), // Mid-tone
-                Colors.black.withValues(alpha: 0.9), // Shadow // Transparent bright spot
-              ],
-              stops: const <double>[0.0, 0.5, 1.0],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 15,
-                offset: const Offset(5, 5), // Adds a shadow for depth
-              ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
+  return SvgPicture.string(svg);
 }
 
 // supporting functions

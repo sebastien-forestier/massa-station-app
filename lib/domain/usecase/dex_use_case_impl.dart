@@ -1,5 +1,6 @@
 // Package imports:
 import 'package:dusa/dusa.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mug/data/repository/dex_repository_impl.dart';
 import 'package:mug/domain/entity/entity.dart';
@@ -54,7 +55,13 @@ class DexUseCaseImpl implements DexUseCase {
     try {
       final result = await repository.getTokenBalance(accountAddress, tokenType);
       return switch (result) {
-        Success(value: final value) => Success(value: bigIntToDecimal(value, getTokenDecimal(tokenType))),
+        Success(value: final value) => () {
+          if (kDebugMode) {
+            print('DEBUG: Token $tokenType decimals: ${getTokenDecimal(tokenType)}');
+            print('DEBUG: Converting BigInt $value to decimal');
+          }
+          return Success(value: bigIntToDecimal(value, getTokenDecimal(tokenType)));
+        }(),
         Failure(exception: final exception) => Failure(exception: Exception("unable to get token balance: $exception"))
       };
     } on Exception catch (error) {

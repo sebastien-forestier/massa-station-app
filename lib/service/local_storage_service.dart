@@ -125,6 +125,13 @@ class LocalStorageService {
 
   Future<void> setIsAutoRotate(bool flag) async => await sharedPreferences.setBool(StorageKeys.isAutoRotate, flag);
 
+  /// Clears all app data - use when user forgets passphrase
+  Future<void> clearAllData() async {
+    await sharedPreferences.clear();
+    await _secureStorage.deleteAll();
+    _isUserActive = false;
+  }
+
   Future<double> setMinimumGassFee(double minimumGassFee) async {
     if (minimumGassFee < 1.0) {
       minimumGassFee = 1.0;

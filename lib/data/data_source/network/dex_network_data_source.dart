@@ -96,11 +96,19 @@ class DexNetworkDataSourceImpl implements DexDataSource {
     await _updateSmartcontractClientAccount(accountAddress);
     final token = Token(grpc: smartContractService!.client, token: tokenType);
     try {
-      final resp = await token.balanceOf(smartContractService!.account.address());
+      if (kDebugMode) {
+        print('DEBUG: Getting balance for token: $tokenType');
+        print('DEBUG: Wallet address: $accountAddress');
+        print('DEBUG: Smart contract account address: ${smartContractService!.account.address()}');
+      }
+      final resp = await token.balanceOf(accountAddress);
+      if (kDebugMode) {
+        print('DEBUG: Raw BigInt balance for $tokenType: $resp');
+      }
       return Success(value: resp);
     } on Exception catch (error) {
       if (kDebugMode) {
-        print(error.toString());
+        print('DEBUG: Error getting token balance: $error');
       }
       return Failure(exception: error);
     }

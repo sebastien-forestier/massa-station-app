@@ -60,9 +60,16 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text(
-            'Set Passphrase',
-          ),
+          title: MediaQuery.of(context).orientation == Orientation.portrait
+              ? Image.asset(
+                  'assets/icons/massa_station_full.png',
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  fit: BoxFit.contain,
+                )
+              : Image.asset(
+                  'assets/icons/massa_station_full.png',
+                  height: 40,
+                ),
           centerTitle: true,
         ),
         body: CustomScrollView(
@@ -74,7 +81,7 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
                 padding: EdgeInsets.only(bottom: bottom),
                 child: Column(
                   children: [
-                    _buildTopLogo(),
+                    const Spacer(),
                     _buildPassphraseSetWorkflow(context),
                     Spacer(),
                     Padding(
@@ -100,8 +107,8 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
     return Padding(
       padding: EdgeInsets.only(top: topPadding, bottom: 20),
       child: Center(
-        child: SvgPicture.asset(
-          'assets/icons/mu.svg',
+        child: Image.asset(
+          'assets/icons/massa_station.png',
           height: 200,
           width: 200,
         ),
@@ -282,11 +289,12 @@ class _SetPassphraseViewState extends ConsumerState<SetPassphraseView> {
         informationSnackBarMessage(context, 'Passphrase set!');
 
         await ref.read(localStorageServiceProvider).setPassphrase(enteredPassphrase);
+        // Auto-login after setting passphrase instead of going to login screen
+        ref.read(localStorageServiceProvider).setLoginStatus(true);
         TextInput.finishAutofillContext();
         await Navigator.pushReplacementNamed(
           context,
-          AuthRoutes.login,
-          arguments: true,
+          AuthRoutes.home,
         );
       } else {
         informationSnackBarMessage(context, 'Passphrase mismatch!');

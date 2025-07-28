@@ -35,10 +35,6 @@ class _ExplorerViewState extends ConsumerState<ExplorerView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text('Massa Explorer'),
-      ),
       body: CommonPadding(
         child: RefreshIndicator(
           onRefresh: () {

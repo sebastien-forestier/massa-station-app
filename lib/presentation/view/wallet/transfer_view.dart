@@ -34,7 +34,13 @@ class TransferView extends ConsumerWidget {
 
     final screenTitle = ref.watch(screenTitleProvider);
     return Scaffold(
-      appBar: AppBar(centerTitle: false, title: Text(screenTitle)),
+      appBar: AppBar(
+        title: Image.asset(
+          'assets/icons/massa_station_full.png',
+          height: 40,
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: CommonPadding(
           child: RefreshIndicator(

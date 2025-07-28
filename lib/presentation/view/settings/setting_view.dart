@@ -9,6 +9,8 @@ import 'package:mug/presentation/widget/help_information_widget.dart';
 
 // Project imports:
 import 'package:mug/presentation/widget/widget.dart';
+import 'package:mug/routes/routes.dart';
+import 'package:mug/service/provider.dart';
 
 class SettingView extends ConsumerStatefulWidget {
   const SettingView({super.key});
@@ -39,7 +41,6 @@ class _SettingViewState extends ConsumerState<SettingView> {
     final minimumTxFee = ref.watch(settingProvider).feeAmount;
     final minimumGasFee = ref.watch(settingProvider).gasAmount;
     return Scaffold(
-      appBar: AppBar(centerTitle: false, title: const Text("Settings")),
       body: CommonPadding(
         child: ListView(
           children: <Widget>[
@@ -138,6 +139,17 @@ class _SettingViewState extends ConsumerState<SettingView> {
               ]),
             ),
             const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text(
+                "Logout",
+                style: TextStyle(color: Colors.red),
+              ),
+              onTap: () {
+                _showLogoutDialog();
+              },
+            ),
+            const Divider(height: 1),
             const AboutWidget(),
           ],
         ),
@@ -176,6 +188,42 @@ class _SettingViewState extends ConsumerState<SettingView> {
       }
       _isTxFeeEditing = !_isTxFeeEditing;
     });
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _logout();
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _logout() {
+    ref.read(localStorageServiceProvider).setLoginStatus(false);
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AuthRoutes.authWall,
+      (Route<dynamic> route) => false,
+      arguments: false,
+    );
   }
 
   @override

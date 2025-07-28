@@ -74,7 +74,7 @@ class _AddressViewState extends ConsumerState<AddressView> {
                                       icon: const Icon(Icons.copy)),
                                 ]),
                                 subtitle:
-                                    Text("Threat: ${addressEntity.thread.toString()}", textAlign: TextAlign.center),
+                                    Text("Thread: ${addressEntity.thread.toString()}", textAlign: TextAlign.center),
                               ),
                             ),
                           ),

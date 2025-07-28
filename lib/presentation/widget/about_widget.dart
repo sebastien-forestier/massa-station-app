@@ -11,16 +11,41 @@ class AboutWidget extends StatefulWidget {
 
 class _AboutState extends State<AboutWidget> {
   void _showAboutDialog() {
-    showAboutDialog(
+    showDialog(
       context: context,
-      applicationIcon: SvgPicture.asset(
-        'assets/icons/mu.svg',
-        height: 40,
-        width: 40,
-      ),
-      applicationName: 'MUG',
-      applicationVersion: 'Version 1.2.0',
-      applicationLegalese: '\u{a9} 2025 Massa',
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('About Massa Station'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/icons/massa_station.png',
+                height: 80,
+                width: 80,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Massa Station',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text('Mobile Version 0.1.0'),
+              const SizedBox(height: 16),
+              const Text('© 2025 Massa Labs'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 
