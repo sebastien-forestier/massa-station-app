@@ -130,7 +130,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
             ListTile(
               leading: const Icon(Icons.double_arrow),
               title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                const Text("Slipage:"),
+                const Text("Slippage:"),
                 const HelpInfo(
                     message:
                         'Slippage is the difference between the expected price of a swapping ond DEX and the actual price.'),
