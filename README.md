@@ -3,17 +3,17 @@
   <img src="assets/icons/mu.svg" alt="App Icon" width="256"/>
 </div>
 
-# MicroGate (μG)
+# Massa Station App
 [![Stars][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
 
 
 ## Introduction
-Massa Universal Mobile Gateway, abbreviated as (MUG) and hence resulting in the name microgateway -  abbreviated at (μG), is a universal mobile gatway for Massa Blockchain. The icon for the app is designed to reflect this.
+Massa Station mobile app for interaction with Massa Blockchain.
 
 ## Features
-MicroGate will initally have the following features:
+Massa Station will initally have the following features:
 
 ### Massa Wallet
 - Massa wallet  - with ability to create multiple wallets, restore wallet from private key, export wallet, send and receive transactions.
@@ -244,39 +244,17 @@ Follow these steps to build the app for Android and iOS:
    Use Xcode's interface to sign the app with your Apple Developer account and distribute it via TestFlight or the App Store. Follow the [official Flutter guide](https://docs.flutter.dev/deployment/ios) for detailed instructions.
 
 
-## Additional information
-You can get more information about massa by visiting the links below.
-### Links
-- [Massa: Massa main website](https://massa.net)
-- [Massa Foundation website](https://massa.foundation)
-- [Massa buildnet](https://buildnet.massa.net)
-- [Massa station](https://station.massa.net/)
-- [Massa Documentation: Valuable massa documentation](https://docs.massa.net/)
-- [Massa Github: Massa official github repository](https://github.com/massalabs)
-- [Massa Web3: massa-dart will have similar functionalities as massa-web3](https://github.com/massalabs/massa-web3)
-- [Massa Dart SDK repository](https://github.com/nafsilabs/massa-dart)
-- [Massa Dart SDK documentation](https://pub.dev/documentation/massa/latest/massa/massa-library.html)
 
 ### Support
-This project is supported by [Massa Foundation Grant](https://massa.foundation)
+This project is supported by a [Massa Foundation Grant](https://massa.foundation)
 
 ### Contribute
-You can contribute to this package, request new features or report any bug by visiting the package repository at [mug](https://github.com/nafsilabs/mug)
+You can contribute to this package, request new features or report any bug by visiting the package repository.
 
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE) for more information.
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[pub-dev-url]: https://pub.dev/packages/massa
-[stars-shield]: https://img.shields.io/github/stars/nafsilabs/mug.svg?style=for-the-badge&logo=github&colorB=deeppink&label=stars
-[stars-url]: https://packagist.org/packages/nafsilabs/mug
-[issues-shield]: https://img.shields.io/github/issues/nafsilabs/mug.svg?style=for-the-badge
-[issues-url]: https://github.com/nafsilabs/mug/issues
-[license-shield]: https://img.shields.io/github/license/nafsilabs/mug.svg?style=for-the-badge
-[license-url]: https://github.com/nafsilabs/mug/blob/main/LICENSE
+The MIT License (MIT).
 
 
 
